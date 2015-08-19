@@ -136,6 +136,8 @@
      <Compile Include="Assets\Scripts\PaintingScript.cs" />
      <Compile Include="Assets\Scripts\PauseMenuScript.cs" />
      <Compile Include="Assets\Scripts\PlayerScript.cs" />
+     <Compile Include="Assets\Scripts\SavableScript.cs" />
+     <Compile Include="Assets\Scripts\SaveLoadScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
      <Compile Include="Assets\Scripts\WeaponScript.cs" />

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PauseMenuScript : MonoBehaviour {
+public class PauseMenuScript : MenuScript {
 	public GameObject pauseMenu;
 
 	// Update is called once per frame
@@ -23,12 +23,5 @@ public class PauseMenuScript : MonoBehaviour {
 		GlobalScript.currentGameState = GlobalScript.GameState.InGame;
 		Time.timeScale = 1f;
 		pauseMenu.SetActive (false);
-	}
-	public void Quit(){
-		Application.Quit();
-	}
-	public void MainMenu(){
-		//TODO
-		//Application.LoadLevel("MainMenu");
 	}
 }
