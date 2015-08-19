@@ -134,7 +134,7 @@
      <Compile Include="Assets\Scripts\LockedScript.cs" />
      <Compile Include="Assets\Scripts\MenuScript.cs" />
      <Compile Include="Assets\Scripts\PaintingScript.cs" />
-     <Compile Include="Assets\Scripts\PauseScript.cs" />
+     <Compile Include="Assets\Scripts\PauseMenuScript.cs" />
      <Compile Include="Assets\Scripts\PlayerScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
