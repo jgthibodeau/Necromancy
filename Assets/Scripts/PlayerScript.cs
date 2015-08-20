@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerScript : MonoBehaviour {
+public class PlayerScript : SavableScript {
 	// Input variables
 	private Vector2 moveInput;
 	private bool interact;
 	private bool cancel;
 
 	public float speed = 10;
-	private Vector3 movement;
+	public Vector3 movement;
 
 	private Animator animator;
 	public Transform sprite;
 
 	public enum State{Moving, Interacting};
-	private State currentState = State.Moving;
+	public State currentState = State.Moving;
 
 	// Use this for initialization
 	void Start()

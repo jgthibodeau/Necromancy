@@ -4,12 +4,12 @@ using System.Collections;
 public class MenuScript : MonoBehaviour {
 
 	public void Load(){
-		Time.timeScale = 1f;
 		//TODO
+		SaveLoad.Load ();
 	}
 	public void Save(){
 		//TODO
-		SaveLoadScript.SaveFile ();
+		SaveLoad.Save ();
 	}
 	public void SaveAndQuit(){
 		Save ();
