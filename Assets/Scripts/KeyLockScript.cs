@@ -9,6 +9,7 @@ public class KeyLockScript : InteractableScript {
 	public float[] currentHeights;
 	public float heightTolerance;
 	public int[] tumblerOrder;	//what order this tumbler is
+	public int currentTumblerOrderToPick;
 	public int currentTumblerToPick;
 	public int currentTumblerBeingPicked;
 	public float tensionStep;
@@ -52,6 +53,7 @@ public class KeyLockScript : InteractableScript {
 		}
 		GlobalScript.ShuffleArray<int> (tumblerOrder);
 		tumblerSize = 2.5f / correctHeights.Length;
+		tensionStep = 1f / (correctHeights.Length+1);
 		SetDefaults ();
 	}
 
@@ -66,20 +68,28 @@ public class KeyLockScript : InteractableScript {
 
 			//Check tension is correct
 			int oldTumbler = currentTumblerToPick;
-			currentTumblerToPick = tumblerOrder[(int)(leftTrigger / tensionStep) - 1];
+			currentTumblerOrderToPick = (int)(leftTrigger / tensionStep) - 1;
+			if(currentTumblerOrderToPick > tumblerOrder.Length - 1)
+				currentTumblerOrderToPick = tumblerOrder.Length - 1;
+			if(currentTumblerOrderToPick == -1)
+				currentTumblerToPick = -1;
+			else
+				currentTumblerToPick = tumblerOrder[currentTumblerOrderToPick];
 //			if(oldTumbler != currentTumblerToPick)
 //				audioSource.PlayOneShot (hitTumblerClip, 1f);
 
 			float randomAngle = 0f;
-			if (!PreviousTumblersCorrect(currentTumblerToPick))
+			if (!PreviousTumblersCorrect(currentTumblerOrderToPick)){
 				randomAngle = Random.Range (-15*leftTrigger, 15*leftTrigger);
+				print (randomAngle);
+			}
 			else if(!CorrectHeight(currentTumblerToPick))
 				randomAngle = Random.Range (-2, 2);
 			tensionWrench.transform.rotation = Quaternion.Euler (90, 135 + 90 * leftTrigger + randomAngle, 0);
 
 			//Set all tumblers above currentTumblerToPick to 0 height
-			for (int i=currentTumblerToPick+1; i<currentHeights.Length; i++)
-					currentHeights [i] = 0;
+			for (int i=currentTumblerOrderToPick+1; i<tumblerOrder.Length; i++)
+					currentHeights [tumblerOrder[i]] = 0;
 
 			//Set current tumbler
 			oldTumbler = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
@@ -109,7 +119,7 @@ public class KeyLockScript : InteractableScript {
 
 			//if currentTumblerBeingPicked is after currentTumblerToPick
 			int pickingOrder = System.Array.IndexOf(tumblerOrder, currentTumblerBeingPicked);
-			if (pickingOrder > currentTumblerToPick) {
+			if (pickingOrder > currentTumblerOrderToPick) {
 				currentHeights [currentTumblerBeingPicked] = rightTrigger;
 				//no wiggle
 				lockPick.rotation = Quaternion.Euler (90, 0, 0);
@@ -117,9 +127,14 @@ public class KeyLockScript : InteractableScript {
 				if(pickingAudioSource.isPlaying)
 					pickingAudioSource.Stop ();
 			//if currentTumblerBeingPicked is before currentTumblerToPick
-			} else if (pickingOrder < currentTumblerToPick) {
+			} else if (pickingOrder < currentTumblerOrderToPick) {
 				if (rightTrigger > currentHeights [currentTumblerBeingPicked])
 					rightTrigger = currentHeights [currentTumblerBeingPicked];
+				//no wiggle
+				lockPick.rotation = Quaternion.Euler (90, 0, 0);
+				//no sound
+				if(pickingAudioSource.isPlaying)
+					pickingAudioSource.Stop ();
 			//if currentTumblerBeingPicked is currentTumblerToPick
 			} else {
 //				if (rightTrigger > currentHeights[currentTumblerBeingPicked]){
@@ -135,7 +150,7 @@ public class KeyLockScript : InteractableScript {
 					currentHeights[currentTumblerBeingPicked] = rightTrigger;
 
 					//if all previous tumblers are correct
-					if(PreviousTumblersCorrect(tumblerOrder[currentTumblerBeingPicked])){
+					if(PreviousTumblersCorrect(currentTumblerOrderToPick)){
 						//wiggle and noise as adjust tumbler
 						float angle = Random.Range (-2, 2);
 						lockPick.rotation = Quaternion.Euler (90, angle, 0);
@@ -184,15 +199,16 @@ public class KeyLockScript : InteractableScript {
 		return (currentHeights [tumbler] >= (correctHeights [tumbler] - heightTolerance) && currentHeights [tumbler] <= (correctHeights [tumbler] + heightTolerance));
 	}
 
-	bool PreviousTumblersCorrect(int tumbler){
-		if (tumbler < 0)
+	bool PreviousTumblersCorrect(int thisTumblerOrder){
+		if (thisTumblerOrder < 0)
 			return true;
-		
-		if (tumbler >= tumblerOrder.Length)
-			tumbler = tumblerOrder.Length-1;
 
-		int thisOrder = System.Array.IndexOf (tumblerOrder, tumbler);
-		for (int i=thisOrder-1; i>0; i--){
+		if (thisTumblerOrder >= tumblerOrder.Length)
+			thisTumblerOrder = tumblerOrder.Length-1;
+		
+		print (thisTumblerOrder);
+		for (int i=thisTumblerOrder-1; i>=0; i--){
+			print (i+" "+CorrectHeight(tumblerOrder[i]));
 			if(!CorrectHeight(tumblerOrder[i]))
 			   return false;
 		}
