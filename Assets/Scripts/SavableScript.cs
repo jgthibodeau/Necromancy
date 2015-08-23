@@ -14,12 +14,25 @@ using System.Xml.Serialization;
 
 
 public class SavableScript : MonoBehaviour {
+	public void SaveVar(){
+		XmlSerializer serializer = new XmlSerializer(typeof(float));
+		using (StringWriter writer = new StringWriter()) {
+			serializer.Serialize(writer, this.transform.position.x);
+			PlayerPrefs.SetString(this.name + "positionx", writer.ToString());
+		}
+	}
+	public void LoadVar(){
+	}
+
 	public void Save(){
+		print ("saving "+this.name);
 		XmlSerializer serializer;
 		FieldInfo[] fields = this.GetType().GetFields();
 		foreach (FieldInfo f in fields) {
-			print (this.name+" "+f.Name+" "+f.FieldType+" "+f.GetValue(this));
-			if(f.FieldType.IsSerializable && f.FieldType is IXmlSerializable){
+			bool serializable = f.FieldType.IsSerializable && f.FieldType != typeof(Transform[]) && f.FieldType != typeof(GameObject[]);
+			//TODO make this properly detect Transform[]
+			print (this.name+" "+f.Name+" "+f.FieldType+" "+f.GetValue(this)+" "+serializable);
+			if(serializable){
 				serializer = new XmlSerializer(f.FieldType);
 				using (StringWriter writer = new StringWriter()) {
 					serializer.Serialize(writer, f.GetValue(this));
@@ -83,10 +96,12 @@ public class SavableScript : MonoBehaviour {
 	}
 	
 	public void Load(){
+		print ("loading "+this.name);
 		XmlSerializer serializer;
 		FieldInfo[] fields = this.GetType().GetFields();
 		foreach (FieldInfo f in fields){
-			if(f.FieldType.IsSerializable && f.FieldType is IXmlSerializable){
+			bool serializable = f.FieldType.IsSerializable && f.FieldType != typeof(Transform[]) && f.FieldType != typeof(GameObject[]);
+			if(serializable){
 				serializer = new XmlSerializer(f.FieldType);
 				using (StringReader reader = new StringReader(PlayerPrefs.GetString(this.name + f.Name))) {
 					if (PlayerPrefs.HasKey(this.name + f.Name))

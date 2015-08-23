@@ -5,18 +5,15 @@ public class KeyLockScript : InteractableScript {
 	public enum State{Locked,Unlocked};
 	public State currentState = State.Locked;
 
-	public float[] tumblerHeights;
-	public float tumblerHeightTolerance;
-	public float tumblerTolerance;
-	public float[] currentTumblerHeights;
-	public int currentTumbler = 0;
-	public float lockPickX;
-	private float tumblerSize;
-	public float changeTumblerSpeed = 0.5f;
-
-	public float tension;
-	public float tensionTolerance;
-	public bool haveTension = false;
+	public float[] correctHeights;
+	public float[] currentHeights;
+	public float heightTolerance;
+	public int[] tumblerOrder;	//what order this tumbler is
+	public int currentTumblerToPick;
+	public int currentTumblerBeingPicked;
+	public float tensionStep;
+	public float tumblerSize;
+	public float changeTumblerSpeed;
 
 	public Transform lockPick;
 	private Sprite lockPickSprite;
@@ -46,8 +43,15 @@ public class KeyLockScript : InteractableScript {
 
 	void Start(){
 		lockPickSprite = lockPick.GetComponent<SpriteRenderer> ().sprite;
-		currentTumblerHeights = new float[tumblerHeights.Length];
-		tumblerSize = 2.5f / tumblerHeights.Length;
+		print (correctHeights.Length);
+		currentHeights = new float[correctHeights.Length];
+		tumblerOrder = new int[correctHeights.Length];
+		for (int i=0; i<correctHeights.Length; i++) {
+			correctHeights [i] = Random.Range (.15f, 1f);
+			tumblerOrder[i] = i;
+		}
+		GlobalScript.ShuffleArray<int> (tumblerOrder);
+		tumblerSize = 2.5f / correctHeights.Length;
 		SetDefaults ();
 	}
 
@@ -61,23 +65,27 @@ public class KeyLockScript : InteractableScript {
 			}
 
 			//Check tension is correct
-			//		Vector3 leftStick = new Vector3 (inputLeftX, 0, inputLeftY);
-			//		if (leftStick.magnitude > 0) {
-			//			tensionAngle = Vector3.Angle (leftStick, Vector3.forward) * Mathf.Sign (leftStick.x);
-			//			tensionWrench.transform.rotation = Quaternion.Euler (90, tensionAngle, 0);
-			//		}
-			haveTension = (leftTrigger >= tension - tensionTolerance && leftTrigger <= tension + tensionTolerance);
-			int randomAngle = 0;
-			if (haveTension)
+			int oldTumbler = currentTumblerToPick;
+			currentTumblerToPick = tumblerOrder[(int)(leftTrigger / tensionStep) - 1];
+//			if(oldTumbler != currentTumblerToPick)
+//				audioSource.PlayOneShot (hitTumblerClip, 1f);
+
+			float randomAngle = 0f;
+			if (!PreviousTumblersCorrect(currentTumblerToPick))
+				randomAngle = Random.Range (-15*leftTrigger, 15*leftTrigger);
+			else if(!CorrectHeight(currentTumblerToPick))
 				randomAngle = Random.Range (-2, 2);
-			else {
-				for (int i=0; i<currentTumblerHeights.Length; i++) {
-					currentTumblerHeights [i] = 0;
-				}
-			}
 			tensionWrench.transform.rotation = Quaternion.Euler (90, 135 + 90 * leftTrigger + randomAngle, 0);
 
+			//Set all tumblers above currentTumblerToPick to 0 height
+			for (int i=currentTumblerToPick+1; i<currentHeights.Length; i++)
+					currentHeights [i] = 0;
+
 			//Set current tumbler
+			oldTumbler = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
+			if (oldTumbler >= currentHeights.Length)
+				oldTumbler = currentHeights.Length - 1;
+
 			float offset = 0f;
 			if (inputRight.x < 0f && lockPick.transform.localPosition.x > -3f) {
 				offset = inputRight.x * changeTumblerSpeed * Time.deltaTime;
@@ -91,29 +99,60 @@ public class KeyLockScript : InteractableScript {
 			}
 			if (offset != 0f)
 				lockPick.transform.position = lockPick.transform.position + new Vector3 (offset, 0, 0);
+			currentTumblerBeingPicked = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
 
-			int oldTumbler = currentTumbler;
-			currentTumbler = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
-			if (currentTumbler >= tumblerHeights.Length)
-				currentTumbler = tumblerHeights.Length - 1;
+			if (currentTumblerBeingPicked >= currentHeights.Length)
+				currentTumblerBeingPicked = currentHeights.Length - 1;
 			// Play tumbler click if on a new tumbler
-			if (oldTumbler != currentTumbler)
+			if (oldTumbler != currentTumblerBeingPicked)
 				audioSource.PlayOneShot (hitTumblerClip, 1f);
 
-			//Set current tumbler height
-			currentTumblerHeights [currentTumbler] = rightTrigger;
-			lockPick.transform.position = new Vector3 (lockPick.transform.position.x, lockPick.transform.position.y, this.transform.position.z - 1.05f + 1.9f * rightTrigger);
-			if (rightTrigger >= tumblerHeights [currentTumbler] - tumblerHeightTolerance && rightTrigger <= tumblerHeights [currentTumbler] + tumblerHeightTolerance) {
-				int angle = Random.Range (-2, 2);
-				lockPick.rotation = Quaternion.Euler (90, angle, 0);
-				if(!pickingAudioSource.isPlaying)
-					pickingAudioSource.Play ();
-			} else{
+			//if currentTumblerBeingPicked is after currentTumblerToPick
+			int pickingOrder = System.Array.IndexOf(tumblerOrder, currentTumblerBeingPicked);
+			if (pickingOrder > currentTumblerToPick) {
+				currentHeights [currentTumblerBeingPicked] = rightTrigger;
+				//no wiggle
+				lockPick.rotation = Quaternion.Euler (90, 0, 0);
+				//no sound
 				if(pickingAudioSource.isPlaying)
 					pickingAudioSource.Stop ();
-				lockPick.rotation = Quaternion.Euler (90, 0, 0);
+			//if currentTumblerBeingPicked is before currentTumblerToPick
+			} else if (pickingOrder < currentTumblerToPick) {
+				if (rightTrigger > currentHeights [currentTumblerBeingPicked])
+					rightTrigger = currentHeights [currentTumblerBeingPicked];
+			//if currentTumblerBeingPicked is currentTumblerToPick
+			} else {
+//				if (rightTrigger > currentHeights[currentTumblerBeingPicked]){
+//					if(!pickingAudioSource.isPlaying)
+//						pickingAudioSource.Play ();
+//				} else {
+//					if(pickingAudioSource.isPlaying)
+//						pickingAudioSource.Stop ();
+//				}
+
+				bool wasCorrect = CorrectHeight(currentTumblerBeingPicked);
+				if (rightTrigger > currentHeights[currentTumblerBeingPicked]){
+					currentHeights[currentTumblerBeingPicked] = rightTrigger;
+
+					//if all previous tumblers are correct
+					if(PreviousTumblersCorrect(tumblerOrder[currentTumblerBeingPicked])){
+						//wiggle and noise as adjust tumbler
+						float angle = Random.Range (-2, 2);
+						lockPick.rotation = Quaternion.Euler (90, angle, 0);
+							
+						//if just got to correct height
+						if (CorrectHeight(currentTumblerBeingPicked) && !wasCorrect){
+							audioSource.PlayOneShot (hitTumblerClip, 1f);
+						}
+					} else {
+						lockPick.rotation = Quaternion.Euler (90, 0, 0);
+					}
+				} else {
+					lockPick.rotation = Quaternion.Euler (90, 0, 0);
+				}
 			}
-			//		GamePad.SetVibration(0,testA,testB);
+
+			lockPick.transform.position = new Vector3 (lockPick.transform.position.x, lockPick.transform.position.y, this.transform.position.z - 1.05f + 1.9f * rightTrigger);
 
 			//start unlock animation
 			if (Unlocked ()) {
@@ -130,9 +169,32 @@ public class KeyLockScript : InteractableScript {
 	}
 
 	bool Unlocked(){
-		for(int i=0;i<tumblerHeights.Length;i++){
-			if(currentTumblerHeights[i] < tumblerHeights[i] - tumblerHeightTolerance || currentTumblerHeights[i] > tumblerHeights [i] + tumblerHeightTolerance)
+		for(int i=0;i<currentHeights.Length;i++){
+			if(!CorrectHeight(i))
 				return false;
+		}
+		return true;
+	}
+
+	bool CorrectHeight(int tumbler){
+		if (tumbler < 0)
+			return true;
+		if (tumbler >= correctHeights.Length)
+			return false;
+		return (currentHeights [tumbler] >= (correctHeights [tumbler] - heightTolerance) && currentHeights [tumbler] <= (correctHeights [tumbler] + heightTolerance));
+	}
+
+	bool PreviousTumblersCorrect(int tumbler){
+		if (tumbler < 0)
+			return true;
+		
+		if (tumbler >= tumblerOrder.Length)
+			tumbler = tumblerOrder.Length-1;
+
+		int thisOrder = System.Array.IndexOf (tumblerOrder, tumbler);
+		for (int i=thisOrder-1; i>0; i--){
+			if(!CorrectHeight(tumblerOrder[i]))
+			   return false;
 		}
 		return true;
 	}
@@ -142,11 +204,9 @@ public class KeyLockScript : InteractableScript {
 	}
 
 	void SetDefaults(){
-		currentTumbler = 0;
-		haveTension = false;
 		tensionWrench.transform.rotation = Quaternion.Euler (90, 135, 0);
-		for (int i=0; i<currentTumblerHeights.Length; i++) {
-			currentTumblerHeights[i] = 0;
+		for (int i=0; i<currentHeights.Length; i++) {
+			currentHeights[i] = 0;
 		}
 	}
 

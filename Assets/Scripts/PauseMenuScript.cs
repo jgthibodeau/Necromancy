@@ -14,10 +14,6 @@ public class PauseMenuScript : MenuScript {
 		}
 	}
 
-	public void Load(){
-
-	}
-	
 	public void Pause(){
 		GlobalScript.currentGameState = GlobalScript.GameState.Paused;
 		Time.timeScale = 0f;
