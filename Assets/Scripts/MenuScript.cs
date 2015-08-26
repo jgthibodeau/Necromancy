@@ -19,7 +19,6 @@ public class MenuScript : MonoBehaviour {
 		Application.Quit();
 	}
 	public void LoadLevel(string level){
-		Time.timeScale = 1f;
-		Application.LoadLevel (level);
+		GlobalScript.LoadLevel (level);
 	}
 }

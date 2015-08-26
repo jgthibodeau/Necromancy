@@ -104,6 +104,28 @@ public class SaveData : ISerializable {
 	}
 }
 
+[Serializable ()]
+public class LoadedLevel : SaveData {
+	public string level;
+
+	public LoadedLevel () : base () {}
+	public LoadedLevel (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+
+//	// This constructor is called automatically by the parent class, ISerializable
+//	// We get to custom-implement the serialization process here
+//	public LoadedLevel (SerializationInfo info, StreamingContext ctxt)
+//	{
+//		string level = (string)info.GetValue ("name", typeof(string));
+//		GlobalScript.LoadLevel(level);
+//	}
+//	
+//	// Required by the ISerializable class to be properly serialized. This is called automatically
+//	public void GetObjectData (SerializationInfo info, StreamingContext ctxt)
+//	{
+//		info.AddValue("name", Application.loadedLevelName);
+//	}
+}
+
 // === This is the class that will be accessed from scripts ===
 public class SaveLoad {
 	
@@ -119,6 +141,11 @@ public class SaveLoad {
 	}
 	public static void SaveAll (string filePath) {
 		Stream stream = File.Open (filePath, FileMode.Create);
+
+		LoadedLevel level = new LoadedLevel ();
+		level.level = Application.loadedLevelName;
+		Save (stream, level);
+
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
 			obj.UpdateSaveData();
 			Save (stream, obj.savedata);
@@ -139,11 +166,25 @@ public class SaveLoad {
 	}
 	public static void LoadAll (string filePath) {
 		Stream stream = File.Open(filePath, FileMode.Open);
+
+		UnityEngine.Debug.Log (Application.isLoadingLevel);
+
+		LoadedLevel level = (LoadedLevel)Load (stream);
+		GlobalScript.LoadLevel (level.level);
+
+		UnityEngine.Debug.Log (Application.isLoadingLevel);
+//		bool loading = Application.isLoadingLevel;
+//		while (loading) {
+//			loading = Application.isLoadingLevel;
+//		}
+//		UnityEngine.Debug.Log (Application.isLoadingLevel);
+
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
 			obj.savedata = Load (stream);
 			obj.SetFromSaveData();
 		}
 		stream.Close();
+		UnityEngine.Debug.Log ("done loading");
 	}
 }
 

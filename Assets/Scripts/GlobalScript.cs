@@ -48,6 +48,11 @@ public class GlobalScript : MonoBehaviour {
 		}
 	}
 
+	public static void LoadLevel(string level){
+		Time.timeScale = 1f;
+		Application.LoadLevel (level);
+	}
+
 	//Raycasting layermasks
 	public static int IgnoreInteractableLayerMask = int.MaxValue & ~(1 << LayerMask.NameToLayer("Interactable")) & ~(1 << LayerMask.NameToLayer("Ignore Raycast"));
 	public static int InteractableLayerMask = 1 << LayerMask.NameToLayer("Interactable");
