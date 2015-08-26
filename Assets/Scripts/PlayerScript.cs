@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
+public class PlayerData : SaveData{
+	public Vector3 position;
+	public PlayerScript.State currentState;
+}
+
 public class PlayerScript : SavableScript {
 	// Input variables
 	private Vector2 moveInput;
@@ -19,19 +25,22 @@ public class PlayerScript : SavableScript {
 	// Use this for initialization
 	void Start()
 	{
+		savedata = new PlayerData ();
 		animator = sprite.GetComponent<Animator>();
 	}
 	
 	void Update()
 	{
+		//
+
 		//TODO ensure globalscript isnt paused for all scripts
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {
 		case State.Moving:
 			GetInput ();
 
-			movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
-			movement = Vector3.ClampMagnitude (movement, speed);
+			movement = new Vector3 (moveInput.x, 0, moveInput.y);
+			movement = Vector3.Normalize (movement);
 			
 			if (interact) {
 				InteractorScript interactor = GetComponent<InteractorScript> ();
@@ -73,7 +82,11 @@ public class PlayerScript : SavableScript {
 	void FixedUpdate()
 	{
 		// 5 - Move the game object
-		GetComponent<Rigidbody>().velocity = movement;
+//		GetComponent<Rigidbody>().velocity = movement;
+
+//		this.transform.position = Vector3.Slerp (this.transform.position, this.transform.position + movement, speed);
+		((PlayerData)savedata).position = Vector3.Slerp (((PlayerData)savedata).position, ((PlayerData)savedata).position + movement, speed);
+		this.transform.position = ((PlayerData)savedata).position;
 
 		Vector3 actualDirectionOfMotion = movement.normalized;
 

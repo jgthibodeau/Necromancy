@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyScript : SavableScript {
+public class EnemyScript : MonoBehaviour {
 	//States
 	public enum State{Patrol, Alert, Search, Investigate};
 	public State currentState;

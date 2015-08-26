@@ -5,11 +5,15 @@ public class MenuScript : MonoBehaviour {
 
 	public void Load(){
 		//TODO
-		SaveLoad.Load ();
+		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+			obj.Load ();
+		}
 	}
 	public void Save(){
 		//TODO
-		SaveLoad.Save ();
+		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+			obj.Save ();
+		}
 	}
 	public void SaveAndQuit(){
 		Save ();
