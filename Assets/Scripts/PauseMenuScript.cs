@@ -13,7 +13,7 @@ public class PauseMenuScript : MenuScript {
 				UnPause();
 		}
 	}
-	
+
 	public void Pause(){
 		GlobalScript.currentGameState = GlobalScript.GameState.Paused;
 		Time.timeScale = 0f;
