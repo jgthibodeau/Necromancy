@@ -20,8 +20,12 @@ public class DetectionConeScript : MonoBehaviour {
 		this.transform.parent = camera.transform;
 	}
 
-	// Update is called once per frame
 	void Update () {
+		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
+			InGame ();
+	}
+	
+	void InGame () {
 
 		//turn off if entity is visible
 		bool enemyOnScreen = false;

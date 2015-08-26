@@ -36,7 +36,7 @@ public class GlobalScript : MonoBehaviour {
 
 	//Gamestate stuff
 	public enum GameState{InGame, Paused};
-	public static GameState currentGameState;
+	public static GameState currentGameState = GameState.InGame;
 
 	public void ChangeState(GameState state){
 		currentGameState = state;

@@ -26,14 +26,18 @@ public class PlayerScript : SavableScript {
 	public State currentState = State.Moving;
 
 	// Use this for initialization
-	void Start()
-	{
-		savedata = new PlayerData ();
+	void Start () {
 		animator = sprite.GetComponent<Animator>();
+
+		savedata = playerdata;
 	}
 	
-	void Update()
-	{
+	void Update () {
+		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
+			InGame ();
+	}
+
+	void InGame () {
 		playerdata = (PlayerData)savedata;
 
 		//TODO ensure globalscript isnt paused for all scripts

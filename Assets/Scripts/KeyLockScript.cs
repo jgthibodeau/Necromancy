@@ -1,14 +1,23 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections;using System.Runtime.Serialization;
 
-public class KeyLockScript : InteractableScript {
-	public enum State{Locked,Unlocked};
-	public State currentState = State.Locked;
-
+[System.Serializable]
+public class KeyLockData : SaveData{
+	public KeyLockScript.State currentState = KeyLockScript.State.Locked;
 	public float[] correctHeights;
+	public int[] tumblerOrder;	//what order this tumbler is
+	
+	public KeyLockData () : base () {}
+	public KeyLockData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+}
+
+public class KeyLockScript : ToggleableScript {
+	public KeyLockData keylockdata;
+
+	public enum State{Locked,Unlocked};
+	
 	public float[] currentHeights;
 	public float heightTolerance;
-	public int[] tumblerOrder;	//what order this tumbler is
 	public int currentTumblerOrderToPick;
 	public int currentTumblerToPick;
 	public int currentTumblerBeingPicked;
@@ -42,39 +51,50 @@ public class KeyLockScript : InteractableScript {
 	public AudioSource audioSource;
 	public AudioSource pickingAudioSource;
 
-	void Start(){
+	public override void Start(){
+		base.Start ();
+
 		lockPickSprite = lockPick.GetComponent<SpriteRenderer> ().sprite;
-		print (correctHeights.Length);
-		currentHeights = new float[correctHeights.Length];
-		tumblerOrder = new int[correctHeights.Length];
-		for (int i=0; i<correctHeights.Length; i++) {
-			correctHeights [i] = Random.Range (.15f, 1f);
-			tumblerOrder[i] = i;
+
+		currentHeights = new float[keylockdata.correctHeights.Length];
+		keylockdata.tumblerOrder = new int[keylockdata.correctHeights.Length];
+		for (int i=0; i<keylockdata.correctHeights.Length; i++) {
+			keylockdata.correctHeights [i] = Random.Range (.15f, 1f);
+			keylockdata.tumblerOrder[i] = i;
 		}
-		GlobalScript.ShuffleArray<int> (tumblerOrder);
-		tumblerSize = 2.5f / correctHeights.Length;
-		tensionStep = 1f / (correctHeights.Length+1);
+		GlobalScript.ShuffleArray<int> (keylockdata.tumblerOrder);
+		tumblerSize = 2.5f / keylockdata.correctHeights.Length;
+		tensionStep = 1f / (keylockdata.correctHeights.Length+1);
 		SetDefaults ();
+
+		savedata = (SaveData)keylockdata;
 	}
 
-	void Update(){
+	public override void ToggledUpdate () {
+		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
+			InGame ();
+	}
+	
+	void InGame () {
+		keylockdata = (KeyLockData)savedata;
+
 		if (!Unlocked ()) {
 			GetInput ();
 
 			if (cancel) {
-				Deactivate (true);
+				Exit (true);
 				return;
 			}
 
 			//Check tension is correct
 			int oldTumbler = currentTumblerToPick;
 			currentTumblerOrderToPick = (int)(leftTrigger / tensionStep) - 1;
-			if(currentTumblerOrderToPick > tumblerOrder.Length - 1)
-				currentTumblerOrderToPick = tumblerOrder.Length - 1;
+			if(currentTumblerOrderToPick > keylockdata.tumblerOrder.Length - 1)
+				currentTumblerOrderToPick = keylockdata.tumblerOrder.Length - 1;
 			if(currentTumblerOrderToPick == -1)
 				currentTumblerToPick = -1;
 			else
-				currentTumblerToPick = tumblerOrder[currentTumblerOrderToPick];
+				currentTumblerToPick = keylockdata.tumblerOrder[currentTumblerOrderToPick];
 //			if(oldTumbler != currentTumblerToPick)
 //				audioSource.PlayOneShot (hitTumblerClip, 1f);
 
@@ -88,8 +108,8 @@ public class KeyLockScript : InteractableScript {
 			tensionWrench.transform.rotation = Quaternion.Euler (90, 135 + 90 * leftTrigger + randomAngle, 0);
 
 			//Set all tumblers above currentTumblerToPick to 0 height
-			for (int i=currentTumblerOrderToPick+1; i<tumblerOrder.Length; i++)
-					currentHeights [tumblerOrder[i]] = 0;
+			for (int i=currentTumblerOrderToPick+1; i<keylockdata.tumblerOrder.Length; i++)
+				currentHeights [keylockdata.tumblerOrder[i]] = 0;
 
 			//Set current tumbler
 			oldTumbler = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
@@ -118,7 +138,7 @@ public class KeyLockScript : InteractableScript {
 				audioSource.PlayOneShot (hitTumblerClip, 1f);
 
 			//if currentTumblerBeingPicked is after currentTumblerToPick
-			int pickingOrder = System.Array.IndexOf(tumblerOrder, currentTumblerBeingPicked);
+			int pickingOrder = System.Array.IndexOf(keylockdata.tumblerOrder, currentTumblerBeingPicked);
 			if (pickingOrder > currentTumblerOrderToPick) {
 				currentHeights [currentTumblerBeingPicked] = rightTrigger;
 				//no wiggle
@@ -179,7 +199,7 @@ public class KeyLockScript : InteractableScript {
 		} else {
 			rotatable.Rotate (new Vector3(0,unlockSpeed*Time.deltaTime,0));
 			if(rotatable.eulerAngles.y >= 45)
-				Deactivate(false);
+				Exit(false);
 		}
 	}
 
@@ -194,22 +214,22 @@ public class KeyLockScript : InteractableScript {
 	bool CorrectHeight(int tumbler){
 		if (tumbler < 0)
 			return true;
-		if (tumbler >= correctHeights.Length)
+		if (tumbler >= keylockdata.correctHeights.Length)
 			return false;
-		return (currentHeights [tumbler] >= (correctHeights [tumbler] - heightTolerance) && currentHeights [tumbler] <= (correctHeights [tumbler] + heightTolerance));
+		return (currentHeights [tumbler] >= (keylockdata.correctHeights [tumbler] - heightTolerance) && currentHeights [tumbler] <= (keylockdata.correctHeights [tumbler] + heightTolerance));
 	}
 
 	bool PreviousTumblersCorrect(int thisTumblerOrder){
 		if (thisTumblerOrder < 0)
 			return true;
 
-		if (thisTumblerOrder >= tumblerOrder.Length)
-			thisTumblerOrder = tumblerOrder.Length-1;
+		if (thisTumblerOrder >= keylockdata.tumblerOrder.Length)
+			thisTumblerOrder = keylockdata.tumblerOrder.Length-1;
 		
 		print (thisTumblerOrder);
 		for (int i=thisTumblerOrder-1; i>=0; i--){
-			print (i+" "+CorrectHeight(tumblerOrder[i]));
-			if(!CorrectHeight(tumblerOrder[i]))
+			print (i+" "+CorrectHeight(keylockdata.tumblerOrder[i]));
+			if(!CorrectHeight(keylockdata.tumblerOrder[i]))
 			   return false;
 		}
 		return true;
@@ -227,12 +247,13 @@ public class KeyLockScript : InteractableScript {
 	}
 
 	//Disable the lock, set all variables to default, return control to player
-	void Deactivate(bool reset){
+	void Exit(bool reset){
 		audioSource.Stop ();
 		if(reset)
 			SetDefaults ();
 		GameObject.Find ("Player").GetComponent<PlayerScript>().ChangeState(PlayerScript.State.Moving);
-		this.gameObject.SetActiveRecursively(false);
+
+		Deactivate();
 	}
 
 	void GetInput(){

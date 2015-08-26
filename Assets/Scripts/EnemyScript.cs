@@ -77,8 +77,6 @@ public class EnemyScript : SavableScript {
 	
 	// Use this for initialization
 	void Start () {
-		savedata = new EnemyData ();
-
 		player = GameObject.Find ("Player");
 		agent = this.GetComponent<NavMeshAgent> ();
 
@@ -86,10 +84,16 @@ public class EnemyScript : SavableScript {
 		waypoints = patrolPath.GetComponentsInChildren<Transform> ();
 		patrolPath.SetActive (false);
 		agent = this.transform.GetComponent<NavMeshAgent> ();
+
+		savedata = enemydata;
 	}
 	
-	// Update is called once per frame
 	void Update () {
+		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
+			InGame ();
+	}
+	
+	void InGame () {
 		enemydata = (EnemyData)savedata;
 
 		switch (enemydata.currentState) {

@@ -17,7 +17,7 @@ public class LockedScript : InteractableScript {
 				go.GetComponent<PlayerScript> ().ChangeState (PlayerScript.State.Interacting);
 				
 				//create keylock instance
-				lockObject.SetActiveRecursively (true);
+				lockObject.GetComponent<ToggleableScript>().Activate();
 				lockObject.transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane));
 				lockObject.transform.position = new Vector3 (lockObject.transform.position.x, go.transform.position.y + 5, lockObject.transform.position.z);
 			}

@@ -136,9 +136,9 @@
      <Compile Include="Assets\Scripts\PaintingScript.cs" />
      <Compile Include="Assets\Scripts\PauseMenuScript.cs" />
      <Compile Include="Assets\Scripts\PlayerScript.cs" />
-     <Compile Include="Assets\Scripts\Savable.cs" />
-     <Compile Include="Assets\Scripts\SaveLoad.cs" />
+     <Compile Include="Assets\Scripts\SavableScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
+     <Compile Include="Assets\Scripts\ToggleableScript.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
      <Compile Include="Assets\Scripts\WeaponScript.cs" />
      <None Include="Assets\AstarPathfindingProject\Editor\EditorAssets\Materials\Navmesh2.shader" />

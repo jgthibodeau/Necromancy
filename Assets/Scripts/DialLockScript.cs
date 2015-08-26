@@ -77,7 +77,12 @@ public class DialLockScript : MonoBehaviour {
 		currentTumbler = 0;
 	}
 	
-	void Update(){
+	void Update () {
+		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
+			InGame ();
+	}
+	
+	void InGame () {
 		switch(currentState){
 		case State.Locked:
 			GetInput ();

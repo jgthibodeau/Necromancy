@@ -54,7 +54,12 @@ public class PaintingScript : MonoBehaviour {
 		cutter.position = new Vector3(paintingBounds.max.x, cutter.position.y, paintingBounds.max.z);
 	}
 	
-	void Update(){
+	void Update () {
+		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
+			InGame ();
+	}
+	
+	void InGame () {
 		switch(currentState){
 		case State.Locked:
 			GetInput ();
