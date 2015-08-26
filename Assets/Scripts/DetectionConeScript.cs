@@ -105,7 +105,7 @@ public class DetectionConeScript : MonoBehaviour {
 
 		//set color based on enemy state
 		Color color = Color.white;
-		switch (enemyScript.currentState) {
+		switch (enemyScript.enemydata.currentState) {
 		case(EnemyScript.State.Patrol):
 			color = Color.white;
 			break;

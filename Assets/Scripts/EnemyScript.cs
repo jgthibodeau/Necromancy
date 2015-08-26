@@ -1,11 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.Serialization;
+
+[System.Serializable]
+public class EnemyData : SaveData{
+	public EnemyScript.State currentState;
+	public EnemyScript.State previousState;
+	public Vector3 lastKnownPosition;
+	public float investigateTime;
+	public float searchTime;
+	public bool loop;
+	public int currentWaypoint;
+	public bool movingForward = true;
+	
+	public EnemyData () : base () {}
+	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+}
 
 public class EnemyScript : SavableScript {
+	public EnemyData enemydata;
+
 	//States
 	public enum State{Patrol, Alert, Search, Investigate};
-	public State currentState;
-	public State previousState;
+//	public State currentState;
+//	public State previousState;
 
 	//Whether to allow default behaviors or not
 	public bool doDefaultPatrol = true;
@@ -15,7 +33,7 @@ public class EnemyScript : SavableScript {
 
 	//Player info
 	public GameObject player;
-	public Vector3 lastKnownPosition;
+//	public Vector3 lastKnownPosition;
 
 	//Detection radiuses
 	public float fov; // in degrees
@@ -26,9 +44,9 @@ public class EnemyScript : SavableScript {
 
 	//Timing
 	public float maxInvestigateTime;
-	public float investigateTime;
+//	public float investigateTime;
 	public float maxSearchTime;
-	public float searchTime;
+//	public float searchTime;
 
 	//Internally set speeds
 	public float noticeTurnSpeed;
@@ -50,8 +68,8 @@ public class EnemyScript : SavableScript {
 	public GameObject patrolPath;
 	public Transform[] waypoints;
 	public bool loop = true;
-	public int currentWaypoint = 0;
-	public bool movingForward = true;
+//	public int currentWaypoint = 0;
+//	public bool movingForward = true;
 
 	//Random values
 	public float investigateRandomness;
@@ -59,6 +77,8 @@ public class EnemyScript : SavableScript {
 	
 	// Use this for initialization
 	void Start () {
+		savedata = new EnemyData ();
+
 		player = GameObject.Find ("Player");
 		agent = this.GetComponent<NavMeshAgent> ();
 
@@ -70,17 +90,19 @@ public class EnemyScript : SavableScript {
 	
 	// Update is called once per frame
 	void Update () {
-		switch (currentState) {
+		enemydata = (EnemyData)savedata;
+
+		switch (enemydata.currentState) {
 		case State.Patrol:
 			agent.speed = patrolSpeed;
 			noticeTurnSpeed = patrolNoticeSpeed;
 
 			if (CanSee (player))
-				currentState = State.Alert;
+				enemydata.currentState = State.Alert;
 			else if (CanNotice (player)){
-				lastKnownPosition = player.transform.position;
-				investigateTime = maxInvestigateTime;
-				currentState = State.Investigate;
+				enemydata.lastKnownPosition = player.transform.position;
+				enemydata.investigateTime = maxInvestigateTime;
+				enemydata.currentState = State.Investigate;
 			}
 
 			break;
@@ -90,14 +112,14 @@ public class EnemyScript : SavableScript {
 			noticeTurnSpeed = investigateNoticeSpeed;
 
 			if (CanSee (player))
-				currentState = State.Alert;
+				enemydata.currentState = State.Alert;
 			else if (CanNotice (player)){
-				investigateTime = maxInvestigateTime;
-				lastKnownPosition = player.transform.position;
-			} else if (investigateTime > 0)
-				investigateTime -= Time.deltaTime;
+				enemydata.investigateTime = maxInvestigateTime;
+				enemydata.lastKnownPosition = player.transform.position;
+			} else if (enemydata.investigateTime > 0)
+				enemydata.investigateTime -= Time.deltaTime;
 			else
-				currentState = State.Patrol;
+				enemydata.currentState = State.Patrol;
 
 			break;
 			
@@ -105,10 +127,10 @@ public class EnemyScript : SavableScript {
 			agent.speed = alertSpeed;
 			noticeTurnSpeed = alertNoticeSpeed;
 
-			lastKnownPosition = player.transform.position;
+			enemydata.lastKnownPosition = player.transform.position;
 			if (!CanSee (player)){
-				searchTime = maxSearchTime;
-				currentState = State.Search;
+				enemydata.searchTime = maxSearchTime;
+				enemydata.currentState = State.Search;
 			}
 
 			break;
@@ -118,14 +140,14 @@ public class EnemyScript : SavableScript {
 			noticeTurnSpeed = searchNoticeSpeed;
 
 			if (CanSee (player))
-				currentState = State.Alert;
+				enemydata.currentState = State.Alert;
 			else if (CanNotice (player)){
-				searchTime = maxSearchTime;
-				lastKnownPosition = player.transform.position;
-			} else if (searchTime > 0)
-				searchTime -= Time.deltaTime;
+				enemydata.searchTime = maxSearchTime;
+				enemydata.lastKnownPosition = player.transform.position;
+			} else if (enemydata.searchTime > 0)
+				enemydata.searchTime -= Time.deltaTime;
 			else
-				currentState = State.Patrol;
+				enemydata.currentState = State.Patrol;
 
 			break;
 		}
@@ -134,7 +156,7 @@ public class EnemyScript : SavableScript {
 	}
 
 	public void DoBehavior(){
-		switch (currentState) {
+		switch (enemydata.currentState) {
 		case State.Patrol:
 			if(doDefaultPatrol)
 				DefaultPatrol ();
@@ -168,31 +190,31 @@ public class EnemyScript : SavableScript {
 	}
 
 	public void DefaultPatrol(){
-		Vector3 target = waypoints [currentWaypoint].position;
+		Vector3 target = waypoints [enemydata.currentWaypoint].position;
 		Vector3 moveDirection = target - transform.position;
 		
 		if (moveDirection.magnitude < 1.5) {
 			//			if (curTime == 0)
 			//				curTime = Time.time; // Pause over the Waypoint
 			//			if ((Time.time - curTime) >= pauseDuration){
-			if (movingForward) {
-				currentWaypoint++;
-				if (currentWaypoint > waypoints.Length - 1) {
+			if (enemydata.movingForward) {
+				enemydata.currentWaypoint++;
+				if (enemydata.currentWaypoint > waypoints.Length - 1) {
 					if (loop)
-						currentWaypoint = 0;
+						enemydata.currentWaypoint = 0;
 					else {
-						currentWaypoint--;
-						movingForward = false;
+						enemydata.currentWaypoint--;
+						enemydata.movingForward = false;
 					}
 				}
 			} else {
-				currentWaypoint--;
-				if (currentWaypoint < 0) {
+				enemydata.currentWaypoint--;
+				if (enemydata.currentWaypoint < 0) {
 					if (loop)
-						currentWaypoint = waypoints.Length - 1;
+						enemydata.currentWaypoint = waypoints.Length - 1;
 					else {
-						currentWaypoint++;
-						movingForward = true;
+						enemydata.currentWaypoint++;
+						enemydata.movingForward = true;
 					}
 				}
 			}
@@ -203,20 +225,20 @@ public class EnemyScript : SavableScript {
 		//			transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * dampingLook);
 		//			character.Move(moveDirection.normalized * patrolSpeed * Time.deltaTime);
 		//		} 
-		agent.SetDestination (waypoints[currentWaypoint].position);
+		agent.SetDestination (waypoints[enemydata.currentWaypoint].position);
 	}
 
 	public void DefaultInvestigate(){
 		//TODO if reached lastknownposition, look left and right then pick a new one
-		if (Vector3.Distance (transform.position, lastKnownPosition) < 1.5)
+		if (Vector3.Distance (transform.position, enemydata.lastKnownPosition) < 1.5)
 			GetNewPosition (investigateRandomness);
 
-		Vector3 targetPoint = new Vector3(lastKnownPosition	.x, transform.position.y, lastKnownPosition.z) - transform.position;
+		Vector3 targetPoint = new Vector3(enemydata.lastKnownPosition	.x, transform.position.y, enemydata.lastKnownPosition.z) - transform.position;
 		if (Vector3.Angle (transform.forward, targetPoint) > 10) {
 			agent.ResetPath ();
-			TurnTowards (lastKnownPosition, noticeTurnSpeed);
+			TurnTowards (enemydata.lastKnownPosition, noticeTurnSpeed);
 		} else {
-			agent.SetDestination (lastKnownPosition);
+			agent.SetDestination (enemydata.lastKnownPosition);
 		}
 	}
 
@@ -226,9 +248,9 @@ public class EnemyScript : SavableScript {
 
 	public void DefaultSearch(){
 		//TODO if reached lastknownposition, look left and right then pick a new one
-		if (Vector3.Distance (transform.position, lastKnownPosition) < 1.5)
+		if (Vector3.Distance (transform.position, enemydata.lastKnownPosition) < 1.5)
 			GetNewPosition (searchRandomness);
-		agent.SetDestination (lastKnownPosition);
+		agent.SetDestination (enemydata.lastKnownPosition);
 	}
 
 	public void GetNewPosition(float randomness){
@@ -246,8 +268,8 @@ public class EnemyScript : SavableScript {
 	}
 	
 	public void ChangeState(State state){
-		previousState = currentState;
-		currentState = state;
+		enemydata.previousState = enemydata.currentState;
+		enemydata.currentState = state;
 	}
 	
 	public bool CanSee(GameObject target){

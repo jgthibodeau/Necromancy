@@ -1,7 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.Serialization;
+
+[System.Serializable]
+public class PlayerData : SaveData{
+	public PlayerData () : base () {}
+	public PlayerData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+}
 
 public class PlayerScript : SavableScript {
+	public PlayerData playerdata;
+	
 	// Input variables
 	private Vector2 moveInput;
 	private bool interact;
@@ -19,11 +28,14 @@ public class PlayerScript : SavableScript {
 	// Use this for initialization
 	void Start()
 	{
+		savedata = new PlayerData ();
 		animator = sprite.GetComponent<Animator>();
 	}
 	
 	void Update()
 	{
+		playerdata = (PlayerData)savedata;
+
 		//TODO ensure globalscript isnt paused for all scripts
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {

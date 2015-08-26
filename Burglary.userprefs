@@ -1,13 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\EnemyScript.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PlayerScript.cs">
     <Files>
-      <File FileName="Assets\Scripts\PauseMenuScript.cs" Line="18" Column="3" />
-      <File FileName="Assets\Scripts\EnemyScript.cs" Line="53" Column="32" />
-      <File FileName="Assets\Scripts\MenuScript.cs" Line="6" Column="21" />
-      <File FileName="Assets\Scripts\SaveLoad.cs" Line="22" Column="41" />
-      <File FileName="Assets\Scripts\SavableScript.cs" Line="89" Column="70" />
-      <File FileName="Assets\Scripts\PlayerScript.cs" Line="11" Column="8" />
+      <File FileName="Assets\Scripts\KeyLockScript.cs" Line="180" Column="1" />
+      <File FileName="Assets\Scripts\EnemyScript.cs" Line="23" Column="1" />
+      <File FileName="Assets\Scripts\PauseMenuScript.cs" Line="28" Column="1" />
+      <File FileName="Assets\Scripts\MenuScript.cs" Line="8" Column="82" />
+      <File FileName="Assets\Scripts\PlayerScript.cs" Line="16" Column="17" />
+      <File FileName="Assets\Scripts\GlobalScript.cs" Line="89" Column="1" />
+      <File FileName="Assets\Scripts\Savable.cs" Line="105" Column="15" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

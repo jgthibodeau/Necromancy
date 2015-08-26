@@ -3,14 +3,14 @@ using System.Collections;
 
 public class MenuScript : MonoBehaviour {
 
-	public void Load(){
-		//TODO
-		SaveLoad.Load ();
-	}
 	public void Save(){
-		//TODO
-		SaveLoad.Save ();
+		SaveLoad.SaveAll ();
 	}
+
+	public void Load(){
+		SaveLoad.LoadAll ();
+	}
+
 	public void SaveAndQuit(){
 		Save ();
 		Quit ();
