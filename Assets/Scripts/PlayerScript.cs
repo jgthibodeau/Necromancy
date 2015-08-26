@@ -12,19 +12,7 @@ public class PlayerData : SaveData{
 }
 
 public class PlayerScript : SavableScript {
-	public override void Save (){
-		((PlayerData)savedata).currentState = currentState;
-
-		base.Save ();
-	}
-
-	public override SaveData Load (){
-		savedata = (PlayerData)base.Load ();
-
-		currentState = ((PlayerData)savedata).currentState;
-
-		return savedata;
-	}
+	public PlayerData playerdata;
 	
 	// Input variables
 	private Vector2 moveInput;
@@ -38,7 +26,7 @@ public class PlayerScript : SavableScript {
 	public Transform sprite;
 
 	public enum State{Moving, Interacting};
-	public State currentState = State.Moving;
+//	public State currentState = State.Moving;
 
 	// Use this for initialization
 	void Start()
@@ -49,11 +37,11 @@ public class PlayerScript : SavableScript {
 	
 	void Update()
 	{
-		//
+		playerdata = (PlayerData)savedata;
 
 		//TODO ensure globalscript isnt paused for all scripts
 		// Only do movement updates if in movement playerstate
-		switch (currentState) {
+		switch (playerdata.currentState) {
 		case State.Moving:
 			GetInput ();
 
@@ -119,8 +107,8 @@ public class PlayerScript : SavableScript {
 	}
 
 	public void ChangeState(State state){
-		currentState = state;
-		switch(currentState){
+		playerdata.currentState = state;
+		switch(playerdata.currentState){
 		case State.Moving:
 			break;
 		case State.Interacting:

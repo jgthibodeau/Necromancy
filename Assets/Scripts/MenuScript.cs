@@ -3,18 +3,14 @@ using System.Collections;
 
 public class MenuScript : MonoBehaviour {
 
-	public void Load(){
-		//TODO
-		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			obj.Load ();
-		}
-	}
 	public void Save(){
-		//TODO
-		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			obj.Save ();
-		}
+		SaveLoad.SaveAll ();
 	}
+
+	public void Load(){
+		SaveLoad.LoadAll ();
+	}
+
 	public void SaveAndQuit(){
 		Save ();
 		Quit ();

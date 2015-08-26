@@ -11,19 +11,17 @@ using System.Reflection;
 public class SavableScript : MonoBehaviour {
 	public SaveData savedata;
 	
-	public virtual void Save(){
+	public virtual void UpdateSaveData(){
 		savedata.position = transform.position;
 		savedata.rotation = transform.rotation.eulerAngles;
-		//TODO save all other savables
-		SaveLoad.Save(savedata);
+		//TODO set all other savables
 	}
 	
-	public virtual SaveData Load(){
+	public virtual void SetFromSaveData(){
 		transform.position = savedata.position;
 		Vector3 rotation = savedata.rotation;
 		transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
-		//TODO load all other loadables
-		return SaveLoad.Load();
+		//TODO set all other loadables
 	}
 }
 
@@ -46,6 +44,10 @@ public class SaveData : ISerializable {
 //			UnityEngine.Debug.Log(field.Name+" "+field.FieldType);
 			if(field.FieldType == typeof(Vector3))
 				field.SetValue(this, LoadVector3(info, field.Name));
+			else if(field.FieldType == typeof(Quaternion))
+				field.SetValue(this, LoadQuaternion(info, field.Name));
+			else if(field.FieldType == typeof(Transform))
+				LoadTransform(info, field);
 			else
 				field.SetValue(this, info.GetValue(field.Name, field.FieldType));
 		}
@@ -57,6 +59,10 @@ public class SaveData : ISerializable {
 		foreach(FieldInfo field in this.GetType().GetFields()){
 			if(field.FieldType == typeof(Vector3))
 				SaveVector3(info, (Vector3)field.GetValue(this), field.Name);
+			else if(field.FieldType == typeof(Quaternion))
+				SaveQuaternion(info, (Quaternion)field.GetValue(this), field.Name);
+			else if(field.FieldType == typeof(Transform))
+				SaveTransform(info, (Transform)field.GetValue(this), field.Name);
 			else
 				info.AddValue(field.Name, field.GetValue(this));
 		}
@@ -73,39 +79,71 @@ public class SaveData : ISerializable {
 		float z = (float)info.GetValue(name+"z", typeof(float));
 		return new Vector3 (x, y, z);
 	}
+	public void SaveQuaternion(SerializationInfo info, Quaternion quaternion, String name){
+		info.AddValue(name+"w", quaternion.w);
+		info.AddValue(name+"x", quaternion.x);
+		info.AddValue(name+"y", quaternion.y);
+		info.AddValue(name+"z", quaternion.z);
+	}
+	public Quaternion LoadQuaternion(SerializationInfo info, String name){
+		float w = (float)info.GetValue(name+"w", typeof(float));
+		float x = (float)info.GetValue(name+"x", typeof(float));
+		float y = (float)info.GetValue(name+"y", typeof(float));
+		float z = (float)info.GetValue(name+"z", typeof(float));
+		return new Quaternion (x, y, z, w);
+	}
+	public void SaveTransform(SerializationInfo info, Transform transform, String name){
+		SaveVector3(info, (Vector3)transform.position, name+"position");
+		SaveQuaternion(info, (Quaternion)transform.rotation, name+rotation);
+	}
+	public void LoadTransform(SerializationInfo info, FieldInfo field){
+		Transform transform = (Transform)field.GetValue (this);
+		transform.position = LoadVector3 (info, field.Name + "position");
+		transform.rotation = LoadQuaternion (info, field.Name + "rotation");
+		field.SetValue (this, transform);
+	}
 }
 
 // === This is the class that will be accessed from scripts ===
 public class SaveLoad {
 	
-	public static string currentFilePath = "SaveData.cjc";    // Edit this for different save files
-	
-	// Call this to write data
-	public static void Save (SaveData data)  // Overloaded
-	{
-		Save (currentFilePath, data);
-	}
-	public static void Save (string filePath, SaveData data)
-	{
-		Stream stream = File.Open(filePath, FileMode.Create);
+	public static string defaultSaveFile = "SaveData.cjc";    // Edit this for different save files
+
+	public static void Save (Stream stream, SaveData data) {
 		BinaryFormatter bformatter = new BinaryFormatter();
-		bformatter.Binder = new VersionDeserializationBinder(); 
+		bformatter.Binder = new VersionDeserializationBinder();
 		bformatter.Serialize(stream, data);
-		stream.Close();
+	}
+	public static void SaveAll() {
+		SaveAll (defaultSaveFile);
+	}
+	public static void SaveAll (string filePath) {
+		Stream stream = File.Open (filePath, FileMode.Create);
+		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+			obj.UpdateSaveData();
+			Save (stream, obj.savedata);
+		}
+		stream.Close ();
 	}
 	
 	// Call this to load from a file into "data"
-	public static SaveData Load ()  { return Load(currentFilePath);  }   // Overloaded
-	public static SaveData Load (string filePath) 
-	{
+	public static SaveData Load (Stream stream) {
 		SaveData data = new SaveData ();
-		Stream stream = File.Open(filePath, FileMode.Open);
 		BinaryFormatter bformatter = new BinaryFormatter();
 		bformatter.Binder = new VersionDeserializationBinder();
 		data = (SaveData)bformatter.Deserialize(stream);
-		stream.Close();
-
 		return data;
+	}
+	public static void LoadAll(){
+		LoadAll (defaultSaveFile);
+	}
+	public static void LoadAll (string filePath) {
+		Stream stream = File.Open(filePath, FileMode.Open);
+		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+			obj.savedata = Load (stream);
+			obj.SetFromSaveData();
+		}
+		stream.Close();
 	}
 }
 
