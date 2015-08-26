@@ -4,11 +4,8 @@ using System.Runtime.Serialization;
 
 [System.Serializable]
 public class PlayerData : SaveData{
-	public PlayerScript.State currentState;
-
 	public PlayerData () : base () {}
 	public PlayerData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
-
 }
 
 public class PlayerScript : SavableScript {
@@ -26,7 +23,7 @@ public class PlayerScript : SavableScript {
 	public Transform sprite;
 
 	public enum State{Moving, Interacting};
-//	public State currentState = State.Moving;
+	public State currentState = State.Moving;
 
 	// Use this for initialization
 	void Start()
@@ -41,7 +38,7 @@ public class PlayerScript : SavableScript {
 
 		//TODO ensure globalscript isnt paused for all scripts
 		// Only do movement updates if in movement playerstate
-		switch (playerdata.currentState) {
+		switch (currentState) {
 		case State.Moving:
 			GetInput ();
 
@@ -107,8 +104,8 @@ public class PlayerScript : SavableScript {
 	}
 
 	public void ChangeState(State state){
-		playerdata.currentState = state;
-		switch(playerdata.currentState){
+		currentState = state;
+		switch(currentState){
 		case State.Moving:
 			break;
 		case State.Interacting:

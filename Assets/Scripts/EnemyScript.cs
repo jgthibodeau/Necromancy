@@ -15,7 +15,6 @@ public class EnemyData : SaveData{
 	
 	public EnemyData () : base () {}
 	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
-	
 }
 
 public class EnemyScript : SavableScript {
