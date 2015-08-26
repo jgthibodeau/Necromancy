@@ -13,8 +13,6 @@ public class PlayerData : SaveData{
 
 public class PlayerScript : SavableScript {
 	public override void Save (){
-		((PlayerData)savedata).position = transform.position;
-		((PlayerData)savedata).rotation = transform.rotation.eulerAngles;
 		((PlayerData)savedata).currentState = currentState;
 
 		base.Save ();
@@ -23,9 +21,6 @@ public class PlayerScript : SavableScript {
 	public override SaveData Load (){
 		savedata = (PlayerData)base.Load ();
 
-		transform.position = ((PlayerData)savedata).position;
-		Vector3 rotation = ((PlayerData)savedata).rotation;
-		transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
 		currentState = ((PlayerData)savedata).currentState;
 
 		return savedata;

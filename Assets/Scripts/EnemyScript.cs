@@ -1,7 +1,52 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.Serialization;
 
-public class EnemyScript : MonoBehaviour {
+[System.Serializable]
+public class EnemyData : SaveData{
+	public EnemyScript.State currentState;
+	public EnemyScript.State previousState;
+	public Vector3 lastKnownPosition;
+	public float investigateTime;
+	public float searchTime;
+	public bool loop;
+	public int currentWaypoint;
+	public bool movingForward;
+	
+	public EnemyData () : base () {}
+	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+	
+}
+
+public class EnemyScript : SavableScript {
+	public override void Save (){
+		((EnemyData)savedata).currentState = currentState;
+		((EnemyData)savedata).previousState = previousState;
+		((EnemyData)savedata).lastKnownPosition = lastKnownPosition;
+		((EnemyData)savedata).investigateTime = investigateTime;
+		((EnemyData)savedata).searchTime = searchTime;
+		((EnemyData)savedata).loop = loop;
+		((EnemyData)savedata).currentWaypoint = currentWaypoint;
+		((EnemyData)savedata).movingForward = movingForward;
+		
+		base.Save ();
+	}
+	
+	public override SaveData Load (){
+		savedata = base.Load ();
+
+		currentState = ((EnemyData)savedata).currentState;
+		previousState = ((EnemyData)savedata).previousState;
+		lastKnownPosition = ((EnemyData)savedata).lastKnownPosition;
+		investigateTime = ((EnemyData)savedata).investigateTime;
+		searchTime = ((EnemyData)savedata).searchTime;
+		loop = ((EnemyData)savedata).loop;
+		currentWaypoint = ((EnemyData)savedata).currentWaypoint;
+		movingForward = ((EnemyData)savedata).movingForward;
+		
+		return savedata;
+	}
+
 	//States
 	public enum State{Patrol, Alert, Search, Investigate};
 	public State currentState;
@@ -59,6 +104,8 @@ public class EnemyScript : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		savedata = new EnemyData ();
+
 		player = GameObject.Find ("Player");
 		agent = this.GetComponent<NavMeshAgent> ();
 

@@ -12,10 +12,17 @@ public class SavableScript : MonoBehaviour {
 	public SaveData savedata;
 	
 	public virtual void Save(){
+		savedata.position = transform.position;
+		savedata.rotation = transform.rotation.eulerAngles;
+		//TODO save all other savables
 		SaveLoad.Save(savedata);
 	}
 	
 	public virtual SaveData Load(){
+		transform.position = savedata.position;
+		Vector3 rotation = savedata.rotation;
+		transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+		//TODO load all other loadables
 		return SaveLoad.Load();
 	}
 }
@@ -95,7 +102,7 @@ public class SaveLoad {
 		Stream stream = File.Open(filePath, FileMode.Open);
 		BinaryFormatter bformatter = new BinaryFormatter();
 		bformatter.Binder = new VersionDeserializationBinder();
-		data = (PlayerData)bformatter.Deserialize(stream);
+		data = (SaveData)bformatter.Deserialize(stream);
 		stream.Close();
 
 		return data;
