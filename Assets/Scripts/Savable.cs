@@ -1,4 +1,4 @@
-using UnityEngine;    // For Debug.Log, etc.
+using UnityEngine;
 
 using System.Text;
 using System.IO;
@@ -11,18 +11,23 @@ using System.Reflection;
 public class SavableScript : MonoBehaviour {
 	public SaveData savedata;
 	
-	public void Save(){
+	public virtual void Save(){
 		SaveLoad.Save(savedata);
 	}
 	
-	public void Load(){
-		SaveLoad.Save(savedata);
+	public virtual SaveData Load(){
+		return SaveLoad.Load();
 	}
 }
 
 // === This is the info container class ===
 [Serializable ()]
 public class SaveData : ISerializable {
+//	TODO public Transform transform;
+
+	public Vector3 position;
+	public Vector3 rotation;
+
 	// The default constructor. Included for when we call it during Save() and Load()
 	public SaveData () {}
 	
@@ -30,19 +35,36 @@ public class SaveData : ISerializable {
 	// We get to custom-implement the serialization process here
 	public SaveData (SerializationInfo info, StreamingContext ctxt)
 	{
-//		levelReached = (int)info.GetValue("levelReached", typeof(int));
-		foreach(PropertyInfo prop in this.GetType().GetProperties()){
-			prop.SetValue(this, info.GetValue(prop.Name, prop.GetType()), null);
+		foreach(FieldInfo field in this.GetType().GetFields()){
+//			UnityEngine.Debug.Log(field.Name+" "+field.FieldType);
+			if(field.FieldType == typeof(Vector3))
+				field.SetValue(this, LoadVector3(info, field.Name));
+			else
+				field.SetValue(this, info.GetValue(field.Name, field.FieldType));
 		}
 	}
 	
 	// Required by the ISerializable class to be properly serialized. This is called automatically
 	public void GetObjectData (SerializationInfo info, StreamingContext ctxt)
 	{
-//		info.AddValue("levelReached", levelReached);
-		foreach(PropertyInfo prop in this.GetType().GetProperties()){
-			info.AddValue(prop.Name, prop.GetValue(this,null));
+		foreach(FieldInfo field in this.GetType().GetFields()){
+			if(field.FieldType == typeof(Vector3))
+				SaveVector3(info, (Vector3)field.GetValue(this), field.Name);
+			else
+				info.AddValue(field.Name, field.GetValue(this));
 		}
+	}
+
+	public void SaveVector3(SerializationInfo info, Vector3 vector, String name){
+		info.AddValue(name+"x", vector.x);
+		info.AddValue(name+"y", vector.y);
+		info.AddValue(name+"z", vector.z);
+	}
+	public Vector3 LoadVector3(SerializationInfo info, String name){
+		float x = (float)info.GetValue(name+"x", typeof(float));
+		float y = (float)info.GetValue(name+"y", typeof(float));
+		float z = (float)info.GetValue(name+"z", typeof(float));
+		return new Vector3 (x, y, z);
 	}
 }
 
@@ -72,8 +94,8 @@ public class SaveLoad {
 		SaveData data = new SaveData ();
 		Stream stream = File.Open(filePath, FileMode.Open);
 		BinaryFormatter bformatter = new BinaryFormatter();
-		bformatter.Binder = new VersionDeserializationBinder(); 
-		data = (SaveData)bformatter.Deserialize(stream);
+		bformatter.Binder = new VersionDeserializationBinder();
+		data = (PlayerData)bformatter.Deserialize(stream);
 		stream.Close();
 
 		return data;

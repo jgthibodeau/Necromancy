@@ -1,13 +1,36 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.Serialization;
 
 [System.Serializable]
 public class PlayerData : SaveData{
-	public Vector3 position;
 	public PlayerScript.State currentState;
+
+	public PlayerData () : base () {}
+	public PlayerData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+
 }
 
 public class PlayerScript : SavableScript {
+	public override void Save (){
+		((PlayerData)savedata).position = transform.position;
+		((PlayerData)savedata).rotation = transform.rotation.eulerAngles;
+		((PlayerData)savedata).currentState = currentState;
+
+		base.Save ();
+	}
+
+	public override SaveData Load (){
+		savedata = (PlayerData)base.Load ();
+
+		transform.position = ((PlayerData)savedata).position;
+		Vector3 rotation = ((PlayerData)savedata).rotation;
+		transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+		currentState = ((PlayerData)savedata).currentState;
+
+		return savedata;
+	}
+	
 	// Input variables
 	private Vector2 moveInput;
 	private bool interact;
@@ -39,8 +62,8 @@ public class PlayerScript : SavableScript {
 		case State.Moving:
 			GetInput ();
 
-			movement = new Vector3 (moveInput.x, 0, moveInput.y);
-			movement = Vector3.Normalize (movement);
+			movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
+			movement = Vector3.ClampMagnitude (movement, speed);
 			
 			if (interact) {
 				InteractorScript interactor = GetComponent<InteractorScript> ();
@@ -82,11 +105,7 @@ public class PlayerScript : SavableScript {
 	void FixedUpdate()
 	{
 		// 5 - Move the game object
-//		GetComponent<Rigidbody>().velocity = movement;
-
-//		this.transform.position = Vector3.Slerp (this.transform.position, this.transform.position + movement, speed);
-		((PlayerData)savedata).position = Vector3.Slerp (((PlayerData)savedata).position, ((PlayerData)savedata).position + movement, speed);
-		this.transform.position = ((PlayerData)savedata).position;
+		GetComponent<Rigidbody>().velocity = movement;
 
 		Vector3 actualDirectionOfMotion = movement.normalized;
 
