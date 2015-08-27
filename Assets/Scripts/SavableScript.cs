@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 using System.Text;
 using System.IO;
@@ -164,21 +165,27 @@ public class SaveLoad {
 	public static void LoadAll(){
 		LoadAll (defaultSaveFile);
 	}
-	public static void LoadAll (string filePath) {
-		Stream stream = File.Open(filePath, FileMode.Open);
+	public static void LoadAll (string filepath) {
+//		SavableScript s = new SavableScript ();
+//		s.StartCoroutine(RealLoadAll(filepath));
+//	}
+//	static IEnumerator RealLoadAll (string filepath){
+		Stream stream = File.Open(filepath, FileMode.Open);
 
-		UnityEngine.Debug.Log (Application.isLoadingLevel);
+//		UnityEngine.Debug.Log (Application.isLoadingLevel);
 
 		LoadedLevel level = (LoadedLevel)Load (stream);
 		GlobalScript.LoadLevel (level.level);
-
-		UnityEngine.Debug.Log (Application.isLoadingLevel);
 //		bool loading = Application.isLoadingLevel;
+//		UnityEngine.Debug.Log (loading);
 //		while (loading) {
+//			yield return null;
 //			loading = Application.isLoadingLevel;
+//			UnityEngine.Debug.Log (loading);
 //		}
-//		UnityEngine.Debug.Log (Application.isLoadingLevel);
-
+//		UnityEngine.Debug.Log (loading);
+//		UnityEngine.Debug.Log (GameObject.FindObjectsOfType<SavableScript> ().Length);
+		
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
 			obj.savedata = Load (stream);
 			obj.SetFromSaveData();
