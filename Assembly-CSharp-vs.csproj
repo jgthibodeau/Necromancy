@@ -138,6 +138,7 @@
      <Compile Include="Assets\Scripts\PlayerScript.cs" />
      <Compile Include="Assets\Scripts\SavableScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
+     <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
      <Compile Include="Assets\Scripts\WeaponScript.cs" />

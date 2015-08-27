@@ -106,25 +106,30 @@ public class SaveData : ISerializable {
 }
 
 [Serializable ()]
-public class LoadedLevel : SaveData {
+public class LoadedLevel : ISerializable {
 	public string level;
 
-	public LoadedLevel () : base () {}
-	public LoadedLevel (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
-
-//	// This constructor is called automatically by the parent class, ISerializable
-//	// We get to custom-implement the serialization process here
-//	public LoadedLevel (SerializationInfo info, StreamingContext ctxt)
-//	{
-//		string level = (string)info.GetValue ("name", typeof(string));
-//		GlobalScript.LoadLevel(level);
-//	}
-//	
-//	// Required by the ISerializable class to be properly serialized. This is called automatically
-//	public void GetObjectData (SerializationInfo info, StreamingContext ctxt)
-//	{
-//		info.AddValue("name", Application.loadedLevelName);
-//	}
+//	public LoadedLevel () : base () {}
+//	public LoadedLevel (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+	public LoadedLevel () {}
+	
+	// This constructor is called automatically by the parent class, ISerializable
+	// We get to custom-implement the serialization process here
+	public LoadedLevel (SerializationInfo info, StreamingContext ctxt)
+	{
+		foreach(FieldInfo field in this.GetType().GetFields()){
+			field.SetValue(this, info.GetValue(field.Name, field.FieldType));
+		}
+	}
+	
+	// Required by the ISerializable class to be properly serialized. This is called automatically
+	public void GetObjectData (SerializationInfo info, StreamingContext ctxt)
+	{
+		foreach (FieldInfo field in this.GetType().GetFields()) {
+			info.AddValue (field.Name, field.GetValue (this));
+		}
+	}
+	
 }
 
 // === This is the class that will be accessed from scripts ===
@@ -132,7 +137,7 @@ public class SaveLoad {
 	
 	public static string defaultSaveFile = "SaveData.cjc";    // Edit this for different save files
 
-	public static void Save (Stream stream, SaveData data) {
+	public static void Save (Stream stream, object data) {
 		BinaryFormatter bformatter = new BinaryFormatter();
 		bformatter.Binder = new VersionDeserializationBinder();
 		bformatter.Serialize(stream, data);
@@ -143,24 +148,31 @@ public class SaveLoad {
 	public static void SaveAll (string filePath) {
 		Stream stream = File.Open (filePath, FileMode.Create);
 
-		LoadedLevel level = new LoadedLevel ();
-		level.level = Application.loadedLevelName;
-		Save (stream, level);
+		UnityEngine.Debug.Log ("saving level");
+
+//		LoadedLevel level = new LoadedLevel ();
+//		level.level = Application.loadedLevelName;
+//		Save (stream, level);
+
+		UnityEngine.Debug.Log ("saving objects");
 
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+			UnityEngine.Debug.Log (obj.name);
 			obj.UpdateSaveData();
 			Save (stream, obj.savedata);
 		}
 		stream.Close ();
+
+		UnityEngine.Debug.Log ("done saving");
 	}
 	
 	// Call this to load from a file into "data"
-	public static SaveData Load (Stream stream) {
-		SaveData data = new SaveData ();
+	public static object Load (Stream stream) {
+//		object data = new object ();
 		BinaryFormatter bformatter = new BinaryFormatter();
 		bformatter.Binder = new VersionDeserializationBinder();
-		data = (SaveData)bformatter.Deserialize(stream);
-		return data;
+		return bformatter.Deserialize(stream);
+//		return data;
 	}
 	public static void LoadAll(){
 		LoadAll (defaultSaveFile);
@@ -168,26 +180,28 @@ public class SaveLoad {
 	public static void LoadAll (string filepath) {
 //		SavableScript s = new SavableScript ();
 //		s.StartCoroutine(RealLoadAll(filepath));
-//	}
-//	static IEnumerator RealLoadAll (string filepath){
+		StaticCoroutine.DoCoroutine(RealLoadAll(filepath));
+	}
+	static IEnumerator RealLoadAll (string filepath){
 		Stream stream = File.Open(filepath, FileMode.Open);
 
-//		UnityEngine.Debug.Log (Application.isLoadingLevel);
+		UnityEngine.Debug.Log ("loading level");
 
-		LoadedLevel level = (LoadedLevel)Load (stream);
-		GlobalScript.LoadLevel (level.level);
+//		LoadedLevel level = (LoadedLevel)Load (stream);
+//		GlobalScript.LoadLevel (level.level);
 //		bool loading = Application.isLoadingLevel;
-//		UnityEngine.Debug.Log (loading);
 //		while (loading) {
 //			yield return null;
+//			yield return null;
 //			loading = Application.isLoadingLevel;
-//			UnityEngine.Debug.Log (loading);
 //		}
-//		UnityEngine.Debug.Log (loading);
-//		UnityEngine.Debug.Log (GameObject.FindObjectsOfType<SavableScript> ().Length);
-		
+		yield return null;
+
+		UnityEngine.Debug.Log ("loading objects");
+
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			obj.savedata = Load (stream);
+			UnityEngine.Debug.Log (obj.name);
+			obj.savedata = (SaveData)Load (stream);
 			obj.SetFromSaveData();
 		}
 		stream.Close();

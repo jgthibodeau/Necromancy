@@ -1,7 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.Serialization;
 
-public class DialLockScript : MonoBehaviour {
+[System.Serializable]
+public class DialLockData : SaveData{
+	public DialLockData () : base () {}
+	public DialLockData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+}
+
+public class DialLockScript : ToggleableScript {
+	public DialLockData diallockdata;
+
 	public enum State{Locked,Unlocked};
 	public State currentState = State.Locked;
 
@@ -47,6 +56,7 @@ public class DialLockScript : MonoBehaviour {
 	public AudioSource rotatingAudioSource;
 	
 	void Start(){
+		savedata = diallockdata;
 		currentTumblerAngles = new float[tumblerAngles.Length];
 		correctTumblers = new bool[tumblerAngles.Length];
 
@@ -78,6 +88,8 @@ public class DialLockScript : MonoBehaviour {
 	}
 	
 	void Update () {
+		diallockdata = (DialLockData)savedata;
+
 		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 			InGame ();
 	}
