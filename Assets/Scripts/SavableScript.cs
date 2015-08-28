@@ -160,8 +160,8 @@ public class SaveLoad {
 		UnityEngine.Debug.Log ("saving objects");
 
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			UnityEngine.Debug.Log (obj.name+" "+obj.savedata.uniqueId);
 			obj.UpdateSaveData();
+			UnityEngine.Debug.Log ("saving "+obj.name+" with id "+obj.savedata.uniqueId);
 			Save (stream, obj.savedata);
 		}
 		stream.Close ();
@@ -217,7 +217,6 @@ public class SaveLoad {
 
 	static SavableScript GetObjectWithId(string id){
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			UnityEngine.Debug.Log(id+"  "+obj.uniqueId);
 			if(String.Compare(obj.uniqueId, id) == 0)
 				return obj;
 		}
