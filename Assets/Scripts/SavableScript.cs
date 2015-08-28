@@ -20,6 +20,7 @@ public class SavableScript : UniqueId {
 	}
 	
 	public virtual void SetFromSaveData(){
+		UnityEngine.Debug.Log (transform.position);
 		transform.position = savedata.position;
 		Vector3 rotation = savedata.rotation;
 		transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
@@ -30,7 +31,7 @@ public class SavableScript : UniqueId {
 
 // === This is the info container class ===
 [Serializable ()]
-public class SaveData : MonoBehaviour {
+public class SaveData : ISerializable {
 	public string uniqueId;
 
 	public Vector3 position;
@@ -197,27 +198,27 @@ public class SaveLoad {
 
 		UnityEngine.Debug.Log ("loading objects");
 
-		while (stream.Position <= stream.Length) {
+		while (stream.Position < stream.Length) {
 			SaveData data = (SaveData)Load (stream);
+			UnityEngine.Debug.Log("finding "+data.uniqueId);
 			SavableScript obj = GetObjectWithId(data.uniqueId);
 			if(obj == null)
 				UnityEngine.Debug.LogError("couldn't find object with id "+data.uniqueId);
-			else
+			else{
+				UnityEngine.Debug.Log("found "+obj.name+" with id "+data.uniqueId);
 				obj.savedata = data;
+				obj.SetFromSaveData ();
+			}
 		}
 
-//		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-//			UnityEngine.Debug.Log (obj.name+" "+obj.savedata.uniqueId);
-//			obj.savedata = (SaveData)Load (stream);
-//			obj.SetFromSaveData();
-//		}
 		stream.Close();
 		UnityEngine.Debug.Log ("done loading");
 	}
 
 	static SavableScript GetObjectWithId(string id){
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			if(String.Compare(obj.savedata.uniqueId, id) == 0)
+			UnityEngine.Debug.Log(id+"  "+obj.uniqueId);
+			if(String.Compare(obj.uniqueId, id) == 0)
 				return obj;
 		}
 		return null;
