@@ -9,12 +9,13 @@ using System;
 using System.Runtime.Serialization;
 using System.Reflection;
 
-public class SavableScript : MonoBehaviour {
+public class SavableScript : UniqueId {
 	public SaveData savedata;
 	
 	public virtual void UpdateSaveData(){
 		savedata.position = transform.position;
 		savedata.rotation = transform.rotation.eulerAngles;
+		savedata.uniqueId = uniqueId;
 		//TODO set all other savables
 	}
 	
@@ -22,14 +23,15 @@ public class SavableScript : MonoBehaviour {
 		transform.position = savedata.position;
 		Vector3 rotation = savedata.rotation;
 		transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+//		uniqueId = savedata.uniqueId;
 		//TODO set all other loadables
 	}
 }
 
 // === This is the info container class ===
 [Serializable ()]
-public class SaveData : ISerializable {
-//	TODO public Transform transform;
+public class SaveData : MonoBehaviour {
+	public string uniqueId;
 
 	public Vector3 position;
 	public Vector3 rotation;
@@ -150,14 +152,14 @@ public class SaveLoad {
 
 		UnityEngine.Debug.Log ("saving level");
 
-//		LoadedLevel level = new LoadedLevel ();
-//		level.level = Application.loadedLevelName;
-//		Save (stream, level);
+		LoadedLevel level = new LoadedLevel ();
+		level.level = Application.loadedLevelName;
+		Save (stream, level);
 
 		UnityEngine.Debug.Log ("saving objects");
 
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			UnityEngine.Debug.Log (obj.name);
+			UnityEngine.Debug.Log (obj.name+" "+obj.savedata.uniqueId);
 			obj.UpdateSaveData();
 			Save (stream, obj.savedata);
 		}
@@ -168,18 +170,14 @@ public class SaveLoad {
 	
 	// Call this to load from a file into "data"
 	public static object Load (Stream stream) {
-//		object data = new object ();
 		BinaryFormatter bformatter = new BinaryFormatter();
 		bformatter.Binder = new VersionDeserializationBinder();
 		return bformatter.Deserialize(stream);
-//		return data;
 	}
 	public static void LoadAll(){
 		LoadAll (defaultSaveFile);
 	}
 	public static void LoadAll (string filepath) {
-//		SavableScript s = new SavableScript ();
-//		s.StartCoroutine(RealLoadAll(filepath));
 		StaticCoroutine.DoCoroutine(RealLoadAll(filepath));
 	}
 	static IEnumerator RealLoadAll (string filepath){
@@ -187,25 +185,42 @@ public class SaveLoad {
 
 		UnityEngine.Debug.Log ("loading level");
 
-//		LoadedLevel level = (LoadedLevel)Load (stream);
-//		GlobalScript.LoadLevel (level.level);
-//		bool loading = Application.isLoadingLevel;
-//		while (loading) {
-//			yield return null;
-//			yield return null;
-//			loading = Application.isLoadingLevel;
-//		}
+		LoadedLevel level = (LoadedLevel)Load (stream);
+		GlobalScript.LoadLevel (level.level);
+		bool loading = Application.isLoadingLevel;
+		while (loading) {
+			yield return null;
+			yield return null;
+			loading = Application.isLoadingLevel;
+		}
 		yield return null;
 
 		UnityEngine.Debug.Log ("loading objects");
 
-		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			UnityEngine.Debug.Log (obj.name);
-			obj.savedata = (SaveData)Load (stream);
-			obj.SetFromSaveData();
+		while (stream.Position <= stream.Length) {
+			SaveData data = (SaveData)Load (stream);
+			SavableScript obj = GetObjectWithId(data.uniqueId);
+			if(obj == null)
+				UnityEngine.Debug.LogError("couldn't find object with id "+data.uniqueId);
+			else
+				obj.savedata = data;
 		}
+
+//		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+//			UnityEngine.Debug.Log (obj.name+" "+obj.savedata.uniqueId);
+//			obj.savedata = (SaveData)Load (stream);
+//			obj.SetFromSaveData();
+//		}
 		stream.Close();
 		UnityEngine.Debug.Log ("done loading");
+	}
+
+	static SavableScript GetObjectWithId(string id){
+		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
+			if(String.Compare(obj.savedata.uniqueId, id) == 0)
+				return obj;
+		}
+		return null;
 	}
 }
 
