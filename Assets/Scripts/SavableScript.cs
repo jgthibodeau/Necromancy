@@ -15,7 +15,7 @@ public class SavableScript : UniqueId {
 	public virtual void UpdateSaveData(){
 		savedata.position = transform.position;
 		savedata.rotation = transform.rotation.eulerAngles;
-		savedata.uniqueId = uniqueId;
+		savedata.uid = uid;
 		//TODO set all other savables
 	}
 	
@@ -32,7 +32,7 @@ public class SavableScript : UniqueId {
 // === This is the info container class ===
 [Serializable ()]
 public class SaveData : ISerializable {
-	public string uniqueId;
+	public string uid;
 
 	public Vector3 position;
 	public Vector3 rotation;
@@ -161,7 +161,7 @@ public class SaveLoad {
 
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
 			obj.UpdateSaveData();
-			UnityEngine.Debug.Log ("saving "+obj.name+" with id "+obj.savedata.uniqueId);
+			UnityEngine.Debug.Log ("saving "+obj.name+" with id "+obj.savedata.uid);
 			Save (stream, obj.savedata);
 		}
 		stream.Close ();
@@ -194,18 +194,17 @@ public class SaveLoad {
 			yield return null;
 			loading = Application.isLoadingLevel;
 		}
-		yield return null;
 
 		UnityEngine.Debug.Log ("loading objects");
 
 		while (stream.Position < stream.Length) {
 			SaveData data = (SaveData)Load (stream);
-			UnityEngine.Debug.Log("finding "+data.uniqueId);
-			SavableScript obj = GetObjectWithId(data.uniqueId);
+			UnityEngine.Debug.Log("finding "+data.uid);
+			SavableScript obj = GetObjectWithId(data.uid);
 			if(obj == null)
-				UnityEngine.Debug.LogError("couldn't find object with id "+data.uniqueId);
+				UnityEngine.Debug.LogError("couldn't find object with id "+data.uid);
 			else{
-				UnityEngine.Debug.Log("found "+obj.name+" with id "+data.uniqueId);
+				UnityEngine.Debug.Log("found "+obj.name+" with id "+data.uid);
 				obj.savedata = data;
 				obj.SetFromSaveData ();
 			}
@@ -217,7 +216,7 @@ public class SaveLoad {
 
 	static SavableScript GetObjectWithId(string id){
 		foreach (SavableScript obj in GameObject.FindObjectsOfType<SavableScript> ()) {
-			if(String.Compare(obj.uniqueId, id) == 0)
+			if(String.Compare(obj.uid, id) == 0)
 				return obj;
 		}
 		return null;
