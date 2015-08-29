@@ -140,6 +140,7 @@
      <Compile Include="Assets\Scripts\ShotScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />
+     <Compile Include="Assets\Scripts\UniqueId.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
      <Compile Include="Assets\Scripts\WeaponScript.cs" />
      <None Include="Assets\AstarPathfindingProject\Editor\EditorAssets\Materials\Navmesh2.shader" />

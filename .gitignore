@@ -56,9 +56,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-Burglary.userprefs
-Burglary.userprefs
-Burglary.userprefs
-Burglary-csharp.sln
-Burglary.userprefs
 *.sln
+*.userprefs

@@ -67,7 +67,7 @@ public class KeyLockScript : ToggleableScript {
 		tensionStep = 1f / (keylockdata.correctHeights.Length+1);
 		SetDefaults ();
 
-		savedata = (SaveData)keylockdata;
+		savedata = keylockdata;
 	}
 
 	public override void ToggledUpdate () {
