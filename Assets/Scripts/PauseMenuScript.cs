@@ -4,8 +4,12 @@ using System.Collections;
 public class PauseMenuScript : MenuScript {
 	public GameObject pauseMenu;
 
+	void Start(){
+		UnPause ();
+	}
+
 	// Update is called once per frame
-	public void Update(){
+	void Update(){
 		if (GlobalScript.GetButton ("Pause")) {
 			if(GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 				Pause();
