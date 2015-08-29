@@ -2,30 +2,35 @@
 using System.Collections;
 
 public class PauseMenuScript : MenuScript {
-	public GameObject pauseMenu;
+	protected override void Start(){
+		base.Start ();
 
-	void Start(){
-		UnPause ();
+		Close ();
 	}
 
 	// Update is called once per frame
-	void Update(){
-		if (GlobalScript.GetButton ("Pause")) {
-			if(GlobalScript.currentGameState == GlobalScript.GameState.InGame)
-				Pause();
-			else
-				UnPause();
+	protected override void Update(){
+		if (GlobalScript.GetButton ("Pause")){
+			if (GlobalScript.currentGameState == GlobalScript.GameState.InGame) {
+				print ("open");
+				Open ();
+			} else
+				Close ();
 		}
+		
+		base.Update ();
 	}
 
-	public void Pause(){
+	public override void Open(){
+		base.Open ();
+
 		GlobalScript.currentGameState = GlobalScript.GameState.Paused;
 		Time.timeScale = 0f;
-		pauseMenu.SetActive (true);
 	}
-	public void UnPause(){
+	public override void Close(){
+		base.Close ();
+
 		GlobalScript.currentGameState = GlobalScript.GameState.InGame;
 		Time.timeScale = 1f;
-		pauseMenu.SetActive (false);
 	}
 }

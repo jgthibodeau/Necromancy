@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 using System.Text;
 using System.IO;
@@ -138,7 +139,17 @@ public class LoadedLevel : ISerializable {
 // === This is the class that will be accessed from scripts ===
 public class SaveLoad {
 	
-	public static string defaultSaveFile = "SaveData.cjc";    // Edit this for different save files
+	public static string defaultSaveFile = "Save\\SaveData.bly";    // Edit this for different save files
+
+	public static List<string> GetSaves(){
+		List<string> filenames = new List<string>();
+		DirectoryInfo dir = new DirectoryInfo("Save");
+		FileInfo[] info = dir.GetFiles("*.bly");
+		foreach (FileInfo f in info) {
+			filenames.Add(f.Name);
+		}
+		return filenames;
+	}
 
 	public static void Save (Stream stream, object data) {
 		BinaryFormatter bformatter = new BinaryFormatter();
