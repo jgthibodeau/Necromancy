@@ -17,6 +17,8 @@ public class MenuScript : MonoBehaviour {
 
 	public MenuScript previousMenu;
 
+	private EventSystem es;
+
 	public void SwitchTo(GameObject other){
 		MenuScript newMenu = other.GetComponent<MenuScript> ();
 		newMenu.previousMenu = this;
@@ -36,6 +38,9 @@ public class MenuScript : MonoBehaviour {
 		menuGroup.interactable = true;
 		menu.enabled = true;
 		justOpened = true;
+
+//		es.SetSelectGameObject(go, null);
+		es.SetSelectedGameObject (transform.GetChild(1).gameObject);
 	}
 
 	public virtual void Close(){
@@ -54,6 +59,12 @@ public class MenuScript : MonoBehaviour {
 	public void Save(){
 		Alert ("Saving ...");
 		SaveLoad.SaveAll ();
+		Alert ("Saving Complete");
+	}
+
+	public void Save(string file){
+		Alert ("Saving ...");
+		SaveLoad.SaveAll (file);
 		Alert ("Saving Complete");
 	}
 
@@ -83,6 +94,8 @@ public class MenuScript : MonoBehaviour {
 	}
 
 	protected virtual void Start(){
+		es = EventSystem.current;
+
 		menu = GetComponent<Canvas> ();
 		menuGroup = GetComponent<CanvasGroup> ();
 

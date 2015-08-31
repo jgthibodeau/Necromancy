@@ -12,7 +12,6 @@ public class PauseMenuScript : MenuScript {
 	protected override void Update(){
 		if (GlobalScript.GetButton ("Pause")){
 			if (GlobalScript.currentGameState == GlobalScript.GameState.InGame) {
-				print ("open");
 				Open ();
 			} else
 				Close ();
