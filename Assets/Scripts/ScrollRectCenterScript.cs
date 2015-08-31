@@ -46,7 +46,6 @@ public class ScrollRectCenterScript : MonoBehaviour {
 		float below = currentScrollRectPosition + ( selectedRectTransform.rect.height );
 
 		// check if selected is out of bounds
-		print (selectedPosition+" "+above);
 		if (selectedPosition > above) {
 			float step = selectedPosition - above;
 			float newY = currentScrollRectPosition + step;

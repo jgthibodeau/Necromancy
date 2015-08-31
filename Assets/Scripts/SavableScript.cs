@@ -138,8 +138,9 @@ public class LoadedLevel : ISerializable {
 
 // === This is the class that will be accessed from scripts ===
 public class SaveLoad {
-	
-	public static string defaultSaveFile = "Save\\SaveData.bly";    // Edit this for different save files
+
+	public static string saveDir = "Save\\";
+	public static string defaultSaveFile = "SaveData.bly";    // Edit this for different save files
 
 	public static List<string> GetSaves(){
 		List<string> filenames = new List<string>();
@@ -160,8 +161,9 @@ public class SaveLoad {
 		SaveAll (defaultSaveFile);
 	}
 	public static void SaveAll (string filePath) {
-		Stream stream = File.Open (filePath, FileMode.Create);
+		Stream stream = File.Open (saveDir+filePath, FileMode.Create);
 
+		UnityEngine.Debug.Log ("saving to "+filePath);
 		UnityEngine.Debug.Log ("saving level");
 
 		LoadedLevel level = new LoadedLevel ();
@@ -189,12 +191,13 @@ public class SaveLoad {
 	public static void LoadAll(){
 		LoadAll (defaultSaveFile);
 	}
-	public static void LoadAll (string filepath) {
-		StaticCoroutine.DoCoroutine(RealLoadAll(filepath));
+	public static void LoadAll (string filePath) {
+		StaticCoroutine.DoCoroutine(RealLoadAll(filePath));
 	}
-	static IEnumerator RealLoadAll (string filepath){
-		Stream stream = File.Open(filepath, FileMode.Open);
+	static IEnumerator RealLoadAll (string filePath){
+		Stream stream = File.Open(saveDir+filePath, FileMode.Open);
 
+		UnityEngine.Debug.Log ("loading from "+filePath);
 		UnityEngine.Debug.Log ("loading level");
 
 		LoadedLevel level = (LoadedLevel)Load (stream);

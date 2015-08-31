@@ -139,7 +139,6 @@
      <Compile Include="Assets\Scripts\SavableScript.cs" />
      <Compile Include="Assets\Scripts\SaveListScript.cs" />
      <Compile Include="Assets\Scripts\ScrollRectCenterScript.cs" />
-     <Compile Include="Assets\Scripts\SelectableButtonScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />

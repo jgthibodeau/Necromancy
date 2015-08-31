@@ -63,9 +63,9 @@ public class MenuScript : MonoBehaviour {
 	}
 
 	public void Save(string file){
-		Alert ("Saving ...");
+		Alert ("Saving "+file+" ...");
 		SaveLoad.SaveAll (file);
-		Alert ("Saving Complete");
+		Alert ("Saving "+file+" Complete");
 	}
 
 	public List<string> GetSaves(){

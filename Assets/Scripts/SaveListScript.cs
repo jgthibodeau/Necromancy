@@ -16,9 +16,10 @@ public class SaveListScript : MonoBehaviour {
 	
 	void PopulateList () {
 		foreach (string saveFile in SaveLoad.GetSaves()) {
-			GameObject newButton = Instantiate (saveFileButton) as GameObject;
+			Button newButton = Instantiate (saveFileButton).GetComponent<Button>();
 			newButton.GetComponentInChildren<Text>().text = saveFile;
-			newButton.GetComponent<Button>().onClick.AddListener(delegate{menu.Save (saveFile);});
+			string localFile = saveFile;
+			newButton.onClick.AddListener(delegate{menu.Save (localFile);});
 			newButton.transform.SetParent (contentPanel);
 		}
 	}
