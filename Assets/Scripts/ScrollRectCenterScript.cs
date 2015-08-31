@@ -6,7 +6,9 @@ using UnityEngine.EventSystems;
 public class ScrollRectCenterScript : MonoBehaviour {
 	
 	public float scrollSpeed = 10f;
-	
+
+	public MenuScript menu;
+
 	ScrollRect scrollRect;
 	RectTransform rectTransform;
 	RectTransform contentRectTransform;
@@ -19,7 +21,8 @@ public class ScrollRectCenterScript : MonoBehaviour {
 	}
 	
 	void Update() {
-		UpdateScrollToSelected();
+		if(menu.Visible())
+			UpdateScrollToSelected();
 	}
 	
 	void UpdateScrollToSelected() {

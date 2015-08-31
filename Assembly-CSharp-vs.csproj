@@ -120,6 +120,7 @@
      <Compile Include="Assets\AstarPathfindingProject\changelog.cs" />
      <Compile Include="Assets\Scripts\AnimationScript.cs" />
      <Compile Include="Assets\Scripts\CameraScript.cs" />
+     <Compile Include="Assets\Scripts\ConfirmationDialogScript.cs" />
      <Compile Include="Assets\Scripts\DetectionConeScript.cs" />
      <Compile Include="Assets\Scripts\DialLockScript.cs" />
      <Compile Include="Assets\Scripts\DrawFovScript.cs" />

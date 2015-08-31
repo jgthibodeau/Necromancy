@@ -142,14 +142,10 @@ public class SaveLoad {
 	public static string saveDir = "Save\\";
 	public static string defaultSaveFile = "SaveData.bly";    // Edit this for different save files
 
-	public static List<string> GetSaves(){
-		List<string> filenames = new List<string>();
+	public static FileInfo[] GetSaves(){
 		DirectoryInfo dir = new DirectoryInfo("Save");
 		FileInfo[] info = dir.GetFiles("*.bly");
-		foreach (FileInfo f in info) {
-			filenames.Add(f.Name);
-		}
-		return filenames;
+		return info;
 	}
 
 	public static void Save (Stream stream, object data) {

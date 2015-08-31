@@ -39,8 +39,8 @@ public class MenuScript : MonoBehaviour {
 		menu.enabled = true;
 		justOpened = true;
 
-//		es.SetSelectGameObject(go, null);
-		es.SetSelectedGameObject (transform.GetChild(1).gameObject);
+//		es.SetSelectedGameObject (transform.GetChild(1).gameObject);
+		es.SetSelectedGameObject (transform.GetComponentsInChildren<Selectable>()[0].gameObject);
 	}
 
 	public virtual void Close(){
@@ -53,7 +53,8 @@ public class MenuScript : MonoBehaviour {
 	}
 
 	public bool Visible(){
-		return menu.enabled;
+//		return menu.enabled;
+		return menuGroup.interactable;
 	}
 
 	public void Save(){
@@ -68,12 +69,17 @@ public class MenuScript : MonoBehaviour {
 		Alert ("Saving "+file+" Complete");
 	}
 
-	public List<string> GetSaves(){
-		return SaveLoad.GetSaves ();
-	}
+//	public List<string> GetSaves(){
+//		return SaveLoad.GetSaves ();
+//	}
 
 	public void Load(){
 		SaveLoad.LoadAll ();
+		Time.timeScale = 1f;
+	}
+
+	public void Load(string file){
+		SaveLoad.LoadAll (file);
 		Time.timeScale = 1f;
 	}
 
