@@ -27,6 +27,7 @@ public class PauseMenuScript : MenuScript {
 		Time.timeScale = 0f;
 	}
 	public override void Close(){
+		Debug.Log ("closing pause");
 		base.Close ();
 
 		GlobalScript.currentGameState = GlobalScript.GameState.InGame;

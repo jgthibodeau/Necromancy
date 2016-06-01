@@ -7,7 +7,7 @@ public class ScrollRectCenterScript : MonoBehaviour {
 	
 	public float scrollSpeed = 10f;
 
-	public MenuScript menu;
+	public SaveLoadMenuScript menu;
 
 	ScrollRect scrollRect;
 	RectTransform rectTransform;

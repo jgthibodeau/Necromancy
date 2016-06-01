@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -53,11 +54,13 @@ public class MenuScript : MonoBehaviour {
 	}
 
 	public bool Visible(){
-//		return menu.enabled;
 		return menuGroup.interactable;
 	}
 
 	public void Save(){
+		//TODO prompt for savefile name, max 28 characters
+		//blank will use default SaveLoad.SaveAll
+
 		Alert ("Saving ...");
 		SaveLoad.SaveAll ();
 		Alert ("Saving Complete");

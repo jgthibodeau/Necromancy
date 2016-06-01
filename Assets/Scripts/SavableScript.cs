@@ -140,7 +140,7 @@ public class LoadedLevel : ISerializable {
 public class SaveLoad {
 
 	public static string saveDir = "Save\\";
-	public static string defaultSaveFile = "SaveData.bly";    // Edit this for different save files
+	public static string defaultSaveFile = "SaveData";    // Edit this for different save files
 
 	public static FileInfo[] GetSaves(){
 		DirectoryInfo dir = new DirectoryInfo("Save");
@@ -154,9 +154,11 @@ public class SaveLoad {
 		bformatter.Serialize(stream, data);
 	}
 	public static void SaveAll() {
-		SaveAll (defaultSaveFile);
+		DateTime currentTime = DateTime.Now;
+		SaveAll (defaultSaveFile + " " + currentTime.Month + "-" + currentTime.Day + "-" + currentTime.Year + " " + currentTime.Hour + "-" + currentTime.Minute + "-" + currentTime.Second);
 	}
 	public static void SaveAll (string filePath) {
+		filePath += ".bly";
 		Stream stream = File.Open (saveDir+filePath, FileMode.Create);
 
 		UnityEngine.Debug.Log ("saving to "+filePath);

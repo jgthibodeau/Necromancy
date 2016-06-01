@@ -140,7 +140,7 @@
      <Compile Include="Assets\Scripts\PauseMenuScript.cs" />
      <Compile Include="Assets\Scripts\PlayerScript.cs" />
      <Compile Include="Assets\Scripts\SavableScript.cs" />
-     <Compile Include="Assets\Scripts\SaveListScript.cs" />
+     <Compile Include="Assets\Scripts\SaveLoadMenuScript.cs" />
      <Compile Include="Assets\Scripts\ScrollRectCenterScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
