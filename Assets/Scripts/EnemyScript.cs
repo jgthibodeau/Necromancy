@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Runtime.Serialization;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class EnemyData : SaveData{
@@ -22,31 +23,22 @@ public class EnemyScript : SavableScript {
 
 	//States
 	public enum State{Patrol, Alert, Search, Investigate};
-//	public State currentState;
-//	public State previousState;
 
 	//Whether to allow default behaviors or not
-	public bool doDefaultPatrol = true;
-	public bool doDefaultInvestigate = true;
-	public bool doDefaultAlert = true;
-	public bool doDefaultSearch = true;
+	public virtual bool doDefaultPatrol {get { return true; } }
+	public virtual bool doDefaultInvestigate {get { return true; } }
+	public virtual bool doDefaultAlert {get { return true; } }
+	public virtual bool doDefaultSearch {get { return true; } }
 
 	//Player info
 	public GameObject player;
-//	public Vector3 lastKnownPosition;
 
 	//Detection radiuses
-	public float fov; // in degrees
-	public float peripheralFov; // in degrees
-	public float viewDistance;
-	public float peripheralViewDistance;
-	public float behindDistance;
+	public FieldOfViewScript fovScript;
 
 	//Timing
 	public float maxInvestigateTime;
-//	public float investigateTime;
 	public float maxSearchTime;
-//	public float searchTime;
 
 	//Internally set speeds
 	public float noticeTurnSpeed;
@@ -68,20 +60,27 @@ public class EnemyScript : SavableScript {
 	public GameObject patrolPath;
 	public Transform[] waypoints;
 	public bool loop = true;
-//	public int currentWaypoint = 0;
-//	public bool movingForward = true;
 
 	//Random values
 	public float investigateRandomness;
 	public float searchRandomness;
 	
 	// Use this for initialization
-	void Start () {
+	protected virtual void Start () {
 		player = GameObject.Find ("Player");
 		agent = this.GetComponent<NavMeshAgent> ();
 
+		fovScript = this.GetComponent<FieldOfViewScript> ();
+
 		patrolPath.SetActive (true);
+
+		List<Transform> waypointList = new List<Transform> ();
 		waypoints = patrolPath.GetComponentsInChildren<Transform> ();
+		foreach(Transform child in waypoints){
+			if(child.CompareTag("WayPoint"))
+				waypointList.Add(child.transform);
+		}
+		waypoints = waypointList.ToArray ();
 		patrolPath.SetActive (false);
 		agent = this.transform.GetComponent<NavMeshAgent> ();
 
@@ -184,14 +183,10 @@ public class EnemyScript : SavableScript {
 		}
 	}
 	
-	public virtual void Patrol(){
-	}
-	public virtual void Alert(){
-	}
-	public virtual void Search(){
-	}
-	public virtual void Investigate(){
-	}
+	public virtual void Patrol(){}
+	public virtual void Alert(){}
+	public virtual void Search(){}
+	public virtual void Investigate(){}
 
 	public void DefaultPatrol(){
 		Vector3 target = waypoints [enemydata.currentWaypoint].position;
@@ -280,10 +275,10 @@ public class EnemyScript : SavableScript {
 		// Detect if target is within the field of view
 		Vector3 direction = target.transform.position - transform.position;
 		
-		if((Vector3.Angle(direction, transform.forward)) < fov){
+		if((Vector3.Angle(direction, transform.forward)) < fovScript.frontFov){
 			// Detect if target within viewDistance
 			RaycastHit hit;
-			if (Physics.Raycast (transform.position, direction, out hit, viewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
+			if (Physics.Raycast (transform.position, direction, out hit, fovScript.frontViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
 				if (hit.transform == target.transform)
 					return true;
 			}
@@ -298,9 +293,9 @@ public class EnemyScript : SavableScript {
 		Debug.DrawRay(transform.position, direction, Color.red);
 		
 		RaycastHit hit;
-		if((Vector3.Angle(direction, transform.forward)) < peripheralFov){
+		if((Vector3.Angle(direction, transform.forward)) < fovScript.peripheralFov){
 			// Detect if player within peripheralViewDistance
-			if (Physics.Raycast (transform.position, direction, out hit, peripheralViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
+			if (Physics.Raycast (transform.position, direction, out hit, fovScript.peripheralViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
 				if (hit.transform == target.transform)
 					return true;
 			}
@@ -308,7 +303,7 @@ public class EnemyScript : SavableScript {
 		}
 		
 		// Detect if player is beind
-		Physics.Raycast (transform.position, direction, out hit, behindDistance, GlobalScript.IgnoreInteractableLayerMask);
+		Physics.Raycast (transform.position, direction, out hit, fovScript.backViewDistance, GlobalScript.IgnoreInteractableLayerMask);
 		if(hit.transform == target.transform){
 			return true;
 		}

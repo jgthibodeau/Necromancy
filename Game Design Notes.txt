@@ -1,0 +1,73 @@
+Do not penalize player for being caught with score, only with gameplay!
+
+
+
+The AI reacting realistically to seeing you / not seeing you / hearing you / noticing things that have changed. The ability to approach situations in multiple ways.
+
+I like to have a lot of variety in the way I control the player - leaning around corners, climbing over walls etc
+
+use of both a lighting system in the 3D engine and sound system as a key part of the gameplay
+
+Interesting level design, specifically a lot of alternate paths into a target building/level. If your goal is to infiltrate a mansion and plant a bug on a phone in the 2nd floor, there should be many ways into the mansion: running from neighboring buildings and onto the roof, sneaking in from underground via sewers, stealing a disguise and walking in through the front door, etc
+
+being able to scale damn near everything, repelling Ozzy style down on a guy and snapping his neck, pulling them through the ice of a frozen lake you're swimming under them in, being able to deactivate/break a patrol's radio leaving back up inaccessible and allowing you to deal with them however you see fit
+
+Open areas with multiple traversal methods
+
+Level design that makes sense. Don't put some crates "over there" just to give me "options", don't make the guards patrol in 15 seconds long laps, don't make the civilian look out the window every 20 seconds... Don't try to make a boring place (like a back alley) interesting through such contrieved level design. Either replace it with something else or simply leave it as it is! Not every section of the level should be a stealth challenge... Tension and uneasiness can come from mixing up the levels with such uneventful locales. Also patience should always be rewarded. Random people or patrols should get bored and take a break, the cook in the kitchen should finish his damn meal, the man near the fireplace should fall asleep and so on. And if I'm told I'm not supposed to touch the street / kill some douchebag etc and I do it, please try and provide an alternative other than GAME OVER DERP.
+
+it's always fun finding out half-way through a mission that you've been set-up, or that someone else has beaten you to the treasure and set off the alarm
+
+
+
+Gameplay loop:
+- tasked with stealing a specific item from a location
+- given an initial map which plots out where the item is and where guards will be positioned
+- use map, tools, and awareness to sneak past guards without getting caught and steal the item
+
+- first time spotted by guard, 911 is called and you have a countdown till police show up to patrol with guns
+- if police see you they will chase and if you run they will shoot and kill you
+- if enough time passes without being seen, police will leave
+
+
+- gun with no bullets for intimidation?
+
+
+Stealable items
+- name
+- sprite
+- $ value
+
+
+Win mechanics
+- need to steal a specific object or specific amount of stealables
+- extra goals
+  - never get caught, no alarms, found all stealables
+
+
+Lose mechanics
+- guard touches player
+  - game over?
+  - handcuff minigame
+    - more enemies make it harder/less time to pull it off?
+- guard sees player
+  - if guard has walkie - radios other guards imediately and chases player
+  - if guard doesn't - runs to nearest radio point
+    - all guards within radius (if less than 3, up to 3 closest guards) run towards alerted guards location
+    - radios can be disabled somehow?
+
+
+Stealing mini-games
+- lockpick
+  - thumbsticks control torque wrench and pick
+  - rumble, sound, and visuals indicate proper torque, pin, and height
+  - keep enough torque and increase it as pins are picked
+  - find correct next pin and get it to the correct height
+- dial lock
+  - thumbsticks control stethoscope and dial
+  - find correct area to listen to for tumblers
+  - alternate rotating directions
+- paintings
+  - thumstick controls angle of knife
+  - thumbstick or trigger controls speed of knife
+    - moving faster adds randomness to knife angle
