@@ -13,11 +13,13 @@ public class PlayerScript : SavableScript {
 	
 	// Input variables
 	private Vector2 moveInput;
+	private Vector2 lookInput;
 	private bool interact;
 	private bool cancel;
 
 	public float speed = 10;
 	public Vector3 movement;
+	public Vector3 look;
 
 	private Animator animator;
 	public Transform sprite;
@@ -41,13 +43,16 @@ public class PlayerScript : SavableScript {
 		playerdata = (PlayerData)savedata;
 
 		//TODO ensure globalscript isnt paused for all scripts
+
+		GetInput ();
+
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {
 		case State.Moving:
-			GetInput ();
-
 			movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
 			movement = Vector3.ClampMagnitude (movement, speed);
+
+			look = new Vector3 (lookInput.x, 0, lookInput.y);
 			
 			if (interact) {
 				InteractorScript interactor = GetComponent<InteractorScript> ();
@@ -75,7 +80,6 @@ public class PlayerScript : SavableScript {
 			animator.SetBool ("Idle", idle);
 			break;
 		case State.Interacting:
-			GetInput ();
 			break;
 		}
 	}
@@ -84,6 +88,7 @@ public class PlayerScript : SavableScript {
 		interact = GlobalScript.GetButton(GlobalScript.Interact);
 		cancel = GlobalScript.GetButton(GlobalScript.Cancel);
 		moveInput = GlobalScript.GetAxis(GlobalScript.LeftStick);
+		lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
 	}
 	
 	void FixedUpdate()
@@ -93,10 +98,15 @@ public class PlayerScript : SavableScript {
 
 		Vector3 actualDirectionOfMotion = movement.normalized;
 
-		if (actualDirectionOfMotion.magnitude > 0) {
-			float angle = Vector3.Angle (actualDirectionOfMotion, Vector3.forward) * Mathf.Sign (actualDirectionOfMotion.x);
+		float angle;
+		if (look.magnitude > 0) {
+			angle = Vector3.Angle (look, Vector3.forward) * Mathf.Sign (look.x);
+			this.transform.rotation = Quaternion.Euler (90, angle, 0);
+		} else if (actualDirectionOfMotion.magnitude > 0) {
+			angle = Vector3.Angle (actualDirectionOfMotion, Vector3.forward) * Mathf.Sign (actualDirectionOfMotion.x);
 			this.transform.rotation = Quaternion.Euler (90, angle, 0);
 		}
+
 	}
 
 	void OnDestroy()
