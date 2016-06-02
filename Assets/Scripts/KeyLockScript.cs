@@ -25,9 +25,8 @@ public class KeyLockScript : ToggleableScript {
 	public float tumblerSize;
 	public float changeTumblerSpeed;
 
-	public Transform lockPick;
-	private Sprite lockPickSprite;
-	public Transform tensionWrench;
+	public float lockpickX;
+	public bool wiggleLockpick = false;
 	public Transform rotatable;
 
 	public GameObject lockedObject;
@@ -41,8 +40,8 @@ public class KeyLockScript : ToggleableScript {
 	private Vector2 inputRight;
 	private Vector2 prevInputLeft;
 	private Vector2 prevInputRight;
-	private float leftTrigger;
-	private float rightTrigger;
+	public float leftTrigger;
+	public float rightTrigger;
 
 	// Sounds
 	public AudioClip hitTumblerClip;
@@ -54,7 +53,9 @@ public class KeyLockScript : ToggleableScript {
 	public override void Start(){
 		base.Start ();
 
-		lockPickSprite = lockPick.GetComponent<SpriteRenderer> ().sprite;
+		lockpickX = 0f;
+
+		rotatable = new GameObject().transform;
 
 		currentHeights = new float[keylockdata.correctHeights.Length];
 		keylockdata.tumblerOrder = new int[keylockdata.correctHeights.Length];
@@ -73,6 +74,17 @@ public class KeyLockScript : ToggleableScript {
 	public override void ToggledUpdate () {
 		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 			InGame ();
+	}
+
+	public override void Activate(){
+		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().SetKeyLock (this);
+		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().Open ();
+		base.Activate ();
+	}
+
+	public override void Deactivate(){
+		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().Close ();
+		base.Deactivate ();
 	}
 	
 	void InGame () {
@@ -98,38 +110,29 @@ public class KeyLockScript : ToggleableScript {
 //			if(oldTumbler != currentTumblerToPick)
 //				audioSource.PlayOneShot (hitTumblerClip, 1f);
 
-			float randomAngle = 0f;
-			if (!PreviousTumblersCorrect(currentTumblerOrderToPick)){
-				randomAngle = Random.Range (-15*leftTrigger, 15*leftTrigger);
-				print (randomAngle);
-			}
-			else if(!CorrectHeight(currentTumblerToPick))
-				randomAngle = Random.Range (-2, 2);
-			tensionWrench.transform.rotation = Quaternion.Euler (90, 135 + 90 * leftTrigger + randomAngle, 0);
-
 			//Set all tumblers above currentTumblerToPick to 0 height
 			for (int i=currentTumblerOrderToPick+1; i<keylockdata.tumblerOrder.Length; i++)
 				currentHeights [keylockdata.tumblerOrder[i]] = 0;
 
 			//Set current tumbler
-			oldTumbler = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
+			oldTumbler = (int)((-0.5f - lockpickX) / tumblerSize);
 			if (oldTumbler >= currentHeights.Length)
 				oldTumbler = currentHeights.Length - 1;
 
 			float offset = 0f;
-			if (inputRight.x < 0f && lockPick.transform.localPosition.x > -3f) {
-				offset = inputRight.x * changeTumblerSpeed * Time.deltaTime;
-				if (lockPick.transform.localPosition.x + offset < -3f)
-					offset = -3f - lockPick.transform.localPosition.x;
+			if (inputLeft.x < 0f && lockpickX > -3f) {
+				offset = inputLeft.x * changeTumblerSpeed * Time.deltaTime;
+				if (lockpickX + offset < -3f)
+					offset = -3f - lockpickX;
 			}
-			if (inputRight.x > 0f && lockPick.transform.localPosition.x < -0.5f) {
-				offset = inputRight.x * changeTumblerSpeed * Time.deltaTime;
-				if (lockPick.transform.localPosition.x + offset > -0.5f)
-					offset = -0.5f - lockPick.transform.localPosition.x;
+			if (inputLeft.x > 0f && lockpickX < -0.5f) {
+				offset = inputLeft.x * changeTumblerSpeed * Time.deltaTime;
+				if (lockpickX + offset > -0.5f)
+					offset = -0.5f - lockpickX;
 			}
 			if (offset != 0f)
-				lockPick.transform.position = lockPick.transform.position + new Vector3 (offset, 0, 0);
-			currentTumblerBeingPicked = (int)((-0.5f - lockPick.localPosition.x) / tumblerSize);
+				lockpickX += offset;
+			currentTumblerBeingPicked = (int)((-0.5f - lockpickX) / tumblerSize);
 
 			if (currentTumblerBeingPicked >= currentHeights.Length)
 				currentTumblerBeingPicked = currentHeights.Length - 1;
@@ -142,7 +145,7 @@ public class KeyLockScript : ToggleableScript {
 			if (pickingOrder > currentTumblerOrderToPick) {
 				currentHeights [currentTumblerBeingPicked] = rightTrigger;
 				//no wiggle
-				lockPick.rotation = Quaternion.Euler (90, 0, 0);
+				wiggleLockpick = false;
 				//no sound
 				if(pickingAudioSource.isPlaying)
 					pickingAudioSource.Stop ();
@@ -151,7 +154,8 @@ public class KeyLockScript : ToggleableScript {
 				if (rightTrigger > currentHeights [currentTumblerBeingPicked])
 					rightTrigger = currentHeights [currentTumblerBeingPicked];
 				//no wiggle
-				lockPick.rotation = Quaternion.Euler (90, 0, 0);
+				wiggleLockpick = false;
+
 				//no sound
 				if(pickingAudioSource.isPlaying)
 					pickingAudioSource.Stop ();
@@ -172,22 +176,19 @@ public class KeyLockScript : ToggleableScript {
 					//if all previous tumblers are correct
 					if(PreviousTumblersCorrect(currentTumblerOrderToPick)){
 						//wiggle and noise as adjust tumbler
-						float angle = Random.Range (-2, 2);
-						lockPick.rotation = Quaternion.Euler (90, angle, 0);
+						wiggleLockpick = true;
 							
 						//if just got to correct height
 						if (CorrectHeight(currentTumblerBeingPicked) && !wasCorrect){
 							audioSource.PlayOneShot (hitTumblerClip, 1f);
 						}
 					} else {
-						lockPick.rotation = Quaternion.Euler (90, 0, 0);
+						wiggleLockpick = false;
 					}
 				} else {
-					lockPick.rotation = Quaternion.Euler (90, 0, 0);
+					wiggleLockpick = false;
 				}
 			}
-
-			lockPick.transform.position = new Vector3 (lockPick.transform.position.x, lockPick.transform.position.y, this.transform.position.z - 1.05f + 1.9f * rightTrigger);
 
 			//start unlock animation
 			if (Unlocked ()) {
@@ -211,7 +212,7 @@ public class KeyLockScript : ToggleableScript {
 		return true;
 	}
 
-	bool CorrectHeight(int tumbler){
+	public bool CorrectHeight(int tumbler){
 		if (tumbler < 0)
 			return true;
 		if (tumbler >= keylockdata.correctHeights.Length)
@@ -219,7 +220,7 @@ public class KeyLockScript : ToggleableScript {
 		return (currentHeights [tumbler] >= (keylockdata.correctHeights [tumbler] - heightTolerance) && currentHeights [tumbler] <= (keylockdata.correctHeights [tumbler] + heightTolerance));
 	}
 
-	bool PreviousTumblersCorrect(int thisTumblerOrder){
+	public bool PreviousTumblersCorrect(int thisTumblerOrder){
 		if (thisTumblerOrder < 0)
 			return true;
 
@@ -240,7 +241,6 @@ public class KeyLockScript : ToggleableScript {
 	}
 
 	void SetDefaults(){
-		tensionWrench.transform.rotation = Quaternion.Euler (90, 135, 0);
 		for (int i=0; i<currentHeights.Length; i++) {
 			currentHeights[i] = 0;
 		}

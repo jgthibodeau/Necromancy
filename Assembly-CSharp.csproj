@@ -118,6 +118,7 @@
      <Compile Include="Assets\AstarPathfindingProject\Utilities\UnityReferenceHelper.cs" />
      <Compile Include="Assets\AstarPathfindingProject\changelog.cs" />
      <Compile Include="Assets\Scripts\AnimationScript.cs" />
+     <Compile Include="Assets\Scripts\Camera3dScript.cs" />
      <Compile Include="Assets\Scripts\CameraScript.cs" />
      <Compile Include="Assets\Scripts\ConfirmationDialogScript.cs" />
      <Compile Include="Assets\Scripts\CopScript.cs" />
@@ -134,6 +135,7 @@
      <Compile Include="Assets\Scripts\InteractableScript.cs" />
      <Compile Include="Assets\Scripts\InteractorScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockScript.cs" />
+     <Compile Include="Assets\Scripts\KeyLockUIScript.cs" />
      <Compile Include="Assets\Scripts\LockedScript.cs" />
      <Compile Include="Assets\Scripts\MenuScript.cs" />
      <Compile Include="Assets\Scripts\PaintingScript.cs" />
@@ -143,6 +145,7 @@
      <Compile Include="Assets\Scripts\SaveLoadMenuScript.cs" />
      <Compile Include="Assets\Scripts\ScrollRectCenterScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
+     <Compile Include="Assets\Scripts\SpriteScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />
      <Compile Include="Assets\Scripts\UniqueId.cs" />

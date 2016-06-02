@@ -8,7 +8,7 @@ public class ToggleableScript : SavableScript {
 	Renderer[] renderers;
 	Renderer renderer;
 
-	public void Activate(){
+	public virtual void Activate(){
 		active = true;
 		if (toggleRenderers)
 			EnableRenderers ();
@@ -28,7 +28,7 @@ public class ToggleableScript : SavableScript {
 			renderer.enabled = false;
 	}
 
-	public void Deactivate(){
+	public virtual void Deactivate(){
 		active = false;
 		if (toggleRenderers)
 			DisableRenderers ();

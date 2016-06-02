@@ -23,9 +23,9 @@ public class FieldOfViewScript : MonoBehaviour {
 	void Start(){
 		//front fov
 		if (drawFovs) {
-			buildMesh ("Front FOV", frontMesh, frontMaterial, frontFov, frontViewDistance, 0.01f);
-			buildMesh ("Peripheral FOV", peripheralMesh, peripheralMaterial, peripheralFov, peripheralViewDistance, 0.02f);
-			buildMesh ("Back FOV", backMesh, backMaterial, backFov, backViewDistance, 0.03f);
+			buildMesh ("Front FOV", frontMesh, frontMaterial, frontFov, frontViewDistance, 0.1f);
+			buildMesh ("Peripheral FOV", peripheralMesh, peripheralMaterial, peripheralFov, peripheralViewDistance, 0.2f);
+			buildMesh ("Back FOV", backMesh, backMaterial, backFov, backViewDistance, 0.3f);
 		}
 	}
 

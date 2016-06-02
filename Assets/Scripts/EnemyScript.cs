@@ -290,7 +290,7 @@ public class EnemyScript : SavableScript {
 		// Detect if target is within the peripheral view
 		Vector3 direction = target.transform.position - transform.position;
 		
-		Debug.DrawRay(transform.position, direction, Color.red);
+//		Debug.DrawRay(transform.position, direction, Color.red);
 		
 		RaycastHit hit;
 		if((Vector3.Angle(direction, transform.forward)) < fovScript.peripheralFov){

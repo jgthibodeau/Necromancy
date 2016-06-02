@@ -41,7 +41,9 @@ public class MenuScript : MonoBehaviour {
 		justOpened = true;
 
 //		es.SetSelectedGameObject (transform.GetChild(1).gameObject);
-		es.SetSelectedGameObject (transform.GetComponentsInChildren<Selectable>()[0].gameObject);
+		Selectable[] selectableItems = transform.GetComponentsInChildren<Selectable>();
+		if(selectableItems.Length > 0)
+			es.SetSelectedGameObject (selectableItems[0].gameObject);
 	}
 
 	public virtual void Close(){
@@ -111,7 +113,8 @@ public class MenuScript : MonoBehaviour {
 		if (hideOnStart)
 			Close ();
 
-		alertText.text = "";
+		if(alertText != null)
+			alertText.text = "";
 	}
 
 	protected virtual void Update(){

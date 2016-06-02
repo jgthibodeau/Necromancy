@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class GlobalScript : MonoBehaviour {
 	//Controller stuff
 	public static float deadzone = 0.25f;
+	public static string Jump = "Jump";
 	public static string Interact = "Interact";
 	public static string Cancel = "Cancel";
 	public static string LeftStick = "Left";

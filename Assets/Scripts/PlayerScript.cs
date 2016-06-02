@@ -16,12 +16,12 @@ public class PlayerScript : SavableScript {
 	private Vector2 lookInput;
 	private bool interact;
 	private bool cancel;
+	private bool jump;
 
 	public float speed = 10;
 	public Vector3 movement;
-	public Vector3 look;
+//	public Vector3 look;
 
-	private Animator animator;
 	public Transform sprite;
 
 	public enum State{Moving, Interacting};
@@ -29,8 +29,6 @@ public class PlayerScript : SavableScript {
 
 	// Use this for initialization
 	void Start () {
-		animator = sprite.GetComponent<Animator>();
-
 		savedata = playerdata;
 	}
 	
@@ -49,10 +47,18 @@ public class PlayerScript : SavableScript {
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {
 		case State.Moving:
-			movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
-			movement = Vector3.ClampMagnitude (movement, speed);
+			Vector3 forward = Camera.main.transform.TransformDirection (Vector3.forward);
+			forward.y = 0;
+			forward = forward.normalized;
+			Vector3 right = new Vector3 (forward.z, 0, -forward.x);
+			movement = (moveInput.x * right + moveInput.y * forward).normalized;
+			movement *= speed;
 
-			look = new Vector3 (lookInput.x, 0, lookInput.y);
+
+//			movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
+//			movement = Vector3.ClampMagnitude (movement, speed);
+
+//			look = new Vector3 (lookInput.x, 0, lookInput.y);
 			
 			if (interact) {
 				InteractorScript interactor = GetComponent<InteractorScript> ();
@@ -60,24 +66,6 @@ public class PlayerScript : SavableScript {
 					interactor.Interact ();
 				}
 			}
-			// Up = 2
-			// Down = 0
-			// Left = 1
-			// Right = 3
-
-			bool idle = false;
-			if (moveInput.x > 0)
-				animator.SetInteger ("Direction", 3);
-			else if (moveInput.x < 0)
-				animator.SetInteger ("Direction", 1);
-			else if (moveInput.y > 0)
-				animator.SetInteger ("Direction", 2);
-			else if (moveInput.y < 0)
-				animator.SetInteger ("Direction", 0);
-			else
-				idle = true;
-
-			animator.SetBool ("Idle", idle);
 			break;
 		case State.Interacting:
 			break;
@@ -85,9 +73,11 @@ public class PlayerScript : SavableScript {
 	}
 
 	void GetInput(){
-		interact = GlobalScript.GetButton(GlobalScript.Interact);
-		cancel = GlobalScript.GetButton(GlobalScript.Cancel);
-		moveInput = GlobalScript.GetAxis(GlobalScript.LeftStick);
+		interact = GlobalScript.GetButton (GlobalScript.Interact);
+		cancel = GlobalScript.GetButton (GlobalScript.Cancel);
+		jump = GlobalScript.GetButton (GlobalScript.Jump);
+
+		moveInput = GlobalScript.GetAxis (GlobalScript.LeftStick);
 		lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
 	}
 	
@@ -99,10 +89,10 @@ public class PlayerScript : SavableScript {
 		Vector3 actualDirectionOfMotion = movement.normalized;
 
 		float angle;
-		if (look.magnitude > 0) {
-			angle = Vector3.Angle (look, Vector3.forward) * Mathf.Sign (look.x);
-			this.transform.rotation = Quaternion.Euler (90, angle, 0);
-		} else if (actualDirectionOfMotion.magnitude > 0) {
+//		if (look.magnitude > 0) {
+//			angle = Vector3.Angle (look, Vector3.forward) * Mathf.Sign (look.x);
+//			this.transform.rotation = Quaternion.Euler (90, angle, 0);
+		/*} else */if (actualDirectionOfMotion.magnitude > 0) {
 			angle = Vector3.Angle (actualDirectionOfMotion, Vector3.forward) * Mathf.Sign (actualDirectionOfMotion.x);
 			this.transform.rotation = Quaternion.Euler (90, angle, 0);
 		}

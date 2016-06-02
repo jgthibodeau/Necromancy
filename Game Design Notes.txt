@@ -18,6 +18,7 @@ Level design that makes sense. Don't put some crates "over there" just to give m
 
 it's always fun finding out half-way through a mission that you've been set-up, or that someone else has beaten you to the treasure and set off the alarm
 
+If you get detected, you should have options to deal with the situation and enemies should react accordingly. Usually stealth games go one of two ways during detection; either you reload the last save and avoid the situation you ran into or you run away from enemies until they are no longer alerted and resume their normal activities. Both of these sequences are pretty unrealistic and immersion breaking. I would really like to see games focus more on tools to deal with being detected rather than just remaining completely undetected without becoming a full on action game.
 
 
 Gameplay loop:
@@ -30,7 +31,11 @@ Gameplay loop:
 - if enough time passes without being seen, police will leave
 
 
-- gun with no bullets for intimidation?
+Guard interactions
+- radio in every minute
+- can be held at gunpoint and ziptied
+  - won't radio in and other guards on same team (same color uniform) will come investigate
+- power can be cut, lights are out til a guard comes to fix em
 
 
 Stealable items
@@ -71,3 +76,14 @@ Stealing mini-games
   - thumstick controls angle of knife
   - thumbstick or trigger controls speed of knife
     - moving faster adds randomness to knife angle
+
+
+Possible single-serve mechanics
+- enforce strict inventory limits (only 3 tools?)
+- gun with no bullets for intimidation
+- whistle/rocks
+  - once or twice per guard per minute is ok, too often they get suspicious and radio in
+- peak through door locks
+- realistic sounds to determine guard locations
+- vents/pipes
+- sneak/run speeds with different noise levels

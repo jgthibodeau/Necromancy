@@ -11,6 +11,9 @@ public class DetectionConeScript : MonoBehaviour {
 	public float regularFadeSpeed = 3f;
 	public float enemyOnScreenFadeSpeed = 5f;
 
+	public bool enemyOnScreen = false;
+	public bool enemyVisibleByPlayer = false;
+
 	// Use this for initialization
 	void Start () {
 		enemy = this.transform.parent;
@@ -28,20 +31,12 @@ public class DetectionConeScript : MonoBehaviour {
 	void InGame () {
 
 		//turn off if entity is visible
-		bool enemyOnScreen = false;
-		bool enemyVisibleByPlayer = false;
+		enemyOnScreen = false;
+		enemyVisibleByPlayer = false;
 		Vector3 enemyPoint = camera.WorldToViewportPoint(enemy.transform.position);
 		if ((enemyPoint.x > 0 && enemyPoint.x < 1 && enemyPoint.y > 0 && enemyPoint.y < 1) && enemyPoint.z > 0) {
 			enemyOnScreen = true;
 		}
-//		This works in game, but not with scene editor...
-//		Renderer[] renderers = enemy.GetComponentsInChildren<Renderer>();
-//		for (int i=0;i<renderers.Length;i++) {
-//			if (renderers[i].isVisible){
-//				enemyOnScreen = true;
-//				break;
-//			}
-//		}
 
 		if (!enemyOnScreen) {
 			// Detect if target within viewDistance
