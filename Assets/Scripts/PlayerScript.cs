@@ -19,10 +19,12 @@ public class PlayerScript : SavableScript {
 	private bool jump;
 
 	public float speed = 10;
+
+	float direction;
+	float currentSpeed;
+
 	public Vector3 movement;
 //	public Vector3 look;
-
-	public Transform sprite;
 
 	public enum State{Moving, Interacting};
 	public State currentState = State.Moving;
@@ -70,6 +72,9 @@ public class PlayerScript : SavableScript {
 		case State.Interacting:
 			break;
 		}
+
+		currentSpeed = new Vector2 (moveInput.x, moveInput.y).sqrMagnitude;
+		StickToWorldSpace (this.transform, Camera.main.transform, ref direction, ref currentSpeed);
 	}
 
 	void GetInput(){
@@ -91,10 +96,10 @@ public class PlayerScript : SavableScript {
 		float angle;
 //		if (look.magnitude > 0) {
 //			angle = Vector3.Angle (look, Vector3.forward) * Mathf.Sign (look.x);
-//			this.transform.rotation = Quaternion.Euler (90, angle, 0);
+//			this.transform.rotation = Quaternion.Euler (0, angle, 0);
 		/*} else */if (actualDirectionOfMotion.magnitude > 0) {
 			angle = Vector3.Angle (actualDirectionOfMotion, Vector3.forward) * Mathf.Sign (actualDirectionOfMotion.x);
-			this.transform.rotation = Quaternion.Euler (90, angle, 0);
+			this.transform.rotation = Quaternion.Euler (0, angle, 0);
 		}
 
 	}
@@ -115,5 +120,32 @@ public class PlayerScript : SavableScript {
 		case State.Interacting:
 			break;
 		}
+	}
+
+	public void StickToWorldSpace(Transform root, Transform camera, ref float directionOut, ref float speedOut){
+		Vector3 rootDirection = root.forward;
+
+		Vector3 stickDirection = new Vector3(moveInput.x, 0, moveInput.y);
+
+		speedOut = stickDirection.sqrMagnitude;
+
+		//get camera rotation
+		Vector3 CameraDirection = camera.forward;
+		CameraDirection.y = 0.0f;
+		Quaternion referenceShift = Quaternion.FromToRotation (Vector3.forward, CameraDirection);
+
+		//convert joystick to worldspace coords
+		Vector3 moveDirection = referenceShift * stickDirection;
+		Vector3 axisSign = Vector3.Cross (moveDirection, rootDirection);
+
+		Debug.DrawRay (new Vector3(root.position.x, root.position.y + 2f, root.position.z), moveDirection, Color.green);
+//		Debug.DrawRay (new Vector3(root.position.x, root.position.y + 2f, root.position.z), rootDirection, Color.magenta);
+//		Debug.DrawRay (new Vector3(root.position.x, root.position.y + 2f, root.position.z), stickDirection, Color.blue);
+
+		float angleRootToMove = Vector3.Angle (rootDirection, moveDirection) * (axisSign.y >= 0 ? -1f : 1f);
+
+		angleRootToMove /= 180f;
+
+		directionOut = angleRootToMove * speed;
 	}
 }

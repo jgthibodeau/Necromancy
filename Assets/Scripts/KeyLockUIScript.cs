@@ -9,7 +9,7 @@ public class KeyLockUIScript : MenuScript{
 	public RectTransform wrench;
 	public RectTransform[] rotatables;
 
-	public void SetKeyLock(KeyLockScript kls){
+	public void SetLock(KeyLockScript kls){
 		keylock = kls;
 	}
 

@@ -125,6 +125,7 @@
      <Compile Include="Assets\Scripts\CopSpawnerScript.cs" />
      <Compile Include="Assets\Scripts\DetectionConeScript.cs" />
      <Compile Include="Assets\Scripts\DialLockScript.cs" />
+     <Compile Include="Assets\Scripts\DialLockUIScript.cs" />
      <Compile Include="Assets\Scripts\DrawFovScript.cs" />
      <Compile Include="Assets\Scripts\EnemyScript.cs" />
      <Compile Include="Assets\Scripts\FieldOfViewScript.cs" />
@@ -147,6 +148,7 @@
      <Compile Include="Assets\Scripts\ShotScript.cs" />
      <Compile Include="Assets\Scripts\SpriteScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
+     <Compile Include="Assets\Scripts\ThirdPersonCamera.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />
      <Compile Include="Assets\Scripts\UniqueId.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />

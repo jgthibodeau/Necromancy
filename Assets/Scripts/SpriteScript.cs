@@ -20,8 +20,6 @@ public class SpriteScript : MonoBehaviour {
 		if (realAngle < 0)
 			realAngle += 360;
 
-		Debug.Log(thisAngle +" "+ camAngle +" "+ realAngle);
-
 		// Up = 2
 		// Down = 0
 		// Left = 1
@@ -32,16 +30,18 @@ public class SpriteScript : MonoBehaviour {
 		// <225 and >135 = towards
 		// <135 and >45 = right
 
-		bool idle = false;
-		if (realAngle > 315 || realAngle < 45)
-			animator.SetInteger ("Direction", 2);
-		else if (realAngle > 225)
-			animator.SetInteger ("Direction", 3);
-		else if (realAngle > 135)
-			animator.SetInteger ("Direction", 0);
-		else
-			animator.SetInteger ("Direction", 1);
+		if(animator != null){
+			bool idle = false;
+			if (realAngle > 315 || realAngle < 45)
+				animator.SetInteger ("Direction", 2);
+			else if (realAngle > 225)
+				animator.SetInteger ("Direction", 3);
+			else if (realAngle > 135)
+				animator.SetInteger ("Direction", 0);
+			else
+				animator.SetInteger ("Direction", 1);
 
-//		animator.SetBool ("Idle", idle);
+	//		animator.SetBool ("Idle", idle);
+		}
 	}
 }

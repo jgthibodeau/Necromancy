@@ -34,8 +34,8 @@ public class DialLockScript : ToggleableScript {
 	public float rotateSpeed = 0.5f;
 	public float unlockSpeed;
 	
-	public Transform dial;
-	public Transform handle;
+//	public Transform dial;
+//	public Transform handle;
 	public GameObject lockedObject;
 	
 	// Inputs
@@ -128,8 +128,6 @@ public class DialLockScript : ToggleableScript {
 			else if(rotatingAudioSource.isPlaying)
 				rotatingAudioSource.Stop();
 
-			dial.transform.rotation = Quaternion.Euler(0,currentAngle,0);
-
 			//To get number of tumblers, lower pitch click every 360 degrees turned until picked up all tumblers
 			if((int)prevAngle / 360 < (int)currentAngle / 360 && !hasBeenReset){
 				//TODO play sound
@@ -169,14 +167,14 @@ public class DialLockScript : ToggleableScript {
 			if (Unlocked () && rightTrigger > 0) {
 				currentState = State.Unlocked;
 				lockedObject.GetComponent<LockedScript>().SetLocked(false);
-				handle.Rotate (new Vector3(0,0,-unlockSpeed*Time.deltaTime));
+//				handle.Rotate (new Vector3(0,0,-unlockSpeed*Time.deltaTime));
 				rotatingAudioSource.Stop ();
 				audioSource.PlayOneShot (unlockedClip, 1f);
 			}
 			break;
 		case State.Unlocked:
-			handle.Rotate (new Vector3(0,0,-unlockSpeed*Time.deltaTime));
-			if(handle.rotation.eulerAngles.y >= 45)
+//			handle.Rotate (new Vector3(0,0,-unlockSpeed*Time.deltaTime));
+//			if(handle.rotation.eulerAngles.y >= 45)
 				Deactivate();
 			break;
 		}
@@ -201,12 +199,18 @@ public class DialLockScript : ToggleableScript {
 	void FixedUpdate(){
 		UpdateLocation ();
 	}
-	
-	//Disable the lock, set all variables to default, return control to player
-	void Deactivate(){
+
+	public override void Activate(){
+		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().SetLock (this);
+		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().Open ();
+		base.Activate ();
+	}
+
+	public override void Deactivate(){
 		rotatingAudioSource.Stop ();
+		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().Close ();
 		GameObject.Find ("Player").GetComponent<PlayerScript>().ChangeState(PlayerScript.State.Moving);
-		this.gameObject.SetActiveRecursively(false);
+		base.Deactivate ();
 	}
 	
 	void GetInput(){

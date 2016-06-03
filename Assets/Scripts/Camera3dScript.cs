@@ -2,8 +2,11 @@
 using System.Collections;
 
 public class Camera3dScript : MonoBehaviour {
+	public float collideTime = 1f;
 	public float dampTime = 1f;
 	public float distance = 5f;
+
+	private bool collided = false;
 
 	public float currentX = 0f;
 	public float currentY = -45f;
@@ -27,22 +30,33 @@ public class Camera3dScript : MonoBehaviour {
 	}
 
 	void LateUpdate(){
+		if (!collided) {
+			Vector2 lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
+			currentX += sensitivityX * lookInput.x;
+			currentY += sensitivityY * lookInput.y;
+			if (currentY > maxY)
+				currentY = maxY;
+			else if (currentY < minY)
+				currentY = minY;
+			
+			Vector3 direction = new Vector3 (0, distance, 0);
+			Quaternion rotation = Quaternion.Euler (currentY, currentX, 0);
+
+			camTransform.position = Vector3.Lerp (camTransform.position, lookAt.position + rotation * direction, Time.deltaTime*dampTime);
+			//		camTransform.position = lookAt.position + rotation * direction;
+		} else {
+			camTransform.position = Vector3.Lerp (camTransform.position, lookAt.position, Time.deltaTime*collideTime);
+		}
+			
+
+		camTransform.LookAt (lookAt);
 	}
 
-	void Update(){
-		Vector2 lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
-		currentX += sensitivityX * lookInput.x;
-		currentY += sensitivityY * lookInput.y;
-		if (currentY > maxY)
-			currentY = maxY;
-		else if (currentY < minY)
-			currentY = minY;
-		
-		Vector3 direction = new Vector3 (0, distance, 0);
-		Quaternion rotation = Quaternion.Euler (currentY, currentX, 0);
+	void OnCollisionEnter(Collision collision) {
+		collided = true;
+	}
 
-		camTransform.position = Vector3.Lerp (camTransform.position, lookAt.position + rotation * direction, dampTime);
-		//		camTransform.position = lookAt.position + rotation * direction;
-		camTransform.LookAt (lookAt);
+	void OnCollisionExit(Collision collision){
+		collided = false;
 	}
 }

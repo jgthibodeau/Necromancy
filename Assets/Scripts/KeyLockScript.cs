@@ -77,7 +77,7 @@ public class KeyLockScript : ToggleableScript {
 	}
 
 	public override void Activate(){
-		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().SetKeyLock (this);
+		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().SetLock (this);
 		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().Open ();
 		base.Activate ();
 	}
