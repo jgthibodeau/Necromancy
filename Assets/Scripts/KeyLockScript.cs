@@ -235,10 +235,6 @@ public class KeyLockScript : ToggleableScript {
 		}
 		return true;
 	}
-	
-	void FixedUpdate(){
-		UpdateLocation ();
-	}
 
 	void SetDefaults(){
 		for (int i=0; i<currentHeights.Length; i++) {
@@ -265,12 +261,5 @@ public class KeyLockScript : ToggleableScript {
 		inputRight = GlobalScript.GetAxis(GlobalScript.RightStick);
 		leftTrigger = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
 		rightTrigger = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
-	}
-
-	//Ensure the lock is always centered on the screen
-	void UpdateLocation(){
-		float oldY = this.transform.position.y;
-		this.transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane));
-		this.transform.position = new Vector3 (this.transform.position.x, oldY, this.transform.position.z);
 	}
 }

@@ -1,29 +1,31 @@
 fileFormatVersion: 2
-guid: a1fcd2a303d794647b2fe7293ee8c6b2
-timeCreated: 1464789245
+guid: ab1b21e717b932740914f239d5832221
+timeCreated: 1464971224
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: cop_0
-    21300002: cop_1
-    21300004: cop_2
-    21300006: cop_3
-    21300008: cop_4
-    21300010: cop_5
-    21300012: cop_6
-    21300014: cop_7
-    21300016: cop_8
-    21300018: cop_9
-    21300020: cop_10
-    21300022: cop_11
-    21300024: cop_12
-    21300026: cop_13
-    21300028: cop_14
-    21300030: cop_15
-    21300032: cop_16
-    21300034: cop_17
-    21300036: cop_18
-    21300038: cop_19
+    21300000: guard_0
+    21300002: guard_1
+    21300004: guard_2
+    21300006: guard_3
+    21300008: guard_4
+    21300010: guard_5
+    21300012: guard_6
+    21300014: guard_7
+    21300016: guard_8
+    21300018: guard_9
+    21300020: guard_10
+    21300022: guard_11
+    21300024: guard_12
+    21300026: guard_13
+    21300028: guard_14
+    21300030: guard_15
+    21300032: guard_16
+    21300034: guard_17
+    21300036: guard_18
+    21300038: guard_19
+    21300040: guard_20
+    21300042: guard_21
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -43,7 +45,7 @@ TextureImporter:
   grayScaleToAlpha: 0
   generateCubemap: 0
   cubemapConvolution: 0
-  cubemapConvolutionSteps: 7
+  cubemapConvolutionSteps: 8
   cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
   textureFormat: -3
@@ -70,7 +72,7 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: cop_0
+    - name: guard_0
       rect:
         serializedVersion: 2
         x: 0
@@ -81,7 +83,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_1
+    - name: guard_1
       rect:
         serializedVersion: 2
         x: 8
@@ -92,7 +94,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_2
+    - name: guard_2
       rect:
         serializedVersion: 2
         x: 16
@@ -103,7 +105,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_3
+    - name: guard_3
       rect:
         serializedVersion: 2
         x: 24
@@ -114,7 +116,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_4
+    - name: guard_4
       rect:
         serializedVersion: 2
         x: 32
@@ -125,7 +127,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_5
+    - name: guard_5
       rect:
         serializedVersion: 2
         x: 0
@@ -136,7 +138,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_6
+    - name: guard_6
       rect:
         serializedVersion: 2
         x: 8
@@ -147,7 +149,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_7
+    - name: guard_7
       rect:
         serializedVersion: 2
         x: 16
@@ -158,7 +160,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_8
+    - name: guard_8
       rect:
         serializedVersion: 2
         x: 24
@@ -169,7 +171,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_9
+    - name: guard_9
       rect:
         serializedVersion: 2
         x: 32
@@ -180,7 +182,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_10
+    - name: guard_10
       rect:
         serializedVersion: 2
         x: 0
@@ -191,7 +193,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_11
+    - name: guard_11
       rect:
         serializedVersion: 2
         x: 8
@@ -202,7 +204,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_12
+    - name: guard_12
       rect:
         serializedVersion: 2
         x: 16
@@ -213,7 +215,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_13
+    - name: guard_13
       rect:
         serializedVersion: 2
         x: 24
@@ -224,7 +226,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_14
+    - name: guard_14
       rect:
         serializedVersion: 2
         x: 32
@@ -235,7 +237,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_15
+    - name: guard_15
       rect:
         serializedVersion: 2
         x: 0
@@ -246,7 +248,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_16
+    - name: guard_16
       rect:
         serializedVersion: 2
         x: 7
@@ -257,7 +259,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_17
+    - name: guard_17
       rect:
         serializedVersion: 2
         x: 14
@@ -268,7 +270,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_18
+    - name: guard_18
       rect:
         serializedVersion: 2
         x: 21
@@ -279,7 +281,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: cop_19
+    - name: guard_19
       rect:
         serializedVersion: 2
         x: 28

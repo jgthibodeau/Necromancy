@@ -9,7 +9,9 @@ public class InteractorScript : MonoBehaviour {
 		//if !interacting
 		RaycastHit hit;
 		if (Physics.Raycast (transform.position, transform.forward, out hit, range, GlobalScript.InteractableLayerMask)) {
-			hit.transform.GetComponent<InteractableScript> ().Interact (this.gameObject);
+			InteractableScript interactable = hit.transform.GetComponent<InteractableScript> ();
+			if(interactable != null)
+				interactable.Interact (this.gameObject);
 		}
 //		} else if (Physics.Raycast (transform.position, transform.up, out hit, range, GlobalScript.InteractableLayerMask)) {
 //			hit.transform.GetComponent<InteractableScript> ().Interact (this.gameObject);

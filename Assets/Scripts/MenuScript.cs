@@ -11,6 +11,7 @@ public class MenuScript : MonoBehaviour {
 	private float remainingAlertTime = -1;
 
 	public bool hideOnStart;
+	public bool cancelable = true;
 	public bool justOpened;
 
 	private Canvas menu;
@@ -124,7 +125,7 @@ public class MenuScript : MonoBehaviour {
 				alertText.text = "";
 		}
 
-		if (Visible () && !justOpened) {
+		if (Visible () && !justOpened && cancelable) {
 			if (GlobalScript.GetButton ("Cancel")) {
 				if (previousMenu != null)
 					SwitchToPrevious ();

@@ -87,14 +87,14 @@ public class DialLockScript : ToggleableScript {
 		currentTumbler = 0;
 	}
 	
-	void Update () {
-		diallockdata = (DialLockData)savedata;
-
+	public override void ToggledUpdate () {
 		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 			InGame ();
 	}
 	
 	void InGame () {
+		diallockdata = (DialLockData)savedata;
+
 		switch(currentState){
 		case State.Locked:
 			GetInput ();
@@ -195,10 +195,6 @@ public class DialLockScript : ToggleableScript {
 		}
 		return true;
 	}
-	
-	void FixedUpdate(){
-		UpdateLocation ();
-	}
 
 	public override void Activate(){
 		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().SetLock (this);
@@ -208,8 +204,8 @@ public class DialLockScript : ToggleableScript {
 
 	public override void Deactivate(){
 		rotatingAudioSource.Stop ();
-		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().Close ();
 		GameObject.Find ("Player").GetComponent<PlayerScript>().ChangeState(PlayerScript.State.Moving);
+		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().Close ();
 		base.Deactivate ();
 	}
 	
@@ -222,12 +218,5 @@ public class DialLockScript : ToggleableScript {
 		inputRight = GlobalScript.GetAxis(GlobalScript.RightStick);
 		leftTrigger = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
 		rightTrigger = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
-	}
-	
-	//Ensure the lock is always centered on the screen
-	void UpdateLocation(){
-		float oldY = this.transform.position.y;
-		this.transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane));
-		this.transform.position = new Vector3 (this.transform.position.x, oldY, this.transform.position.z);
 	}
 }
