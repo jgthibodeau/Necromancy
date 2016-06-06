@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Camera3dScript : MonoBehaviour {
+public class Camera3DScript : MonoBehaviour {
 	public float collideTime = 1f;
 	public float dampTime = 1f;
 	public float distance = 5f;
