@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ThirdPersonCamera : MonoBehaviour {
+public class MyThirdPersonCamera : MonoBehaviour {
 	public float distanceAway;
 	public float distanceUp;
 	public float smooth;

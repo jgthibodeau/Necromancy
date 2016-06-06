@@ -10,7 +10,9 @@ public class PlayerData : SaveData{
 
 public class PlayerScript : SavableScript {
 	public PlayerData playerdata;
-	
+
+	public bool cameraBasedMovement = false;
+
 	// Input variables
 	private Vector2 moveInput;
 	private Vector2 lookInput;
@@ -49,16 +51,21 @@ public class PlayerScript : SavableScript {
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {
 		case State.Moving:
-			Vector3 forward = Camera.main.transform.TransformDirection (Vector3.forward);
-			forward.y = 0;
-			forward = forward.normalized;
-			Vector3 right = new Vector3 (forward.z, 0, -forward.x);
-			movement = (moveInput.x * right + moveInput.y * forward).normalized;
-			movement *= speed;
+			//3d movement
+			if (cameraBasedMovement) {
+				Vector3 forward = Camera.main.transform.TransformDirection (Vector3.forward);
+				forward.y = 0;
+				forward = forward.normalized;
+				Vector3 right = new Vector3 (forward.z, 0, -forward.x);
+				movement = (moveInput.x * right + moveInput.y * forward).normalized;
+				movement *= speed;
 
-
-//			movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
-//			movement = Vector3.ClampMagnitude (movement, speed);
+			}
+			//2d movement
+			else {
+				movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
+				movement = Vector3.ClampMagnitude (movement, speed);
+			}
 
 //			look = new Vector3 (lookInput.x, 0, lookInput.y);
 			

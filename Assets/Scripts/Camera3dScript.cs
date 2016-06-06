@@ -34,10 +34,11 @@ public class Camera3dScript : MonoBehaviour {
 			Vector2 lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
 			currentX += sensitivityX * lookInput.x;
 			currentY += sensitivityY * lookInput.y;
-			if (currentY > maxY)
-				currentY = maxY;
-			else if (currentY < minY)
-				currentY = minY;
+
+//			if (currentY > maxY)
+//				currentY = maxY;
+//			else if (currentY < minY)
+//				currentY = minY;
 			
 			Vector3 direction = new Vector3 (0, distance, 0);
 			Quaternion rotation = Quaternion.Euler (currentY, currentX, 0);
@@ -45,7 +46,7 @@ public class Camera3dScript : MonoBehaviour {
 			camTransform.position = Vector3.Lerp (camTransform.position, lookAt.position + rotation * direction, Time.deltaTime*dampTime);
 			//		camTransform.position = lookAt.position + rotation * direction;
 		} else {
-			camTransform.position = Vector3.Lerp (camTransform.position, lookAt.position, Time.deltaTime*collideTime);
+//			camTransform.position = Vector3.Lerp (camTransform.position, lookAt.position, Time.deltaTime*collideTime);
 		}
 			
 

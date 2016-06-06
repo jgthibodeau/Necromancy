@@ -87,3 +87,8 @@ Possible single-serve mechanics
 - realistic sounds to determine guard locations
 - vents/pipes
 - sneak/run speeds with different noise levels
+- blueprint map that can be annotated before and during the level
+  - guard rooms
+  - guard placements
+  - items of interest
+- player 2 is a guard?

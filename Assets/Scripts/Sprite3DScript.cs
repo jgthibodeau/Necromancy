@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpriteScript : MonoBehaviour {
+public class Sprite3DScript : MonoBehaviour {
 	private Animator animator;
 
 	void Start(){

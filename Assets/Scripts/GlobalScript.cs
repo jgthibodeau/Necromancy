@@ -8,6 +8,7 @@ public class GlobalScript : MonoBehaviour {
 	public static string Jump = "Jump";
 	public static string Interact = "Interact";
 	public static string Cancel = "Cancel";
+	public static string CenterCamera = "Camera";
 	public static string LeftStick = "Left";
 	public static string RightStick = "Right";
 	public static string LeftTrigger = "Trigger Left";
