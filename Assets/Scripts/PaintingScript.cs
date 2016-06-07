@@ -217,7 +217,7 @@ public class PaintingScript : MonoBehaviour {
 	//Disable the lock, set all variables to default, return control to player
 	void Deactivate(){
 		cuttingAudioSource.Stop ();
-		GameObject.Find ("Player").GetComponent<PlayerScript>().ChangeState(PlayerScript.State.Moving);
+		GameObject.Find ("Player").GetComponent<PlayerController>().ChangeState(PlayerController.State.Moving);
 		this.gameObject.SetActiveRecursively(false);
 	}
 	

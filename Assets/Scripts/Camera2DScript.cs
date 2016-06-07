@@ -4,6 +4,7 @@ using System.Collections;
 public class Camera2DScript : MonoBehaviour {
 	public float dampTime = 1f;
 	public float cameraRange = 5f;
+	public float cameraHeight = 1f;
 	private Vector3 velocity = Vector3.zero;
 	public Transform target;
 
@@ -33,7 +34,10 @@ public class Camera2DScript : MonoBehaviour {
 			Vector3 point = GetComponent<Camera>().WorldToViewportPoint(projectedTarget);
 			Vector3 delta = projectedTarget - GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z));
 			Vector3 destination = transform.position + delta;
-			transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
+			destination = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
+			destination.y = target.position.y + cameraHeight;
+
+			transform.position = destination;
 		}
 	}
 }

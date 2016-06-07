@@ -18,22 +18,22 @@ public class KeyLockUIScript : MenuScript{
 		if (Visible ()) {
 			//set wrench and add randomness as appropriate
 			float randomAngle = 0f;
-			if (!keylock.PreviousTumblersCorrect(keylock.currentTumblerOrderToPick)){
-				randomAngle = Random.Range (-15*keylock.leftTrigger, 15*keylock.leftTrigger);
+			/*if (!keylock.PreviousTumblersCorrect(keylock.currentTumblerOrderToPick)){
+				randomAngle = Random.Range (-10*keylock.pickHeightInput, 10*keylock.pickHeightInput);
 			}
-			else if(!keylock.CorrectHeight(keylock.currentTumblerToPick))
+			else */if(!keylock.CorrectHeight(keylock.currentTumblerToPick))
 				randomAngle = Random.Range (-2, 2);
-			wrench.transform.rotation = Quaternion.Euler (0, 0, 225 - 90 * keylock.leftTrigger + randomAngle);
+			wrench.transform.rotation = Quaternion.Euler (0, 0, 225 - 45 * keylock.pickHeightInput + randomAngle);
 
 			//set lockpick and add randomness as appropriate
 			//want to stop at 20
-			lockpick.localPosition = new Vector3(75 + (keylock.lockpickX + 0.5f) * 16f, keylock.rightTrigger * 38 - 21, 0);
-			Debug.Log(keylock.lockpickX+" "+keylock.rightTrigger+" "+lockpick.localPosition);
+			lockpick.localPosition = new Vector3(-50 + (keylock.lockpickX + 0.5f) * 16f, keylock.wrenchInput * 38 - 21, 0);
+			Debug.Log(keylock.lockpickX+" "+keylock.wrenchInput+" "+lockpick.localPosition);
 
 			randomAngle = 0f;
 			if(keylock.wiggleLockpick)
 				randomAngle = Random.Range (-2, 2);
-			lockpick.rotation = Quaternion.Euler (0, 0, randomAngle);
+			lockpick.rotation = Quaternion.Euler (0, 180, randomAngle);
 
 
 			foreach(Transform r in rotatables){

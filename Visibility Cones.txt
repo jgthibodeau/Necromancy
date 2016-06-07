@@ -1,0 +1,14 @@
+2 different types of cones, visiblility and movement
+a visible object has a percentage of itself that must be visible in order for it to be counted as seen
+
+When an entity is in unaware state, it will poll all of its cones to see if there is anything of note
+	Movement sensed builds up until the guard decides to investigate the area of the last movement
+	Direct objects sensed build up based on current light level until the guard sees the object
+
+
+
+Strong Direct & Weak Direct
+	entity in these cone builds up awareness based off light level (lower level means slower buildup)
+
+Strong Peripheral, Weak Peripheral, Back Peripheral
+	entity movement in these cones builds up awareness based off speed (slower movement means slower buildup)

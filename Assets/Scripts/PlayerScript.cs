@@ -2,16 +2,21 @@
 using System.Collections;
 using System.Runtime.Serialization;
 
-[System.Serializable]
-public class PlayerData : SaveData{
-	public PlayerData () : base () {}
-	public PlayerData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
-}
+//[System.Serializable]
+//public class PlayerData : SaveData{
+//	public PlayerData () : base () {}
+//	public PlayerData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+//}
 
 public class PlayerScript : SavableScript {
 	public PlayerData playerdata;
 
-	public bool cameraBasedMovement = false;
+	public bool topDown = true;
+	public bool firstPerson = false;
+
+	public Vector2 lookSensitivity = new Vector2 (10f, 10f);
+	public bool invertY = false;
+	public bool invertX = false;
 
 	// Input variables
 	private Vector2 moveInput;
@@ -51,8 +56,37 @@ public class PlayerScript : SavableScript {
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {
 		case State.Moving:
+			//topdown movement
+			if (topDown) {
+				movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
+				movement = Vector3.ClampMagnitude (movement, speed);
+			}
+			//first person movement
+			else if (firstPerson) {
+				Vector3 forward = transform.forward;
+				Vector3 right = transform.right;
+				movement = Vector3.Lerp(movement, (moveInput.x * right + moveInput.y * forward).normalized * speed, 40*Time.deltaTime);
+//				movement *= speed;
+
+				Vector3 rotation = transform.rotation.eulerAngles;
+
+//				float newY = rotation.y + lookInput.x * lookSensitivity.x * (invertX ? -1 : 1);
+//				float newX = rotation.x + lookInput.y * lookSensitivity.y * (invertY ? -1 : 1);
+
+//				newX = Mathf.Clamp (newX, -90, 90);
+//				if (newX > 90 && newX < 270)
+//					newX = 90;
+//				if (newX > 270 || newX < -90 )
+//					newX = 270;
+
+//				Debug.Log (lookInput + " " + rotation);
+
+//				transform.rotation = Quaternion.Euler (0, newY, 0);
+//
+//				transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler (0, newY, 0), 40*Time.deltaTime);
+			}
 			//3d movement
-			if (cameraBasedMovement) {
+			else{
 				Vector3 forward = Camera.main.transform.TransformDirection (Vector3.forward);
 				forward.y = 0;
 				forward = forward.normalized;
@@ -60,11 +94,6 @@ public class PlayerScript : SavableScript {
 				movement = (moveInput.x * right + moveInput.y * forward).normalized;
 				movement *= speed;
 
-			}
-			//2d movement
-			else {
-				movement = new Vector3 (speed * moveInput.x, 0, speed * moveInput.y);
-				movement = Vector3.ClampMagnitude (movement, speed);
 			}
 
 //			look = new Vector3 (lookInput.x, 0, lookInput.y);
@@ -101,14 +130,18 @@ public class PlayerScript : SavableScript {
 		Vector3 actualDirectionOfMotion = movement.normalized;
 
 		float angle;
-//		if (look.magnitude > 0) {
-//			angle = Vector3.Angle (look, Vector3.forward) * Mathf.Sign (look.x);
-//			this.transform.rotation = Quaternion.Euler (0, angle, 0);
-		/*} else */if (actualDirectionOfMotion.magnitude > 0) {
+		if (!firstPerson && actualDirectionOfMotion.magnitude > 0) {
 			angle = Vector3.Angle (actualDirectionOfMotion, Vector3.forward) * Mathf.Sign (actualDirectionOfMotion.x);
 			this.transform.rotation = Quaternion.Euler (0, angle, 0);
 		}
 
+	}
+
+	void LateUpdate(){
+		if (firstPerson) {
+			float newY = transform.rotation.eulerAngles.y + lookInput.x * lookSensitivity.x * (invertX ? -1 : 1);
+			transform.rotation = Quaternion.Lerp (transform.rotation, Quaternion.Euler (0, newY, 0), 40 * Time.deltaTime);
+		}
 	}
 
 	void OnDestroy()

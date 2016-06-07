@@ -59,8 +59,3 @@ $RECYCLE.BIN/
 *.sln
 *.userprefs
 Burglary.userprefs
-
-Assets/3rdPersonCamera.*
-Assets/3rdPersonCamera/*
-Assets/Procore.*
-Assets/Procore/*

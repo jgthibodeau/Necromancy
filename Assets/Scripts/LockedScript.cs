@@ -24,7 +24,7 @@ public class LockedScript : InteractableScript {
 		if (lockeddata.locked) {
 			if (go.transform.tag == "Player") {
 				//set currentGameState to interacting
-				go.GetComponent<PlayerScript> ().ChangeState (PlayerScript.State.Interacting);
+				go.GetComponent<PlayerController> ().ChangeState (PlayerController.State.Interacting);
 				
 				//create keylock instance
 				lockObject.GetComponent<ToggleableScript>().Activate();

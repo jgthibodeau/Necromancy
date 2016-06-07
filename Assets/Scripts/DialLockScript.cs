@@ -204,7 +204,7 @@ public class DialLockScript : ToggleableScript {
 
 	public override void Deactivate(){
 		rotatingAudioSource.Stop ();
-		GameObject.Find ("Player").GetComponent<PlayerScript>().ChangeState(PlayerScript.State.Moving);
+		GameObject.Find ("Player").GetComponent<PlayerController>().ChangeState(PlayerController.State.Moving);
 		GameObject.Find ("DialLockUI").GetComponent<DialLockUIScript>().Close ();
 		base.Deactivate ();
 	}

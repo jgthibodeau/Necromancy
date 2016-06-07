@@ -19,4 +19,16 @@ public class InteractorScript : MonoBehaviour {
 
 		Debug.DrawRay(transform.position, transform.forward, Color.red);
 	}
+
+	public void Interact(Transform source){
+		RaycastHit hit;
+		if (Physics.Raycast (source.position, source.forward, out hit, range, GlobalScript.InteractableLayerMask)) {
+			InteractableScript interactable = hit.transform.GetComponent<InteractableScript> ();
+			Debug.Log (interactable);
+			if(interactable != null)
+				interactable.Interact (this.gameObject);
+		}
+
+		Debug.DrawRay(source.position, source.forward*range, Color.red);
+	}
 }

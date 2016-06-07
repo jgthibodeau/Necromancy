@@ -20,6 +20,9 @@ it's always fun finding out half-way through a mission that you've been set-up, 
 
 If you get detected, you should have options to deal with the situation and enemies should react accordingly. Usually stealth games go one of two ways during detection; either you reload the last save and avoid the situation you ran into or you run away from enemies until they are no longer alerted and resume their normal activities. Both of these sequences are pretty unrealistic and immersion breaking. I would really like to see games focus more on tools to deal with being detected rather than just remaining completely undetected without becoming a full on action game.
 
+And now to the last one. Shadow-based cover system. A light-gem is an absolute necessity for this mechanic. (shouldn't be copyrighted I believe). Except for Thief 4 which was basically "INVISIBLE" and "VISIBLE but let me just wait untill my discovery indicator fills up from 1 to 3 strikes over the course of a few seconds, before I am allowed to discover you", real shadow based stealth games like Thief 1-3 and the dark mod have ~12 different gradings to them. From a perfect shadow, which makes you invisible to the enemy to openly standing in the light, which makes the enemy immideatly discover you. In addition to that, if that wasn't clear enough it also basically subdivided the gradings to 3 different states: red, yellow and black. While you might get away with shortly being seen by less attentie guards in yellow and making them either make a concerned comment about rats or look over your way and then just mumble on, on red you are typically immideatly spotted. This might differ of course, if you have previously agitated that enemy. There are things like different alarm states, which may very well be permanent, often indicated by the AI walking around even more attentive and having their sword out for the rest of the level.
+
+Sound also has an extremely and immensly important place in stealth mechanics. Let me just say it right now to get it out of the way. If you try to recreate thief's stealth mechanics in your game, without including things like footsteps for the player character and enemies and generally show the same lackluster attitude as basically every modern action game with complete indifference to whether the player runs up to an enemey, crosses a loud, clanky metal surface or silently walks up to one, then you failed and will probably get no attention from the stealth gamer community.
 
 Gameplay loop:
 - tasked with stealing a specific item from a location
@@ -92,3 +95,5 @@ Possible single-serve mechanics
   - guard placements
   - items of interest
 - player 2 is a guard?
+- when enemy leaves player sight, draw a figment of where they used to be
+- when enemy moves outside player sight and can be hear, draw footprints

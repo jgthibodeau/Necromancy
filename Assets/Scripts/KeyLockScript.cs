@@ -36,12 +36,10 @@ public class KeyLockScript : ToggleableScript {
 	// Inputs
 	private bool unlock;
 	private bool cancel;
-	private Vector2 inputLeft;
-	private Vector2 inputRight;
-	private Vector2 prevInputLeft;
-	private Vector2 prevInputRight;
-	public float leftTrigger;
-	public float rightTrigger;
+	private float pickInput;
+	private float prevPickInput;
+	public float pickHeightInput;
+	public float wrenchInput;
 
 	// Sounds
 	public AudioClip hitTumblerClip;
@@ -53,7 +51,7 @@ public class KeyLockScript : ToggleableScript {
 	public override void Start(){
 		base.Start ();
 
-		lockpickX = 0f;
+		lockpickX = -3f;
 
 		rotatable = new GameObject().transform;
 
@@ -100,7 +98,7 @@ public class KeyLockScript : ToggleableScript {
 
 			//Check tension is correct
 			int oldTumbler = currentTumblerToPick;
-			currentTumblerOrderToPick = (int)(leftTrigger / tensionStep) - 1;
+			currentTumblerOrderToPick = (int)(pickHeightInput / tensionStep) - 1;
 			if(currentTumblerOrderToPick > keylockdata.tumblerOrder.Length - 1)
 				currentTumblerOrderToPick = keylockdata.tumblerOrder.Length - 1;
 			if(currentTumblerOrderToPick == -1)
@@ -120,13 +118,13 @@ public class KeyLockScript : ToggleableScript {
 				oldTumbler = currentHeights.Length - 1;
 
 			float offset = 0f;
-			if (inputLeft.x < 0f && lockpickX > -3f) {
-				offset = inputLeft.x * changeTumblerSpeed * Time.deltaTime;
+			if (pickInput < 0f && lockpickX > -3f) {
+				offset = pickInput * changeTumblerSpeed * Time.deltaTime;
 				if (lockpickX + offset < -3f)
 					offset = -3f - lockpickX;
 			}
-			if (inputLeft.x > 0f && lockpickX < -0.5f) {
-				offset = inputLeft.x * changeTumblerSpeed * Time.deltaTime;
+			if (pickInput > 0f && lockpickX < -0.5f) {
+				offset = pickInput * changeTumblerSpeed * Time.deltaTime;
 				if (lockpickX + offset > -0.5f)
 					offset = -0.5f - lockpickX;
 			}
@@ -143,7 +141,7 @@ public class KeyLockScript : ToggleableScript {
 			//if currentTumblerBeingPicked is after currentTumblerToPick
 			int pickingOrder = System.Array.IndexOf(keylockdata.tumblerOrder, currentTumblerBeingPicked);
 			if (pickingOrder > currentTumblerOrderToPick) {
-				currentHeights [currentTumblerBeingPicked] = rightTrigger;
+				currentHeights [currentTumblerBeingPicked] = wrenchInput;
 				//no wiggle
 				wiggleLockpick = false;
 				//no sound
@@ -151,8 +149,8 @@ public class KeyLockScript : ToggleableScript {
 					pickingAudioSource.Stop ();
 			//if currentTumblerBeingPicked is before currentTumblerToPick
 			} else if (pickingOrder < currentTumblerOrderToPick) {
-				if (rightTrigger > currentHeights [currentTumblerBeingPicked])
-					rightTrigger = currentHeights [currentTumblerBeingPicked];
+				if (wrenchInput > currentHeights [currentTumblerBeingPicked])
+					wrenchInput = currentHeights [currentTumblerBeingPicked];
 				//no wiggle
 				wiggleLockpick = false;
 
@@ -161,7 +159,7 @@ public class KeyLockScript : ToggleableScript {
 					pickingAudioSource.Stop ();
 			//if currentTumblerBeingPicked is currentTumblerToPick
 			} else {
-//				if (rightTrigger > currentHeights[currentTumblerBeingPicked]){
+//				if (wrenchInput > currentHeights[currentTumblerBeingPicked]){
 //					if(!pickingAudioSource.isPlaying)
 //						pickingAudioSource.Play ();
 //				} else {
@@ -170,8 +168,8 @@ public class KeyLockScript : ToggleableScript {
 //				}
 
 				bool wasCorrect = CorrectHeight(currentTumblerBeingPicked);
-				if (rightTrigger > currentHeights[currentTumblerBeingPicked]){
-					currentHeights[currentTumblerBeingPicked] = rightTrigger;
+				if (wrenchInput > currentHeights[currentTumblerBeingPicked]){
+					currentHeights[currentTumblerBeingPicked] = wrenchInput;
 
 					//if all previous tumblers are correct
 					if(PreviousTumblersCorrect(currentTumblerOrderToPick)){
@@ -247,7 +245,7 @@ public class KeyLockScript : ToggleableScript {
 		audioSource.Stop ();
 		if(reset)
 			SetDefaults ();
-		GameObject.Find ("Player").GetComponent<PlayerScript>().ChangeState(PlayerScript.State.Moving);
+		GameObject.Find ("Player").GetComponent<PlayerController>().ChangeState(PlayerController.State.Moving);
 
 		Deactivate();
 	}
@@ -255,11 +253,9 @@ public class KeyLockScript : ToggleableScript {
 	void GetInput(){
 		unlock = GlobalScript.GetButton (GlobalScript.Interact);
 		cancel = GlobalScript.GetButton (GlobalScript.Cancel);
-		prevInputLeft = inputLeft;
-		inputLeft = GlobalScript.GetAxis(GlobalScript.LeftStick);
-		prevInputRight = inputRight;
-		inputRight = GlobalScript.GetAxis(GlobalScript.RightStick);
-		leftTrigger = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
-		rightTrigger = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
+		prevPickInput = pickInput;
+		pickInput = GlobalScript.GetAxis(GlobalScript.LeftStick).x;
+		wrenchInput = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
+		pickHeightInput = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
 	}
 }
