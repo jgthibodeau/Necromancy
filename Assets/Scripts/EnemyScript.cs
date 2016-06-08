@@ -218,32 +218,45 @@ public class EnemyScript : SavableScript {
 		foreach (GameObject go in detector.entities.Keys) {
 			/*Raycast to make sure we have line of sight to the entity in question before adding values*/
 			Bounds bounds = go.GetComponent<Collider> ().bounds;
-			Vector3[] boundPoints = new Vector3[6];
-			//top
-			boundPoints[0] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y+bounds.size.y/2-.1f, bounds.center.z));
-			//bottom
-			boundPoints[1] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y-bounds.size.y/2+.1f, bounds.center.z));
-			//right
-			boundPoints[2] = bounds.ClosestPoint (new Vector3(bounds.center.x+10, bounds.center.y, bounds.center.z));
-			//left
-			boundPoints[3] = bounds.ClosestPoint (new Vector3(bounds.center.x-10, bounds.center.y, bounds.center.z));
-			//front
-			boundPoints[4] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y, bounds.center.z+10));
-			//back
-			boundPoints[5] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y, bounds.center.z-10));
+			Vector3[] boundPoints = new Vector3[5];
 
-			//raycast to all faces
+			Vector3 eyeheight = transform.FindChild ("Eyes").transform.position;
+
+			//top and bottom
+			boundPoints [0] = bounds.center + go.transform.up * (bounds.size.y / 2f - .1f);
+			boundPoints [1] = bounds.center + go.transform.up * (bounds.size.y / -2f + .1f);
+
+			//left and right
+			Vector3 directionToCenter = eyeheight - bounds.center;
+			boundPoints [2] = Vector3.Cross(directionToCenter, go.transform.up);
+			boundPoints [2] *= (bounds.size.x / 2f - .1f) / (boundPoints [2].magnitude);
+			boundPoints [2] += bounds.center;
+
+			boundPoints [3] = Vector3.Cross(go.transform.up, directionToCenter);
+			boundPoints [3] *= (bounds.size.x / 2f - .1f) / (boundPoints [3].magnitude);
+			boundPoints [3] += bounds.center;
+
+			//front
+			boundPoints [4] = directionToCenter;
+			boundPoints [4] *= (bounds.size.x / 2f - .1f) / (boundPoints [4].magnitude);
+			boundPoints [4] += bounds.center;
+
+			//raycast to all points
 			int totalAgree = 0;
 			foreach(Vector3 point in boundPoints){
-				Vector3 direction = point - transform.position;
+				//draw line onto entities collider
+				Debug.DrawLine (bounds.center, point, Color.magenta);
+
+				//check for visibility from us to entity
 				RaycastHit hit;
-				if (Physics.Raycast (transform.position, direction, out hit)) {
+				if (Physics.Linecast (eyeheight, point, out hit)) {
 					if (hit.transform == go.transform) {
-						Debug.DrawRay (transform.position, direction, Color.blue);
+						Debug.DrawLine (eyeheight, point, Color.blue);
 						totalAgree++;
 					}
-					else
-						Debug.DrawRay (transform.position, direction, Color.red);
+					else{
+						Debug.DrawLine (eyeheight, point, Color.red);
+					}
 				}
 			}
 
