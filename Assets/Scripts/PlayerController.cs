@@ -26,7 +26,8 @@ public class PlayerController : SavableScript {
 	// Use this for initialization
 	void Start () {
 		savedata = playerdata;
-		camera = GetComponentInChildren <Camera> ().transform;
+//		camera = GetComponentInChildren <Camera> ().transform;
+		camera = Camera.main.transform;
 		firstPersonController = GetComponent<RigidbodyFirstPersonController>();
 	}
 

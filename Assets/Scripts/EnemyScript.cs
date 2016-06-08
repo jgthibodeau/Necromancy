@@ -4,6 +4,21 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 
 [System.Serializable]
+public class AwarenessLevel{
+	public float visibility = 0f;
+	public float noticeability = 0f;
+
+	public void resetVisibility(){
+		visibility = 0f;
+	}
+
+	public void resetNoticeability(){
+		noticeability = 0f;
+	}
+}
+
+
+[System.Serializable]
 public class EnemyData : SaveData{
 	public EnemyScript.State currentState;
 	public EnemyScript.State previousState;
@@ -13,6 +28,7 @@ public class EnemyData : SaveData{
 	public bool loop;
 	public int currentWaypoint;
 	public bool movingForward = true;
+	public Hashtable awarenessLevels = new Hashtable();
 	
 	public EnemyData () : base () {}
 	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
@@ -64,6 +80,11 @@ public class EnemyScript : SavableScript {
 	//Random values
 	public float investigateRandomness;
 	public float searchRandomness;
+
+	//detection stuff
+	public EntityDetector detector;
+	public float visibilityScale = 1f;
+	public float noticeabilityScale = 1f;
 	
 	// Use this for initialization
 	protected virtual void Start () {
@@ -84,6 +105,8 @@ public class EnemyScript : SavableScript {
 		patrolPath.SetActive (false);
 		agent = this.transform.GetComponent<NavMeshAgent> ();
 
+		detector = GetComponentInChildren<EntityDetector> ();
+
 		savedata = enemydata;
 	}
 	
@@ -94,6 +117,8 @@ public class EnemyScript : SavableScript {
 	
 	void InGame () {
 		enemydata = (EnemyData)savedata;
+
+		DetectEntities ();
 
 		switch (enemydata.currentState) {
 		case State.Patrol:
@@ -188,6 +213,78 @@ public class EnemyScript : SavableScript {
 	public virtual void Search(){}
 	public virtual void Investigate(){}
 
+	public void DetectEntities(){
+		//foreach entity visible to this guard
+		foreach (GameObject go in detector.entities.Keys) {
+			/*Raycast to make sure we have line of sight to the entity in question before adding values*/
+			Bounds bounds = go.GetComponent<Collider> ().bounds;
+			Vector3[] boundPoints = new Vector3[6];
+			//top
+			boundPoints[0] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y+bounds.size.y/2-.1f, bounds.center.z));
+			//bottom
+			boundPoints[1] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y-bounds.size.y/2+.1f, bounds.center.z));
+			//right
+			boundPoints[2] = bounds.ClosestPoint (new Vector3(bounds.center.x+10, bounds.center.y, bounds.center.z));
+			//left
+			boundPoints[3] = bounds.ClosestPoint (new Vector3(bounds.center.x-10, bounds.center.y, bounds.center.z));
+			//front
+			boundPoints[4] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y, bounds.center.z+10));
+			//back
+			boundPoints[5] = bounds.ClosestPoint (new Vector3(bounds.center.x, bounds.center.y, bounds.center.z-10));
+
+			//raycast to all faces
+			int totalAgree = 0;
+			foreach(Vector3 point in boundPoints){
+				Vector3 direction = point - transform.position;
+				RaycastHit hit;
+				if (Physics.Raycast (transform.position, direction, out hit)) {
+					if (hit.transform == go.transform) {
+						Debug.DrawRay (transform.position, direction, Color.blue);
+						totalAgree++;
+					}
+					else
+						Debug.DrawRay (transform.position, direction, Color.red);
+				}
+			}
+
+			//entity is visible if majority agree
+			if (totalAgree < 5) {
+				break;
+			}
+
+			Debug.Log (go);
+
+			/*incremement awareness about the entity*/
+			//get awareness level for this object, creating it if it doesnt exist
+			AwarenessLevel currentAwareness;
+			if (!enemydata.awarenessLevels.Contains (go))
+				enemydata.awarenessLevels.Add (go, new AwarenessLevel ());
+			currentAwareness = (AwarenessLevel) enemydata.awarenessLevels [go];
+
+			//if gameobject has a direct cone, add visibility based on light level
+			bool hasDirect = false;
+			foreach (VisionCone cone in (List<VisionCone>)detector.entities[go]) {
+				if (cone.type == VisionCone.Type.Direct) {
+					hasDirect = true;
+					break;
+				}
+			}
+			if (hasDirect) {
+//				currentAwareness.visibility += Mathf.Clamp (go.lightLevel * visibilityScale * Time.deltaTime, 0, 100);
+			}
+
+			//add noticeability based on motion vector
+//			currentAwareness.noticeability +=Mathf.Clamp (go.speed * noticeabilityScale * Time.deltaTime, 0, 100);
+
+
+			/*react to detecting entity*/
+			//if entity surpassed visual threshold
+			//go to a chasing behavior
+			//if entity surpassed peripheral threshold
+			//go to an investigation behavior
+		}
+	}
+
 	public void DefaultPatrol(){
 		Vector3 target = waypoints [enemydata.currentWaypoint].position;
 		Vector3 moveDirection = target - transform.position;
@@ -272,41 +369,41 @@ public class EnemyScript : SavableScript {
 	}
 	
 	public bool CanSee(GameObject target){
-		// Detect if target is within the field of view
-		Vector3 direction = target.transform.position - transform.position;
-		
-		if((Vector3.Angle(direction, transform.forward)) < fovScript.frontFov){
-			// Detect if target within viewDistance
-			RaycastHit hit;
-			if (Physics.Raycast (transform.position, direction, out hit, fovScript.frontViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
-				if (hit.transform == target.transform)
-					return true;
-			}
-		}
+//		// Detect if target is within the field of view
+//		Vector3 direction = target.transform.position - transform.position;
+//		
+//		if((Vector3.Angle(direction, transform.forward)) < fovScript.frontFov){
+//			// Detect if target within viewDistance
+//			RaycastHit hit;
+//			if (Physics.Raycast (transform.position, direction, out hit, fovScript.frontViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
+//				if (hit.transform == target.transform)
+//					return true;
+//			}
+//		}
 		return false;
 	}
 	
 	public bool CanNotice(GameObject target){
-		// Detect if target is within the peripheral view
-		Vector3 direction = target.transform.position - transform.position;
-		
-//		Debug.DrawRay(transform.position, direction, Color.red);
-		
-		RaycastHit hit;
-		if((Vector3.Angle(direction, transform.forward)) < fovScript.peripheralFov){
-			// Detect if player within peripheralViewDistance
-			if (Physics.Raycast (transform.position, direction, out hit, fovScript.peripheralViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
-				if (hit.transform == target.transform)
-					return true;
-			}
-			return false;
-		}
-		
-		// Detect if player is beind
-		Physics.Raycast (transform.position, direction, out hit, fovScript.backViewDistance, GlobalScript.IgnoreInteractableLayerMask);
-		if(hit.transform == target.transform){
-			return true;
-		}
+//		// Detect if target is within the peripheral view
+//		Vector3 direction = target.transform.position - transform.position;
+//		
+////		Debug.DrawRay(transform.position, direction, Color.red);
+//		
+//		RaycastHit hit;
+//		if((Vector3.Angle(direction, transform.forward)) < fovScript.peripheralFov){
+//			// Detect if player within peripheralViewDistance
+//			if (Physics.Raycast (transform.position, direction, out hit, fovScript.peripheralViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
+//				if (hit.transform == target.transform)
+//					return true;
+//			}
+//			return false;
+//		}
+//		
+//		// Detect if player is beind
+//		Physics.Raycast (transform.position, direction, out hit, fovScript.backViewDistance, GlobalScript.IgnoreInteractableLayerMask);
+//		if(hit.transform == target.transform){
+//			return true;
+//		}
 		
 		//TODO remove this once we do sound!
 		return false;	

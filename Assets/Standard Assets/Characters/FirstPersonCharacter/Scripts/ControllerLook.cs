@@ -26,8 +26,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 			m_CharacterTargetRot = character.localRotation;
 			m_CameraTargetRot = camera.localRotation;
 		}
-
-
+			
 		public void LookRotation(Transform character, Transform camera)
 		{
 			float yRot = CrossPlatformInputManager.GetAxis("Horizontal Right") * XSensitivity * (invertX ? -1 : 1);
@@ -41,9 +40,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
 			if(smooth)
 			{
-				character.localRotation = Quaternion.Slerp (character.localRotation, m_CharacterTargetRot,
+				character.localRotation = Quaternion.Lerp (character.localRotation, m_CharacterTargetRot,
 					smoothTime * Time.deltaTime);
-				camera.localRotation = Quaternion.Slerp (camera.localRotation, m_CameraTargetRot,
+				camera.localRotation = Quaternion.Lerp (camera.localRotation, m_CameraTargetRot,
 					smoothTime * Time.deltaTime);
 			}
 			else

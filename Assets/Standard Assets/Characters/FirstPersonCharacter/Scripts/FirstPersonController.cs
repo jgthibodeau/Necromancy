@@ -17,7 +17,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private float m_JumpSpeed;
         [SerializeField] private float m_StickToGroundForce;
         [SerializeField] private float m_GravityMultiplier;
-        [SerializeField] private MouseLook m_MouseLook;
+		[SerializeField] private MouseLook m_MouseLook;
+		[SerializeField] public bool useController = true;
+		[SerializeField] private ControllerLook m_ControllerLook;
         [SerializeField] private bool m_UseFovKick;
         [SerializeField] private FOVKick m_FovKick = new FOVKick();
         [SerializeField] private bool m_UseHeadBob;
@@ -53,8 +55,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_StepCycle = 0f;
             m_NextStep = m_StepCycle/2f;
             m_Jumping = false;
-            m_AudioSource = GetComponent<AudioSource>();
+			m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+			m_ControllerLook.Init(transform , m_Camera.transform);
         }
 
 
@@ -204,8 +207,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void GetInput(out float speed)
         {
             // Read input
-            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal Left");
+            float vertical = CrossPlatformInputManager.GetAxis("Vertical Left");
 
             bool waswalking = m_IsWalking;
 
@@ -236,7 +239,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void RotateView()
         {
-            m_MouseLook.LookRotation (transform, m_Camera.transform);
+			if(useController)
+				m_ControllerLook.LookRotation (transform, m_Camera.transform);
+			else
+				m_MouseLook.LookRotation (transform, m_Camera.transform);
         }
 
 

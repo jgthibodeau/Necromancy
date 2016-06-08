@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class GuardScript : EnemyScript {
 	public GameObject copSpawner;
 	private CopSpawnerScript copSpawnerScript;
@@ -15,6 +16,7 @@ public class GuardScript : EnemyScript {
 
 	public override void Patrol(){
 
+		DefaultPatrol ();
 	}
 	
 	public override void Investigate(){

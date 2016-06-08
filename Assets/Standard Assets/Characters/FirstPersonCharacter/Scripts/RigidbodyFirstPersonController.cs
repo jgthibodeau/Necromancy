@@ -77,6 +77,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 		private float height;
+
+		public bool useController = true;
+
 		public float CrouchSpeed = 1.0f;	// Speed crouch and uncrouching occurs
 		public float CrouchScale = 0.5f;	// Amount player is squashed when crouching
 
@@ -136,18 +139,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
 			controllerLook.Init (transform, cam.transform);
         }
 
-
         private void Update()
         {
-            RotateView();
+			RotateView();
 
 			if (doMovement)
 				GetInput ();
-        }
+		}
 
-
-        private void FixedUpdate()
-        {
+		private void FixedUpdate()
+		{
             GroundCheck();
 
 			if (doMovement) {
@@ -256,8 +257,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // get the rotation before it's changed
             float oldYRotation = transform.eulerAngles.y;
 
-            mouseLook.LookRotation (transform, cam.transform);
-			controllerLook.LookRotation (transform, cam.transform);
+			if(useController)
+				controllerLook.LookRotation (transform, cam.transform);
+			else
+				mouseLook.LookRotation (transform, cam.transform);
+
 
             if (m_IsGrounded || advancedSettings.airControl)
             {
@@ -286,9 +290,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
 			float lastHeight = m_Capsule.height;
 			float desiredHeight = Crouching ? CrouchScale*height : height;
 
-			m_Capsule.height = Mathf.Lerp (lastHeight, desiredHeight, CrouchSpeed*Time.deltaTime);
-
-			transform.position += new Vector3(0, (m_Capsule.height - lastHeight)*0.5f+0.001f, 0);
+			if (lastHeight != desiredHeight) {
+				m_Capsule.height = Mathf.Lerp (lastHeight, desiredHeight, CrouchSpeed * Time.deltaTime);
+				transform.position += new Vector3 (0, (m_Capsule.height - lastHeight) * 0.5f + 0.001f, 0);
+			}
 		}
 
         /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
