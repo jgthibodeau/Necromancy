@@ -102,4 +102,9 @@ public class GlobalScript : MonoBehaviour {
 			arr[r] = tmp;
 		}
 	}
+
+	//Light level constants
+	public static float maxLightLevel = 1f;
+	public static float minLightLevel = 0f;
+	public static float lightLevelRange = maxLightLevel - minLightLevel;
 }

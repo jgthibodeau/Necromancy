@@ -216,73 +216,17 @@ public class EnemyScript : SavableScript {
 	public void DetectEntities(){
 		//foreach entity visible to this guard
 		foreach (GameObject go in detector.entities.Keys) {
-			/*Raycast to make sure we have line of sight to the entity in question before adding values*/
-			Bounds bounds = go.GetComponent<Collider> ().bounds;
-			Vector3[] boundPoints = new Vector3[5];
+			//TODO only do this if the entity is visible enough
 
-			Vector3 eyeheight = transform.FindChild ("Eyes").transform.position;
-
-			//top and bottom
-			boundPoints [0] = bounds.center + go.transform.up * (bounds.size.y / 2f - .1f);
-			boundPoints [1] = bounds.center + go.transform.up * (bounds.size.y / -2f + .1f);
-
-			//left and right
-			Vector3 directionToCenter = eyeheight - bounds.center;
-			boundPoints [2] = Vector3.Cross(directionToCenter, go.transform.up);
-			boundPoints [2] *= (bounds.size.x / 2f - .1f) / (boundPoints [2].magnitude);
-			boundPoints [2] += bounds.center;
-
-			boundPoints [3] = Vector3.Cross(go.transform.up, directionToCenter);
-			boundPoints [3] *= (bounds.size.x / 2f - .1f) / (boundPoints [3].magnitude);
-			boundPoints [3] += bounds.center;
-
-			//front
-			boundPoints [4] = directionToCenter;
-			boundPoints [4] *= (bounds.size.x / 2f - .1f) / (boundPoints [4].magnitude);
-			boundPoints [4] += bounds.center;
-
-			//raycast to all points
-			int totalAgree = 0;
-			foreach(Vector3 point in boundPoints){
-				//draw line onto entities collider
-				Debug.DrawLine (bounds.center, point, Color.magenta);
-
-				//check for visibility from us to entity
-				RaycastHit hit;
-				if (Physics.Linecast (eyeheight, point, out hit)) {
-					if (hit.transform == go.transform) {
-						Debug.DrawLine (eyeheight, point, Color.blue);
-						totalAgree++;
-					}
-					else{
-						Debug.DrawLine (eyeheight, point, Color.red);
-					}
-				}
-			}
-
-			//entity is visible if majority agree
-			if (totalAgree < 5) {
-				break;
-			}
-
-			Debug.Log (go);
-
-			/*incremement awareness about the entity*/
+			/*increase awareness about the entity*/
 			//get awareness level for this object, creating it if it doesnt exist
 			AwarenessLevel currentAwareness;
 			if (!enemydata.awarenessLevels.Contains (go))
 				enemydata.awarenessLevels.Add (go, new AwarenessLevel ());
 			currentAwareness = (AwarenessLevel) enemydata.awarenessLevels [go];
 
-			//if gameobject has a direct cone, add visibility based on light level
-			bool hasDirect = false;
-			foreach (VisionCone cone in (List<VisionCone>)detector.entities[go]) {
-				if (cone.type == VisionCone.Type.Direct) {
-					hasDirect = true;
-					break;
-				}
-			}
-			if (hasDirect) {
+			//if gameobject has a direct sight, add visibility based on light level
+			if (((DetectionData)detector.entities[go]).isDirect ()) {
 //				currentAwareness.visibility += Mathf.Clamp (go.lightLevel * visibilityScale * Time.deltaTime, 0, 100);
 			}
 

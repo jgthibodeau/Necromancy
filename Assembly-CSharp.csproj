@@ -162,7 +162,9 @@
      <Compile Include="Assets\Scripts\InteractorScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockUIScript.cs" />
+     <Compile Include="Assets\Scripts\LightCaster.cs" />
      <Compile Include="Assets\Scripts\LightLevel.cs" />
+     <Compile Include="Assets\Scripts\LightReceiver.cs" />
      <Compile Include="Assets\Scripts\LockedScript.cs" />
      <Compile Include="Assets\Scripts\MenuScript.cs" />
      <Compile Include="Assets\Scripts\MyThirdPersonCamera.cs" />

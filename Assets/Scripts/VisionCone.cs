@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class VisionCone : MonoBehaviour {
-//	public List<GameObject> objects;
 	public enum Type{Peripheral, Direct};
 	public Type type = Type.Direct;
 	private EntityDetector detector;

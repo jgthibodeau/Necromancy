@@ -42,6 +42,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
 					CurrentTargetSpeed = ForwardSpeed;
 				}
 
+				CurrentTargetSpeed *= input.magnitude;
+
 				if (m_Running)
 				{
 					CurrentTargetSpeed *= RunMultiplier;
