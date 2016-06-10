@@ -7,11 +7,21 @@ public class DetectionData {
 	public float percentVisible;
 	public int numberCones;
 	public int numberDirectCones;
+	public List<VisionCone> cones = new List<VisionCone>();
 	public Vector3[] boundPoints = new Vector3[0];
 	public bool markedForDeletion = false;
 
 	public bool isDirect(){
 		return numberDirectCones > 0;
+	}
+
+	public VisionCone HighestPriorityCone(){
+		VisionCone highestPriority = null;
+		foreach(VisionCone cone in cones){
+			if (highestPriority == null || cone.priority > highestPriority.priority)
+				highestPriority = cone;
+		}
+		return highestPriority;
 	}
 
 	public Vector3 bottom(){
@@ -20,9 +30,9 @@ public class DetectionData {
 }
 
 public class EntityDetector : MonoBehaviour {
-	public Hashtable entities = new Hashtable ();
-	int tick = 0;
-	int tickRate = 5;
+	public Dictionary<GameObject, DetectionData> entities = new Dictionary<GameObject, DetectionData> ();
+	public int tick = 0;
+	public int tickRate = 5;
 	public bool immediatelyDelete = true;
 
 	// Use this for initialization
@@ -41,7 +51,7 @@ public class EntityDetector : MonoBehaviour {
 		foreach (GameObject go in entities.Keys) {
 			/*Raycast to make sure we have line of sight to the entity in question before adding values*/
 			Bounds bounds = go.GetComponent<Collider> ().bounds;
-			Vector3[] boundPoints = new Vector3[6];
+			Vector3[] boundPoints = new Vector3[5];
 
 			Vector3 eyeheight = transform.position;
 
@@ -53,14 +63,12 @@ public class EntityDetector : MonoBehaviour {
 			Vector3 directionToCenter = eyeheight - bounds.center;
 			boundPoints [2] = Vector3.Cross (directionToCenter, go.transform.up);
 			boundPoints [2] *= (bounds.size.x / 2f - .1f) / (boundPoints [2].magnitude);
-
 			boundPoints [3] = boundPoints [2] * -1;
 
 			//front and back
 			boundPoints [4] = Vector3.Cross (go.transform.up, boundPoints[2]);
 			boundPoints [4] *= (bounds.size.x / 2f - .1f) / (boundPoints [4].magnitude);
-
-			boundPoints [5] = boundPoints [4] * -1;
+//			boundPoints [5] = boundPoints [4] * -1;
 
 			//corners
 //			boundPoints [6] = Vector3.Lerp (boundPoints [0], boundPoints [2], 0.5f);
@@ -98,7 +106,7 @@ public class EntityDetector : MonoBehaviour {
 				}
 			}
 
-			DetectionData dd = (DetectionData)entities [go];
+			DetectionData dd = entities [go];
 			dd.percentVisible = totalAgree / boundPoints.Length;
 			dd.distance = Vector3.Distance (transform.position, go.transform.position);
 			dd.boundPoints = boundPoints;
@@ -156,32 +164,34 @@ public class EntityDetector : MonoBehaviour {
 				}
 			}
 
-			DetectionData dd = (DetectionData)entities [go];
+			DetectionData dd = entities [go];
 			dd.percentVisible = totalAgree / boundPoints.Length;
 			dd.distance = Vector3.Distance (transform.position, go.transform.position);
 		}
 	}
 
 	public void AddEntity(GameObject go, VisionCone cone){
-		if (entities.Contains (go)) {
-			DetectionData dd = ((DetectionData)entities [go]);
+		DetectionData dd;
+		if (entities.ContainsKey (go)) {
+			dd = entities [go];
 			dd.numberCones++;
 			dd.markedForDeletion = false;
 			if(cone.type == VisionCone.Type.Direct)
 				dd.numberDirectCones++;
 		} else {
-			DetectionData dd = new DetectionData();
+			dd = new DetectionData();
 			dd.numberCones++;
 			dd.markedForDeletion = false;
 			if(cone.type == VisionCone.Type.Direct)
 				dd.numberDirectCones++;
 			entities.Add (go, dd);
 		}
+		dd.cones.Add (cone);
 	}
 
 	public void RemoveEntity(GameObject go, VisionCone cone){
-		if (entities.Contains (go)) {
-			DetectionData dd = ((DetectionData)entities [go]);
+		if (entities.ContainsKey (go)) {
+			DetectionData dd = entities [go];
 			dd.numberCones--;
 			if(cone.type == VisionCone.Type.Direct)
 				dd.numberDirectCones--;
@@ -191,6 +201,7 @@ public class EntityDetector : MonoBehaviour {
 				else
 					dd.markedForDeletion = false;
 			}
+			dd.cones.Remove (cone);
 		}
 	}
 

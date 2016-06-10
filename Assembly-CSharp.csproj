@@ -45,7 +45,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\3D Sound For 2D Games\Scripts\AudioControl.cs" />
      <Compile Include="Assets\3rdPersonCamera\DemoSceneDependencies\Scripts\BallController.cs" />
      <Compile Include="Assets\3rdPersonCamera\DemoSceneDependencies\Scripts\CaretFix.cs" />
      <Compile Include="Assets\3rdPersonCamera\DemoSceneDependencies\Scripts\Reset.cs" />
@@ -58,6 +57,8 @@
      <Compile Include="Assets\3rdPersonCamera\Scripts\LockOnTarget.cs" />
      <Compile Include="Assets\3rdPersonCamera\Scripts\Targetable.cs" />
      <Compile Include="Assets\ConstantRotate.cs" />
+     <Compile Include="Assets\DebugDrawingExtension\DebugExtension.cs" />
+     <Compile Include="Assets\DebugDrawingExtension\Example\Example.cs" />
      <Compile Include="Assets\MouseLook.cs" />
      <Compile Include="Assets\PrimitivesPro\Scripts\CSG\CSG.cs" />
      <Compile Include="Assets\PrimitivesPro\Scripts\CSG\CSGNode.cs" />
@@ -146,6 +147,7 @@
      <Compile Include="Assets\Scripts\ConfirmationDialogScript.cs" />
      <Compile Include="Assets\Scripts\CopScript.cs" />
      <Compile Include="Assets\Scripts\CopSpawnerScript.cs" />
+     <Compile Include="Assets\Scripts\DetectableSound.cs" />
      <Compile Include="Assets\Scripts\DetectionConeScript.cs" />
      <Compile Include="Assets\Scripts\DialLockScript.cs" />
      <Compile Include="Assets\Scripts\DialLockUIScript.cs" />
@@ -162,12 +164,11 @@
      <Compile Include="Assets\Scripts\InteractorScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockUIScript.cs" />
-     <Compile Include="Assets\Scripts\LightCaster.cs" />
      <Compile Include="Assets\Scripts\LightLevel.cs" />
-     <Compile Include="Assets\Scripts\LightReceiver.cs" />
      <Compile Include="Assets\Scripts\LockedScript.cs" />
      <Compile Include="Assets\Scripts\MenuScript.cs" />
      <Compile Include="Assets\Scripts\MyThirdPersonCamera.cs" />
+     <Compile Include="Assets\Scripts\OccludableAudio.cs" />
      <Compile Include="Assets\Scripts\PaintingScript.cs" />
      <Compile Include="Assets\Scripts\PauseMenuScript.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
@@ -176,10 +177,13 @@
      <Compile Include="Assets\Scripts\SaveLoadMenuScript.cs" />
      <Compile Include="Assets\Scripts\ScrollRectCenterScript.cs" />
      <Compile Include="Assets\Scripts\ShotScript.cs" />
+     <Compile Include="Assets\Scripts\SoundDetector.cs" />
+     <Compile Include="Assets\Scripts\SoundWave.cs" />
      <Compile Include="Assets\Scripts\Sprite2DScript.cs" />
      <Compile Include="Assets\Scripts\Sprite3DScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />
+     <Compile Include="Assets\Scripts\UIScript.cs" />
      <Compile Include="Assets\Scripts\UniqueId.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
      <Compile Include="Assets\Scripts\ViewFogScript.cs" />
@@ -187,6 +191,7 @@
      <Compile Include="Assets\Scripts\WeaponScript.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
+     <None Include="Assets\DebugDrawingExtension\readme.txt" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_TransparentOverlay.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonBasic.shader" />
@@ -304,9 +309,6 @@
  </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
- </Reference>
- <Reference Include="EcholocationLtd3DFor2DUnity4">
- <HintPath>C:/Users/Justin/Documents/GitHub/Burglary-Game/Assets/3D Sound For 2D Games/Plugins/EcholocationLtd3DFor2DUnity4.dll</HintPath>
  </Reference>
  <Reference Include="P2T">
  <HintPath>C:/Users/Justin/Documents/GitHub/Burglary-Game/Assets/PrimitivesPro/Scripts/Triangulation/P2T.dll</HintPath>

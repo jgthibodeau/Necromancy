@@ -12,3 +12,7 @@ Strong Direct & Weak Direct
 
 Strong Peripheral, Weak Peripheral, Back Peripheral
 	entity movement in these cones builds up awareness based off speed (slower movement means slower buildup)
+
+
+
+Ignore peripheral/sound if close enough to another guard and not alerted yet

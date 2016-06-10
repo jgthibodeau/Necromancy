@@ -17,6 +17,11 @@ public class AwarenessLevel{
 	}
 }
 
+[System.Serializable]
+public class AwarenessLevelHashItem{
+	public GameObject gameObject;
+	public AwarenessLevel awarenessLevel;
+}
 
 [System.Serializable]
 public class EnemyData : SaveData{
@@ -28,7 +33,8 @@ public class EnemyData : SaveData{
 	public bool loop;
 	public int currentWaypoint;
 	public bool movingForward = true;
-	public Hashtable awarenessLevels = new Hashtable();
+	public Dictionary<GameObject, AwarenessLevel> awarenessLevels = new Dictionary<GameObject, AwarenessLevel>();
+	public AwarenessLevelHashItem[] awarenessLevelsList;
 	
 	public EnemyData () : base () {}
 	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
@@ -83,8 +89,10 @@ public class EnemyScript : SavableScript {
 
 	//detection stuff
 	public EntityDetector detector;
-	public float visibilityScale = 1f;
-	public float noticeabilityScale = 1f;
+	public float minLightLevel = 0f;
+	public float minSpeed = 0f;
+	public float visionSensitivity = 1f;
+	public float noticeSensitivity = 1f;
 	
 	// Use this for initialization
 	protected virtual void Start () {
@@ -113,6 +121,17 @@ public class EnemyScript : SavableScript {
 	void Update () {
 		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 			InGame ();
+	}
+
+	void LateUpdate(){
+		enemydata.awarenessLevelsList = new AwarenessLevelHashItem[enemydata.awarenessLevels.Count];
+		int i=0;
+		foreach(GameObject go in enemydata.awarenessLevels.Keys){
+			AwarenessLevelHashItem alh = new AwarenessLevelHashItem();
+			alh.gameObject = go;
+			alh.awarenessLevel = enemydata.awarenessLevels[go];
+			enemydata.awarenessLevelsList[i++] = alh;
+		}
 	}
 	
 	void InGame () {
@@ -216,25 +235,47 @@ public class EnemyScript : SavableScript {
 	public void DetectEntities(){
 		//foreach entity visible to this guard
 		foreach (GameObject go in detector.entities.Keys) {
-			//TODO only do this if the entity is visible enough
+			DetectionData dd = (DetectionData)detector.entities [go];
 
 			/*increase awareness about the entity*/
 			//get awareness level for this object, creating it if it doesnt exist
 			AwarenessLevel currentAwareness;
-			if (!enemydata.awarenessLevels.Contains (go))
+			if (!enemydata.awarenessLevels.ContainsKey (go))
 				enemydata.awarenessLevels.Add (go, new AwarenessLevel ());
-			currentAwareness = (AwarenessLevel) enemydata.awarenessLevels [go];
+			currentAwareness = enemydata.awarenessLevels [go];
 
-			//if gameobject has a direct sight, add visibility based on light level
-			if (((DetectionData)detector.entities[go]).isDirect ()) {
-//				currentAwareness.visibility += Mathf.Clamp (go.lightLevel * visibilityScale * Time.deltaTime, 0, 100);
+			//get light, distance, and motion data about entity
+			float lightLevel = go.GetComponent<LightLevel> ().level;
+			float distance = Vector3.Distance (transform.position, go.transform.position);
+			VisionCone visionCone = dd.HighestPriorityCone ();
+			float distancePercent = distance / visionCone.length;
+
+//			TODO speed = magnitude of component of motion vector perpendicular to us, clamped
+//			Debug.DrawRay (go.transform.position, go.GetComponent<Rigidbody> ().velocity, Color.magenta);
+//
+//			Vector3 direction = go.transform.position - transform.position;
+//			Debug.DrawRay (go.transform.position, direction, Color.green);
+//
+//			Vector3 movementPerpendicular = Vector3.ProjectOnPlane (go.GetComponent<Rigidbody> ().velocity, direction);
+//			Debug.DrawRay (go.transform.position, movementPerpendicular, Color.cyan);
+//
+//			float relativeSpeed = movementPerpendicular.magnitude;
+			float relativeSpeed = go.GetComponent<Rigidbody> ().velocity.magnitude;
+
+			//if entity is directly visible, add visibility based on light level only
+			if (dd.isDirect ()) {
+				//amount to add is porportional to light, sensitivity, amount of entity visible, and cone sensitivity
+				float newVisibility = lightLevel * visionSensitivity * dd.percentVisible * distancePercent * visionCone.sensitivity;
+				currentAwareness.visibility += Mathf.Clamp (newVisibility, 0, 100);
 			}
 
-			//add noticeability based on motion vector
-//			currentAwareness.noticeability +=Mathf.Clamp (go.speed * noticeabilityScale * Time.deltaTime, 0, 100);
+			//add noticeability based on light, sensitivity, amount of entity visible, speed, distance to entity, and cone sensitivity
+			float newNoticeability = lightLevel * noticeSensitivity * dd.percentVisible * relativeSpeed * distancePercent * visionCone.sensitivity;
+			currentAwareness.noticeability += Mathf.Clamp (newNoticeability, 0, 100);
 
+			//TODO add noticeability based on sounds
 
-			/*react to detecting entity*/
+			/*TODO react to detecting entity*/
 			//if entity surpassed visual threshold
 			//go to a chasing behavior
 			//if entity surpassed peripheral threshold

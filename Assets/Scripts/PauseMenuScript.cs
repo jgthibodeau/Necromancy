@@ -4,8 +4,7 @@ using System.Collections;
 public class PauseMenuScript : MenuScript {
 	protected override void Start(){
 		base.Start ();
-
-		Close ();
+//		Close ();
 	}
 
 	// Update is called once per frame
@@ -21,13 +20,12 @@ public class PauseMenuScript : MenuScript {
 	}
 
 	public override void Open(){
-		base.Open ();
-
 		GlobalScript.currentGameState = GlobalScript.GameState.Paused;
 		Time.timeScale = 0f;
+
+		base.Open ();
 	}
 	public override void Close(){
-		Debug.Log ("closing pause");
 		base.Close ();
 
 		GlobalScript.currentGameState = GlobalScript.GameState.InGame;

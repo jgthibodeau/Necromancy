@@ -23,12 +23,17 @@ public class PlayerController : SavableScript {
 
 	private RigidbodyFirstPersonController firstPersonController;
 
+	private DetectableSound detectableSounds;
+	public float footStepRate = 4f;
+	public float footStepDistance = 30f;
+
 	// Use this for initialization
 	void Start () {
 		savedata = playerdata;
 //		camera = GetComponentInChildren <Camera> ().transform;
 		camera = Camera.main.transform;
 		firstPersonController = GetComponent<RigidbodyFirstPersonController>();
+		detectableSounds = GetComponent<DetectableSound> ();
 	}
 
 	void Update () {
@@ -40,8 +45,6 @@ public class PlayerController : SavableScript {
 
 	void InGame () {
 		playerdata = (PlayerData)savedata;
-
-		//TODO ensure globalscript isnt paused for all scripts
 
 		GetInput ();
 
@@ -60,6 +63,12 @@ public class PlayerController : SavableScript {
 			firstPersonController.doMovement = false;
 			break;
 		}
+
+		//if moving, send out sound waves of appropriate strength and rate
+		float speed = firstPersonController.Velocity.magnitude;
+		float frequency = speed/firstPersonController.MaxSpeed;
+		detectableSounds.frequency = footStepRate * frequency;
+		detectableSounds.maxDistance = footStepDistance * frequency;
 	}
 
 	void GetInput(){

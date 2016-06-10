@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using Random = UnityEngine.Random;
 
-public class DialLockUIScript : MenuScript{
+public class DialLockUIScript : UIScript{
 	private DialLockScript diallock;
 	public RectTransform dial;
 	public RectTransform handle;
@@ -13,7 +13,7 @@ public class DialLockUIScript : MenuScript{
 		diallock = dls;
 	}
 
-	void Update(){
+	protected override void Update(){
 		//move items appropriately
 		if (Visible ()) {
 			//set dial angle

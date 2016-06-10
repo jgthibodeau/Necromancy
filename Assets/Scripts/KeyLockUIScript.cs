@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using Random = UnityEngine.Random;
 
-public class KeyLockUIScript : MenuScript{
+public class KeyLockUIScript : UIScript{
 	private KeyLockScript keylock;
 	public RectTransform lockpick;
 	public RectTransform wrench;
@@ -13,7 +13,7 @@ public class KeyLockUIScript : MenuScript{
 		keylock = kls;
 	}
 
-	void Update(){
+	protected override void Update(){
 		//move items appropriately
 		if (Visible ()) {
 			//set wrench and add randomness as appropriate

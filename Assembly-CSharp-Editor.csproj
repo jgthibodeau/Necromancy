@@ -126,6 +126,7 @@
      <Compile Include="Assets\ProCore\ProBuilder\Editor\pb_ScenePostProcessor.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
+     <None Include="Assets\DebugDrawingExtension\readme.txt" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
      <None Include="Assets\ProCore\ProBuilder\Shader\pb_TransparentOverlay.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonBasic.shader" />
@@ -261,12 +262,6 @@
  </Reference>
  <Reference Include="UnityEditor.TreeEditor">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll</HintPath>
- </Reference>
- <Reference Include="EcholocationLtd3DFor2DUnity4Editor">
- <HintPath>C:/Users/Justin/Documents/GitHub/Burglary-Game/Assets/3D Sound For 2D Games/Editor/EcholocationLtd3DFor2DUnity4Editor.dll</HintPath>
- </Reference>
- <Reference Include="EcholocationLtd3DFor2DUnity4">
- <HintPath>C:/Users/Justin/Documents/GitHub/Burglary-Game/Assets/3D Sound For 2D Games/Plugins/EcholocationLtd3DFor2DUnity4.dll</HintPath>
  </Reference>
  <Reference Include="P2T">
  <HintPath>C:/Users/Justin/Documents/GitHub/Burglary-Game/Assets/PrimitivesPro/Scripts/Triangulation/P2T.dll</HintPath>

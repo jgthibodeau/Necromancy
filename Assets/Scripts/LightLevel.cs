@@ -46,7 +46,7 @@ public class LightLevel : MonoBehaviour {
 			Vector3 point;
 			VisibleByLight (light, out distance, out angle, out point);
 
-			if (distance >= 0) {
+			if (VisibleByLight (light, out distance, out angle, out point)) {
 //				float attenuation = 1f / (1f + attenuationFactor * Mathf.Pow (distance, distanceFactor) / Mathf.Pow (light.range, rangeFactor));
 				float attenuation = 1f;
 				float cookieFactor = 1f;
@@ -81,7 +81,7 @@ public class LightLevel : MonoBehaviour {
 
 	}
 
-	public void VisibleByLight(Light light, out float minDistance, out float minAngle, out Vector3 minPoint){
+	public bool VisibleByLight(Light light, out float minDistance, out float minAngle, out Vector3 minPoint){
 		bool visible = false;
 		minDistance = -1f;
 		minAngle = -1f;
@@ -90,6 +90,11 @@ public class LightLevel : MonoBehaviour {
 		for (int i = 0; i < lightSpots.Length; i++) {
 			Vector3 point = lightSpots [i];
 			float distance = Vector3.Distance (point, light.transform.position);
+
+			if (i == 0) {
+				minDistance = distance;
+				minPoint = point;
+			}
 
 			//cancel if player is too far away
 			if (distance > light.range)
@@ -100,16 +105,12 @@ public class LightLevel : MonoBehaviour {
 			if (light.type == LightType.Spot) {
 				Vector3 direction = point - light.transform.position;
 				float angle = Vector3.Angle (light.transform.forward, direction);
+				if (i == 0)
+					minAngle = angle;
 
 				if (angle*2 <= light.spotAngle && Physics.Linecast (light.transform.position, point, out hit)) {
 					if (hit.transform == transform) {
-						//keep track of the smallest of the points used
-						if (!visible || distance < minDistance) {
-							visible = true;
-							minAngle = angle;
-							minDistance = distance;
-							minPoint = point;
-						}
+						visible = true;
 						Debug.DrawLine (light.transform.position, point, Color.blue);
 					} else {
 						Debug.DrawLine (light.transform.position, point, Color.red);
@@ -120,11 +121,7 @@ public class LightLevel : MonoBehaviour {
 			else{
 				if (Physics.Linecast (light.transform.position, point, out hit)) {
 					if (hit.transform == transform) {
-						//keep track of the smallest of the points used
-						if (!visible || distance < minDistance) {
-							minDistance = distance;
-							visible = true;
-						}
+						visible = true;
 						Debug.DrawLine (light.transform.position, point, Color.blue);
 					} else {
 						Debug.DrawLine (light.transform.position, point, Color.red);
@@ -132,6 +129,7 @@ public class LightLevel : MonoBehaviour {
 				}
 			}
 		}
+		return visible;
 	}
 
 	private float CalculateCookieAlpha(Light light, float angle, Vector3 point){

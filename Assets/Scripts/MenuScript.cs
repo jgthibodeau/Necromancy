@@ -5,20 +5,12 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class MenuScript : MonoBehaviour {
+public class MenuScript : UIScript {
 	public Text alertText;
 	public float alertTime = 3;
 	private float remainingAlertTime = -1;
 
-	public bool hideOnStart;
-	public bool cancelable = true;
-	public bool justOpened;
-
-	private Canvas menu;
-	private CanvasGroup menuGroup;
-
 	public MenuScript previousMenu;
-
 	private EventSystem es;
 
 	public void SwitchTo(GameObject other){
@@ -34,30 +26,6 @@ public class MenuScript : MonoBehaviour {
 	public void SwitchToMenu(MenuScript other){
 		Hide ();
 		other.Open ();
-	}
-
-	public virtual void Open(){
-		menuGroup.interactable = true;
-		menu.enabled = true;
-		justOpened = true;
-
-//		es.SetSelectedGameObject (transform.GetChild(1).gameObject);
-		Selectable[] selectableItems = transform.GetComponentsInChildren<Selectable>();
-		if(selectableItems.Length > 0)
-			es.SetSelectedGameObject (selectableItems[0].gameObject);
-	}
-
-	public virtual void Close(){
-		Hide ();
-	}
-
-	public virtual void Hide(){
-		menuGroup.interactable = false;
-		menu.enabled = false;
-	}
-
-	public bool Visible(){
-		return menuGroup.interactable;
 	}
 
 	public void Save(){
@@ -105,17 +73,13 @@ public class MenuScript : MonoBehaviour {
 		remainingAlertTime = alertTime;
 	}
 
-	protected virtual void Start(){
+	protected override void Start(){
 		es = EventSystem.current;
-
-		menu = GetComponent<Canvas> ();
-		menuGroup = GetComponent<CanvasGroup> ();
-
-		if (hideOnStart)
-			Close ();
 
 		if(alertText != null)
 			alertText.text = "";
+		
+		base.Start ();
 	}
 
 	protected virtual void Update(){
@@ -125,14 +89,22 @@ public class MenuScript : MonoBehaviour {
 				alertText.text = "";
 		}
 
-		if (Visible () && !justOpened && cancelable) {
-			if (GlobalScript.GetButton ("Cancel")) {
-				if (previousMenu != null)
-					SwitchToPrevious ();
-				else
-					Close ();
-			}
-		} else
-			justOpened = false;
+		base.Update ();
+	}
+
+	public override void Close(){
+		if (previousMenu != null)
+			SwitchToPrevious ();
+		else
+			base.Close ();
+	}
+
+	public override void Open(){
+		base.Open ();
+
+		//		es.SetSelectedGameObject (transform.GetChild(1).gameObject);
+		Selectable[] selectableItems = transform.GetComponentsInChildren<Selectable> ();
+		if (selectableItems.Length > 0)
+			es.SetSelectedGameObject (selectableItems [0].gameObject);
 	}
 }

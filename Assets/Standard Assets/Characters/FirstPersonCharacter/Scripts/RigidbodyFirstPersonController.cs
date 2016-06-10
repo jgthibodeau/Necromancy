@@ -104,29 +104,28 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
 		private Vector2 movementInput;
 
-        public Vector3 Velocity
-        {
+		public float MaxSpeed {
+			get { return movementSettings.ForwardSpeed * movementSettings.RunMultiplier; }
+		}
+
+        public Vector3 Velocity {
             get { return m_RigidBody.velocity; }
         }
 
-        public bool Grounded
-        {
+        public bool Grounded {
             get { return m_IsGrounded; }
         }
 
-        public bool Jumping
-        {
+        public bool Jumping {
             get { return m_Jumping; }
         }
 
-        public bool Running
-        {
+        public bool Running {
             get
             { return movementSettings.Running; }
 		}
 
-		public bool Crouching
-		{
+		public bool Crouching {
 			get
 			{ return movementSettings.Crouching; }
 		}
