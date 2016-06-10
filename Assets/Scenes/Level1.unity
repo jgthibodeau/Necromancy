@@ -571,6 +571,10 @@ Prefab:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 2}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 2}
   m_IsPrefabParent: 0
@@ -5134,6 +5138,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 613220871}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e315c945409f77248b62cce220c59c49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priority: 1
+--- !u!114 &613220877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 613220871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29d3da32cefbf674ca0c2891a6da0a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -5142,7 +5158,8 @@ MonoBehaviour:
   volume: 0.01
   minDistance: 10
   maxDistance: 30
-  rate: 0
+  frequency: 2
+  timeSinceLast: 0
 --- !u!114 &613220878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5164,6 +5181,7 @@ MonoBehaviour:
   - {x: -15.238898, y: 0.9996359, z: -7.63013}
   - {x: -15.238898, y: 1.3996359, z: -7.63013}
   - {x: -15.238898, y: 0.59963584, z: -7.63013}
+  priority: 0
   lightUI: {fileID: 1809302648}
   lightSlider: {fileID: 986028255}
 --- !u!1 &619401998
@@ -16428,7 +16446,7 @@ GameObject:
   - 82: {fileID: 2021586280}
   - 114: {fileID: 2021586286}
   - 169: {fileID: 2021586287}
-  m_Layer: 8
+  m_Layer: 12
   m_Name: Guard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16551,9 +16569,12 @@ MonoBehaviour:
     loop: 0
     currentWaypoint: 0
     movingForward: 1
-    awarenessLevelsList: []
+    interestLevel: 0
+    interestingLocation: {x: 0, y: 0, z: 0}
+    interestPiqued: 0
+    timesInterestPiqued: 0
+    seenPlayer: 0
   player: {fileID: 0}
-  fovScript: {fileID: 0}
   maxInvestigateTime: 10
   maxSearchTime: 10
   noticeTurnSpeed: 2
@@ -16576,7 +16597,12 @@ MonoBehaviour:
   minLightLevel: 0
   minSpeed: 0
   visionSensitivity: 5
-  noticeSensitivity: 1
+  motionSensitivity: 1
+  soundDetector: {fileID: 0}
+  ignorableSoundLevel: 0
+  maxTimesInterestPiqued: 3
+  maxInterest: 100
+  highInterestRate: 100
   copSpawner: {fileID: 1180526970}
 --- !u!195 &2021586283
 NavMeshAgent:

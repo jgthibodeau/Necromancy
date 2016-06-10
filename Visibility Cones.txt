@@ -15,4 +15,54 @@ Strong Peripheral, Weak Peripheral, Back Peripheral
 
 
 
-Ignore peripheral/sound if close enough to another guard and not alerted yet
+Ignore peripheral/sound if close enough to another guard, not alerted yet, and values are within that guards possible values
+
+
+hearing a sound louder than a threshold imediately piques guards interest towards that area
+
+
+
+2 levels for a guard to keep track of
+	knowledge -> being close enough with enough light on you while in direct vision will give the guard full knowledge of your location
+	interest -> piqued interest means the guard will go to and investigate a spot, spending more time the higher their interest is
+				depending on frequency of piqued interest, the guard will go into a full investigation mode, ignoring their patrol and hunting down the player
+	times interest piqued
+
+	while interest has been piqued:
+		the guard notes the position of the interesting location, and will investigate it
+		when more interest is built up
+			the interesting locations position is updated
+			if the rate of buildup is high, it will be counted as a new interest piqued event
+
+	guard behavior is dependent on the amount of times interest has been piqued and player has been actually seen
+
+	being directly seen, or enough piqued interests will cause the guard to know there is an intruder and enter a full investiagtion mode
+
+	guards investigation time will cool down as long as you remain out of sight
+
+	(optional, test and see how it feels) as long as number of times interest has been piqued is kept below a threshold, they will go away after a time
+
+	guard state, amount of times interest piqued, and if guard has seen player effect their senses
+
+
+4 levels to keep track of on the player and noticable entitites
+	distance - an ever present modifier to your visibility
+			closer => faster buildups
+			further => slower buildups
+
+	light - dictates how easy it is for a guard to see you or notice your movement in their peripheral vision
+			bright => imediate knowledge in direct sight, imediate detection of sudden movements
+			dim => buildup detection till interest piqued, buildup detection of movements till interest piqued
+			dark => invisible
+
+	speed - dictates how easy it is for a guard to see you in his peripheral vision, as long as there is sufficient light
+			fast => imediate interest piqued
+			moderate => buildup till interest piqued
+			slow = invisible
+
+	sound - above a threshold will imediately pique interest of a guard
+			movement speed affects the noises you naturally make
+			can whistle to produce a loud sound at your position
+			thrown items make a loud sound at the position they collide into another object based on their velocity
+
+			too many piqued interests close together will put guard into an investigate state

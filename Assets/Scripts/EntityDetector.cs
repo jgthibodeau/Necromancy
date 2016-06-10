@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class DetectionData {
+	public int priority;
 	public float distance;
 	public float percentVisible;
 	public int numberCones;
@@ -110,6 +111,7 @@ public class EntityDetector : MonoBehaviour {
 			dd.percentVisible = totalAgree / boundPoints.Length;
 			dd.distance = Vector3.Distance (transform.position, go.transform.position);
 			dd.boundPoints = boundPoints;
+			dd.priority = go.GetComponent<Detectable> ().priority;
 		}
 	}
 

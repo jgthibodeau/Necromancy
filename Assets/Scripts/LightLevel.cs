@@ -11,6 +11,9 @@ public class LightLevel : MonoBehaviour {
 	public float intensityFactor = 1f;
 	public float level = 0f;
 	public Vector3[] lightSpots;
+
+	public float priority;
+
 	public Image lightUI;
 	public Image lightSlider;
 

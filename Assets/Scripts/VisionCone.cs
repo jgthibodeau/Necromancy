@@ -19,15 +19,13 @@ public class VisionCone : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 		//add object to list of collided objects
-		if(other.gameObject.layer == 10)
-//			objects.Add(other.gameObject);
+		if(other.gameObject.GetComponent<Detectable> () != null)
 			detector.AddEntity(other.gameObject, this);
 	}
 
 	void OnTriggerExit(Collider other){
 		//remove object from list of collided objects
-		if(other.gameObject.layer == 10)
-//			objects.Remove (other.gameObject);
+		if(other.gameObject.GetComponent<Detectable> () != null)
 			detector.RemoveEntity(other.gameObject, this);
 	}
 }

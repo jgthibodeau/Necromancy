@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class SoundData{
 	public Vector3 origin;
 	public float volume;
+	public int priority; //TODO get this from somewhere
 }
 
 public class SoundDetector : MonoBehaviour {
@@ -38,5 +39,9 @@ public class SoundDetector : MonoBehaviour {
 			sd.volume = volume;
 			sounds.Add (sd);
 		}
+	}
+
+	public void RemoveSound(SoundData sd){
+		sounds.Remove (sd);
 	}
 }

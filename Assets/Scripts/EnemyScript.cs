@@ -4,26 +4,6 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class AwarenessLevel{
-	public float visibility = 0f;
-	public float noticeability = 0f;
-
-	public void resetVisibility(){
-		visibility = 0f;
-	}
-
-	public void resetNoticeability(){
-		noticeability = 0f;
-	}
-}
-
-[System.Serializable]
-public class AwarenessLevelHashItem{
-	public GameObject gameObject;
-	public AwarenessLevel awarenessLevel;
-}
-
-[System.Serializable]
 public class EnemyData : SaveData{
 	public EnemyScript.State currentState;
 	public EnemyScript.State previousState;
@@ -33,8 +13,12 @@ public class EnemyData : SaveData{
 	public bool loop;
 	public int currentWaypoint;
 	public bool movingForward = true;
-	public Dictionary<GameObject, AwarenessLevel> awarenessLevels = new Dictionary<GameObject, AwarenessLevel>();
-	public AwarenessLevelHashItem[] awarenessLevelsList;
+
+	public float interestLevel = 0f;
+	public Vector3 interestingLocation;
+	public bool interestPiqued;
+	public int timesInterestPiqued;
+	public bool seenPlayer;
 	
 	public EnemyData () : base () {}
 	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
@@ -54,9 +38,6 @@ public class EnemyScript : SavableScript {
 
 	//Player info
 	public GameObject player;
-
-	//Detection radiuses
-	public FieldOfViewScript fovScript;
 
 	//Timing
 	public float maxInvestigateTime;
@@ -92,14 +73,19 @@ public class EnemyScript : SavableScript {
 	public float minLightLevel = 0f;
 	public float minSpeed = 0f;
 	public float visionSensitivity = 1f;
-	public float noticeSensitivity = 1f;
+	public float motionSensitivity = 1f;
+
+	public SoundDetector soundDetector;
+	public float ignorableSoundLevel = 0f;
+
+	public int maxTimesInterestPiqued = 3;
+	public float maxInterest = 100f;
+	public float highInterestRate = 100f;
 	
 	// Use this for initialization
 	protected virtual void Start () {
 		player = GameObject.Find ("Player");
 		agent = this.GetComponent<NavMeshAgent> ();
-
-		fovScript = this.GetComponent<FieldOfViewScript> ();
 
 		patrolPath.SetActive (true);
 
@@ -114,6 +100,7 @@ public class EnemyScript : SavableScript {
 		agent = this.transform.GetComponent<NavMeshAgent> ();
 
 		detector = GetComponentInChildren<EntityDetector> ();
+		soundDetector = GetComponentInChildren<SoundDetector> ();
 
 		savedata = enemydata;
 	}
@@ -121,17 +108,6 @@ public class EnemyScript : SavableScript {
 	void Update () {
 		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 			InGame ();
-	}
-
-	void LateUpdate(){
-		enemydata.awarenessLevelsList = new AwarenessLevelHashItem[enemydata.awarenessLevels.Count];
-		int i=0;
-		foreach(GameObject go in enemydata.awarenessLevels.Keys){
-			AwarenessLevelHashItem alh = new AwarenessLevelHashItem();
-			alh.gameObject = go;
-			alh.awarenessLevel = enemydata.awarenessLevels[go];
-			enemydata.awarenessLevelsList[i++] = alh;
-		}
 	}
 	
 	void InGame () {
@@ -233,16 +209,15 @@ public class EnemyScript : SavableScript {
 	public virtual void Investigate(){}
 
 	public void DetectEntities(){
+		float newInterest = 0f;
+		GameObject highestPriorityEntity;
+		int highestPriority = 99;
+
 		//foreach entity visible to this guard
 		foreach (GameObject go in detector.entities.Keys) {
 			DetectionData dd = (DetectionData)detector.entities [go];
 
 			/*increase awareness about the entity*/
-			//get awareness level for this object, creating it if it doesnt exist
-			AwarenessLevel currentAwareness;
-			if (!enemydata.awarenessLevels.ContainsKey (go))
-				enemydata.awarenessLevels.Add (go, new AwarenessLevel ());
-			currentAwareness = enemydata.awarenessLevels [go];
 
 			//get light, distance, and motion data about entity
 			float lightLevel = go.GetComponent<LightLevel> ().level;
@@ -262,25 +237,48 @@ public class EnemyScript : SavableScript {
 //			float relativeSpeed = movementPerpendicular.magnitude;
 			float relativeSpeed = go.GetComponent<Rigidbody> ().velocity.magnitude;
 
-			//if entity is directly visible, add visibility based on light level only
+			//if entity is directly visible, add interest based on light level only
 			if (dd.isDirect ()) {
-				//amount to add is porportional to light, sensitivity, amount of entity visible, and cone sensitivity
-				float newVisibility = lightLevel * visionSensitivity * dd.percentVisible * distancePercent * visionCone.sensitivity;
-				currentAwareness.visibility += Mathf.Clamp (newVisibility, 0, 100);
+				//amount to add is porportional to light, sensitivity, amount of entity visible, distance to entity, and cone sensitivity
+				newInterest += lightLevel * visionSensitivity * dd.percentVisible * distancePercent * visionCone.sensitivity;
+
+				//TODO if light level high enough and distance low enough, we have seen the entity
 			}
 
-			//add noticeability based on light, sensitivity, amount of entity visible, speed, distance to entity, and cone sensitivity
-			float newNoticeability = lightLevel * noticeSensitivity * dd.percentVisible * relativeSpeed * distancePercent * visionCone.sensitivity;
-			currentAwareness.noticeability += Mathf.Clamp (newNoticeability, 0, 100);
+			//add interest based on motion
+			//amount to add is porportional to light, sensitivity, amount of entity visible, speed, distance to entity, and cone sensitivity
+			newInterest += lightLevel * motionSensitivity * dd.percentVisible * relativeSpeed * distancePercent * visionCone.sensitivity;
 
-			//TODO add noticeability based on sounds
-
-			/*TODO react to detecting entity*/
-			//if entity surpassed visual threshold
-			//go to a chasing behavior
-			//if entity surpassed peripheral threshold
-			//go to an investigation behavior
+			//TODO set highestPriorityInterestingEntity if priority of object is highest
+			if (dd.priority < highestPriority)
+				highestPriorityEntity = go;
 		}
+
+		//TODO add interest based on sounds
+		foreach (SoundData sd in soundDetector.sounds) {
+			if (sd.volume > ignorableSoundLevel) {
+				newInterest += maxInterest;
+				//TODO set highestPriorityInterestingEntity if priority of object is highest
+			}
+			soundDetector.RemoveSound (sd);
+		}
+
+		//TODO decrease interest if nothing interesting is happening
+//		if(newInterest = 0)
+
+		//add new interest
+		float oldInterest = enemydata.interestLevel;
+		enemydata.interestLevel = Mathf.Clamp (enemydata.interestLevel + newInterest, 0, maxInterest);
+
+		//if interest is newly full, and interest not currently piqued, then interest has been piqued
+		//or if newInterest is high enough, and interest is currently piqued, interest has been piqued again
+		if ((oldInterest != enemydata.interestLevel && enemydata.interestLevel == maxInterest && !enemydata.interestPiqued) 
+			|| (newInterest >= highInterestRate && enemydata.interestPiqued)) {
+			enemydata.interestPiqued = true;
+			enemydata.timesInterestPiqued = Mathf.Clamp (enemydata.timesInterestPiqued++, 0, maxTimesInterestPiqued);
+		}
+		//if newInterest is high enough, and interest is currently piqued, interest has been piqued again
+
 	}
 
 	public void DefaultPatrol(){

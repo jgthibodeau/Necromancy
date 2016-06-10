@@ -59,6 +59,7 @@
      <Compile Include="Assets\ConstantRotate.cs" />
      <Compile Include="Assets\DebugDrawingExtension\DebugExtension.cs" />
      <Compile Include="Assets\DebugDrawingExtension\Example\Example.cs" />
+     <Compile Include="Assets\Detectable.cs" />
      <Compile Include="Assets\MouseLook.cs" />
      <Compile Include="Assets\PrimitivesPro\Scripts\CSG\CSG.cs" />
      <Compile Include="Assets\PrimitivesPro\Scripts\CSG\CSGNode.cs" />
