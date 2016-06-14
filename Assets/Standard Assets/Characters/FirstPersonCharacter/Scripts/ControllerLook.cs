@@ -32,8 +32,20 @@ namespace UnityStandardAssets.Characters.FirstPerson
 			float yRot = CrossPlatformInputManager.GetAxis("Horizontal Right") * XSensitivity * (invertX ? -1 : 1);
 			float xRot = CrossPlatformInputManager.GetAxis("Vertical Right") * YSensitivity * (invertY ? -1 : 1);
 
+			bool lookLeft = CrossPlatformInputManager.GetButton ("Camera Left");
+			bool lookRight = CrossPlatformInputManager.GetButton ("Camera Right");
+
+			float lookRotate = 0f;
+			if (lookLeft && lookRight)
+				lookRotate = 180f;
+			else if (lookLeft)
+				lookRotate = -90f;
+			else if (lookRight)
+				lookRotate = 90f;
+
 			m_CharacterTargetRot *= Quaternion.Euler (0f, yRot, 0f);
 			m_CameraTargetRot *= Quaternion.Euler (-xRot, 0f, 0f);
+			m_CameraTargetRot = Quaternion.Euler (m_CameraTargetRot.eulerAngles.x, lookRotate, 0f);
 
 			if(clampVerticalRotation)
 				m_CameraTargetRot = ClampRotationAroundXAxis (m_CameraTargetRot);

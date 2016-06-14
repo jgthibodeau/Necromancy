@@ -6,7 +6,10 @@ public class GuardScript : EnemyScript {
 	public GameObject copSpawner;
 	private CopSpawnerScript copSpawnerScript;
 
-	public override bool doDefaultAlert {get { return false; } }
+	public void Reset(){
+		doDefaultPatrol = false;
+		doDefaultAlert = false;
+	}
 
 	new void Start () {
 		base.Start ();
@@ -15,7 +18,6 @@ public class GuardScript : EnemyScript {
 
 
 	public override void Patrol(){
-
 		DefaultPatrol ();
 	}
 	
@@ -31,9 +33,5 @@ public class GuardScript : EnemyScript {
 
 //		do default alert behavior
 		DefaultAlert ();
-	}
-	
-	public override void Search(){
-
 	}
 }

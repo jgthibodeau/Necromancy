@@ -114,9 +114,6 @@ public class DetectionConeScript : MonoBehaviour {
 		case(EnemyScript.State.Alert):
 			color = Color.red;
 			break;
-		case(EnemyScript.State.Search):
-			color = GlobalScript.orange;
-			break;
 		}
 
 		//fade in and out

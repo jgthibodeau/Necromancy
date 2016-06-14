@@ -156,7 +156,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
 				if ((Mathf.Abs (movementInput.x) > 0.25f || Mathf.Abs (movementInput.y) > 0.25f) && (advancedSettings.airControl || m_IsGrounded)) {
 					// always move along the camera forward as it is the direction that it being aimed at
-					Vector3 desiredMove = cam.transform.forward * movementInput.y + cam.transform.right * movementInput.x;
+					Vector3 desiredMove = transform.forward * movementInput.y + transform.right * movementInput.x;
 					desiredMove = Vector3.ProjectOnPlane (desiredMove, m_GroundContactNormal).normalized;
 
 					desiredMove.x = desiredMove.x * movementSettings.CurrentTargetSpeed;
@@ -273,6 +273,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
 			//rotate view about forward axis dependent on lean
 			Lean ();
+//			LookBehind ();
         }
 
 		private void Lean()
@@ -284,6 +285,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
 			Vector3 currentPosition = cam.transform.localPosition;
 			float targetPosition = -1 * m_Lean;
 			cam.transform.localPosition = new Vector3 (targetPosition, currentPosition.y, currentPosition.z);
+		}
+
+		private void LookBehind()
+		{
+			Vector3 currentAngle = cam.transform.rotation.eulerAngles;
+			float targetAngle = -10 * m_Lean;
+			cam.transform.rotation = Quaternion.Euler (currentAngle.x, currentAngle.y+targetAngle, 0);
+
+//			Vector3 currentPosition = cam.transform.localPosition;
+//			float targetPosition = -1 * m_Lean;
+//			cam.transform.localPosition = new Vector3 (targetPosition, currentPosition.y, currentPosition.z);
 		}
 
 		private void Crouch()

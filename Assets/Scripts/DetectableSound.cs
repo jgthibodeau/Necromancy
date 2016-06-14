@@ -28,6 +28,7 @@ public class DetectableSound : MonoBehaviour {
 		GameObject wave =  new GameObject ();
 		wave.name = "Sound Wave";
 		wave.transform.position = transform.position;
+		wave.layer = LayerMask.NameToLayer("Ignore Raycast");
 
 		SphereCollider collider = wave.AddComponent<SphereCollider> ();
 		collider.isTrigger = true;

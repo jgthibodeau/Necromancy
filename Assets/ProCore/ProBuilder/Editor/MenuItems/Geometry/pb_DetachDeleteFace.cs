@@ -1,4 +1,3 @@
-#define PROTOTYPE
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
@@ -13,6 +12,8 @@ namespace ProBuilder2.Actions
 	 */
 	public class pb_DetachDeleteFace : Editor
 	{
+#if !PROTOTYPE
+
 		[MenuItem("Tools/" + pb_Constant.PRODUCT_NAME + "/Geometry/Detach Face Selection", true, pb_Constant.MENU_GEOMETRY + pb_Constant.MENU_GEOMETRY_FACE + 4)]
 		[MenuItem("Tools/" + pb_Constant.PRODUCT_NAME + "/Geometry/Delete Face (Backspace)", true, pb_Constant.MENU_GEOMETRY + pb_Constant.MENU_GEOMETRY_FACE + 5)]
 		public static bool VerifyFaceAction()
@@ -20,18 +21,17 @@ namespace ProBuilder2.Actions
 			return pb_Editor.instance != null && pb_Editor.instance.selectedFaceCount > 0;
 		}
 
-#if !PROTOTYPE
 		[MenuItem("Tools/" + pb_Constant.PRODUCT_NAME + "/Geometry/Detach Face Selection", false, pb_Constant.MENU_GEOMETRY + pb_Constant.MENU_GEOMETRY_FACE + 4)]
 		public static void MenuDetachFace()
 		{
 			pb_Menu_Commands.MenuDetachFaces(pbUtil.GetComponents<pb_Object>(Selection.transforms));
 		}
-#endif
 
 		[MenuItem("Tools/" + pb_Constant.PRODUCT_NAME + "/Geometry/Delete Face (Backspace)", false, pb_Constant.MENU_GEOMETRY + pb_Constant.MENU_GEOMETRY_FACE + 5)]
 		public static void MenuDeleteFace()
 		{
 			pb_Menu_Commands.MenuDeleteFace(pbUtil.GetComponents<pb_Object>(Selection.transforms));
 		}
+#endif
 	}
 }

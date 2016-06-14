@@ -1,5 +1,4 @@
-#define PROTOTYPE
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,12 +126,8 @@ namespace ProBuilder2.Examples
 				
 			// Materials are set per-face on pb_Object meshes.  pb_Objects will automatically
 			// condense the mesh to the smallest set of subMeshes possible based on materials.
-#if !PROTOTYPE
 			foreach(pb_Face f in shell)
 				f.SetMaterial( material );
-#else
-			ico.gameObject.GetComponent<MeshRenderer>().sharedMaterial = material;
-#endif
 
 			pb_Face[] connectingFaces;
 

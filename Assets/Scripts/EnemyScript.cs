@@ -3,6 +3,8 @@ using System.Collections;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 
+public delegate void BehaviorDelegate ();
+
 [System.Serializable]
 public class EnemyData : SaveData{
 	public EnemyScript.State currentState;
@@ -16,25 +18,53 @@ public class EnemyData : SaveData{
 
 	public float interestLevel = 0f;
 	public Vector3 interestingLocation;
-	public bool interestPiqued;
-	public int timesInterestPiqued;
 	public bool seenPlayer;
+	public int timesInvestigateTriggered = 0;
 	
 	public EnemyData () : base () {}
 	public EnemyData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
+}
+
+[System.Serializable]
+public class EnemyStateVariables{
+	public float speed = 2f;
+	public float turnSpeed = 2f;
+	public float minDetectionLight;
+	public float minDetectionSpeed;
+	public float visionSensitivity = 1f;
+	public float visibleLightValue = 10f;
+	public float motionSensitivity = 1f;
+	public float soundSensitivity = 1f;
+	public float ignorableSoundLevel = 0f;
+	public float maxInterest = 100f;
+	public float highInterestRate = 100f;
+	public float interestDecreaseRate = 1f;
 }
 
 public class EnemyScript : SavableScript {
 	public EnemyData enemydata;
 
 	//States
-	public enum State{Patrol, Alert, Search, Investigate};
+	public enum State{Patrol, Cautious, Investigate, Alert, Hunt};
+	bool StateChanged;
+	bool doDefault;
+	BehaviorDelegate defaultBehavior;
+	BehaviorDelegate customBehavior;
 
 	//Whether to allow default behaviors or not
-	public virtual bool doDefaultPatrol {get { return true; } }
-	public virtual bool doDefaultInvestigate {get { return true; } }
-	public virtual bool doDefaultAlert {get { return true; } }
-	public virtual bool doDefaultSearch {get { return true; } }
+	public bool doDefaultPatrol = true;
+	public bool doDefaultInvestigate = true;
+	public bool doDefaultCautious = true;
+	public bool doDefaultAlert = true;
+	public bool doDefaultHunt = true;
+
+	//State variables
+	public EnemyStateVariables patrolVars = new EnemyStateVariables();
+	public EnemyStateVariables cautiousVars = new EnemyStateVariables();
+	public EnemyStateVariables investigateVars = new EnemyStateVariables();
+	public EnemyStateVariables alertVars = new EnemyStateVariables();
+	public EnemyStateVariables huntVars = new EnemyStateVariables();
+	private EnemyStateVariables currentVars;
 
 	//Player info
 	public GameObject player;
@@ -43,25 +73,12 @@ public class EnemyScript : SavableScript {
 	public float maxInvestigateTime;
 	public float maxSearchTime;
 
-	//Internally set speeds
-	public float noticeTurnSpeed;
-	public float alertedTurnSpeed;
-
 	//Agent and state speeds
 	public NavMeshAgent agent;
-	public float patrolSpeed;
-	public float alertSpeed;
-	public float searchSpeed;
-	public float investigateSpeed;
-	
-	public float patrolNoticeSpeed;
-	public float alertNoticeSpeed;
-	public float searchNoticeSpeed;
-	public float investigateNoticeSpeed;
 
 	//Patroling waypoints
 	public GameObject patrolPath;
-	public Transform[] waypoints;
+	public WayPoint[] waypoints;
 	public bool loop = true;
 
 	//Random values
@@ -70,32 +87,28 @@ public class EnemyScript : SavableScript {
 
 	//detection stuff
 	public EntityDetector detector;
-	public float minLightLevel = 0f;
-	public float minSpeed = 0f;
-	public float visionSensitivity = 1f;
-	public float motionSensitivity = 1f;
-
 	public SoundDetector soundDetector;
-	public float ignorableSoundLevel = 0f;
 
-	public int maxTimesInterestPiqued = 3;
-	public float maxInterest = 100f;
-	public float highInterestRate = 100f;
+	public GameObject highestPriorityVisibleEntity;
+	public float highestPriorityVisibility;
+	public GameObject highestPriorityInterestingEntity;
+	public float highestPriorityInterest;
+	public SoundData highestPrioritySound;
+	public float highestPriorityVolume;
+
+	public int maxInvestigations = 3;
+	public float interestRate = 0f;
 	
 	// Use this for initialization
 	protected virtual void Start () {
 		player = GameObject.Find ("Player");
 		agent = this.GetComponent<NavMeshAgent> ();
 
+		ChangeState (State.Patrol);
+
 		patrolPath.SetActive (true);
 
-		List<Transform> waypointList = new List<Transform> ();
-		waypoints = patrolPath.GetComponentsInChildren<Transform> ();
-		foreach(Transform child in waypoints){
-			if(child.CompareTag("WayPoint"))
-				waypointList.Add(child.transform);
-		}
-		waypoints = waypointList.ToArray ();
+		waypoints = patrolPath.GetComponentsInChildren<WayPoint> ();
 		patrolPath.SetActive (false);
 		agent = this.transform.GetComponent<NavMeshAgent> ();
 
@@ -113,182 +126,66 @@ public class EnemyScript : SavableScript {
 	void InGame () {
 		enemydata = (EnemyData)savedata;
 
-		DetectEntities ();
+		//get new interest from entity senses
+		float oldInterest = enemydata.interestLevel;
+		interestRate = Look() + Listen();
 
-		switch (enemydata.currentState) {
-		case State.Patrol:
-			agent.speed = patrolSpeed;
-			noticeTurnSpeed = patrolNoticeSpeed;
+		enemydata.interestLevel =  Mathf.Max (enemydata.interestLevel + interestRate, enemydata.interestLevel);
 
-			if (CanSee (player))
-				enemydata.currentState = State.Alert;
-			else if (CanNotice (player)){
-				enemydata.lastKnownPosition = player.transform.position;
-				enemydata.investigateTime = maxInvestigateTime;
-				enemydata.currentState = State.Investigate;
-			}
+		//if no new interest, relax interest
+		if (interestRate == 0)
+			RelaxInterest ();
 
-			break;
-
-		case State.Investigate:
-			agent.speed = investigateSpeed;
-			noticeTurnSpeed = investigateNoticeSpeed;
-
-			if (CanSee (player))
-				enemydata.currentState = State.Alert;
-			else if (CanNotice (player)){
-				enemydata.investigateTime = maxInvestigateTime;
-				enemydata.lastKnownPosition = player.transform.position;
-			} else if (enemydata.investigateTime > 0)
-				enemydata.investigateTime -= Time.deltaTime;
+		//do behavior, and repeat without changing sensed entities until we settle on a full behavior
+		do {
+			StateChanged = false;
+			if (doDefault)
+				defaultBehavior ();
 			else
-				enemydata.currentState = State.Patrol;
-
-			break;
+				customBehavior ();
+		} while(StateChanged);
 			
-		case State.Alert:
-			agent.speed = alertSpeed;
-			noticeTurnSpeed = alertNoticeSpeed;
-
-			enemydata.lastKnownPosition = player.transform.position;
-			if (!CanSee (player)){
-				enemydata.searchTime = maxSearchTime;
-				enemydata.currentState = State.Search;
-			}
-
-			break;
-		
-		case State.Search:
-			agent.speed = searchSpeed;
-			noticeTurnSpeed = searchNoticeSpeed;
-
-			if (CanSee (player))
-				enemydata.currentState = State.Alert;
-			else if (CanNotice (player)){
-				enemydata.searchTime = maxSearchTime;
-				enemydata.lastKnownPosition = player.transform.position;
-			} else if (enemydata.searchTime > 0)
-				enemydata.searchTime -= Time.deltaTime;
-			else
-				enemydata.currentState = State.Patrol;
-
-			break;
-		}
-
-		DoBehavior ();
-	}
-
-	public void DoBehavior(){
-		switch (enemydata.currentState) {
-		case State.Patrol:
-			if(doDefaultPatrol)
-				DefaultPatrol ();
-			Patrol ();
-			break;
-		case State.Investigate:
-			if(doDefaultInvestigate)
-				DefaultInvestigate ();
-			Investigate ();
-			break;
-		case State.Alert:
-			if(doDefaultAlert)
-				DefaultAlert ();
-			Alert ();
-			break;
-		case State.Search:
-			if(doDefaultSearch)
-				DefaultSearch ();
-			Search ();
-			break;
-		}
+		DebugExtension.DebugWireSphere (agent.destination, Color.red);
 	}
 	
 	public virtual void Patrol(){}
-	public virtual void Alert(){}
-	public virtual void Search(){}
+	public virtual void Cautious(){}
 	public virtual void Investigate(){}
-
-	public void DetectEntities(){
-		float newInterest = 0f;
-		GameObject highestPriorityEntity;
-		int highestPriority = 99;
-
-		//foreach entity visible to this guard
-		foreach (GameObject go in detector.entities.Keys) {
-			DetectionData dd = (DetectionData)detector.entities [go];
-
-			/*increase awareness about the entity*/
-
-			//get light, distance, and motion data about entity
-			float lightLevel = go.GetComponent<LightLevel> ().level;
-			float distance = Vector3.Distance (transform.position, go.transform.position);
-			VisionCone visionCone = dd.HighestPriorityCone ();
-			float distancePercent = distance / visionCone.length;
-
-//			TODO speed = magnitude of component of motion vector perpendicular to us, clamped
-//			Debug.DrawRay (go.transform.position, go.GetComponent<Rigidbody> ().velocity, Color.magenta);
-//
-//			Vector3 direction = go.transform.position - transform.position;
-//			Debug.DrawRay (go.transform.position, direction, Color.green);
-//
-//			Vector3 movementPerpendicular = Vector3.ProjectOnPlane (go.GetComponent<Rigidbody> ().velocity, direction);
-//			Debug.DrawRay (go.transform.position, movementPerpendicular, Color.cyan);
-//
-//			float relativeSpeed = movementPerpendicular.magnitude;
-			float relativeSpeed = go.GetComponent<Rigidbody> ().velocity.magnitude;
-
-			//if entity is directly visible, add interest based on light level only
-			if (dd.isDirect ()) {
-				//amount to add is porportional to light, sensitivity, amount of entity visible, distance to entity, and cone sensitivity
-				newInterest += lightLevel * visionSensitivity * dd.percentVisible * distancePercent * visionCone.sensitivity;
-
-				//TODO if light level high enough and distance low enough, we have seen the entity
-			}
-
-			//add interest based on motion
-			//amount to add is porportional to light, sensitivity, amount of entity visible, speed, distance to entity, and cone sensitivity
-			newInterest += lightLevel * motionSensitivity * dd.percentVisible * relativeSpeed * distancePercent * visionCone.sensitivity;
-
-			//TODO set highestPriorityInterestingEntity if priority of object is highest
-			if (dd.priority < highestPriority)
-				highestPriorityEntity = go;
-		}
-
-		//TODO add interest based on sounds
-		foreach (SoundData sd in soundDetector.sounds) {
-			if (sd.volume > ignorableSoundLevel) {
-				newInterest += maxInterest;
-				//TODO set highestPriorityInterestingEntity if priority of object is highest
-			}
-			soundDetector.RemoveSound (sd);
-		}
-
-		//TODO decrease interest if nothing interesting is happening
-//		if(newInterest = 0)
-
-		//add new interest
-		float oldInterest = enemydata.interestLevel;
-		enemydata.interestLevel = Mathf.Clamp (enemydata.interestLevel + newInterest, 0, maxInterest);
-
-		//if interest is newly full, and interest not currently piqued, then interest has been piqued
-		//or if newInterest is high enough, and interest is currently piqued, interest has been piqued again
-		if ((oldInterest != enemydata.interestLevel && enemydata.interestLevel == maxInterest && !enemydata.interestPiqued) 
-			|| (newInterest >= highInterestRate && enemydata.interestPiqued)) {
-			enemydata.interestPiqued = true;
-			enemydata.timesInterestPiqued = Mathf.Clamp (enemydata.timesInterestPiqued++, 0, maxTimesInterestPiqued);
-		}
-		//if newInterest is high enough, and interest is currently piqued, interest has been piqued again
-
-	}
+	public virtual void Alert(){}
+	public virtual void Hunt(){}
 
 	public void DefaultPatrol(){
-		Vector3 target = waypoints [enemydata.currentWaypoint].position;
+		//if player directly visible, go to alert state
+		if(highestPriorityVisibility > currentVars.visibleLightValue){
+			ChangeState (State.Alert);
+			return;
+		}
+
+		//if interestRate too high, go to investigate state
+		//TODO base this off times investigated too
+		if (interestRate >= currentVars.highInterestRate) {
+			ChangeState (State.Investigate);
+			return;
+		}
+
+		//if interest too high, go to cautious state
+		//TODO base this off times investigated too
+		if (enemydata.interestLevel >= currentVars.maxInterest) {
+			ChangeState (State.Cautious);
+			return;
+		}
+
+		//regular patrol
+		WayPoint wayPoint = waypoints [enemydata.currentWaypoint];
+		Vector3 target = wayPoint.transform.position;
 		Vector3 moveDirection = target - transform.position;
-		
+
+		//if at current waypoint, 
 		if (moveDirection.magnitude < 1.5) {
-			//			if (curTime == 0)
-			//				curTime = Time.time; // Pause over the Waypoint
-			//			if ((Time.time - curTime) >= pauseDuration){
+			//TODO pause for a time, and look around if need to
+//			PauseAndLook (wayPoint.pauseTime, wayPoint.lookAround);
+
+			//set to next waypoint
 			if (enemydata.movingForward) {
 				enemydata.currentWaypoint++;
 				if (enemydata.currentWaypoint > waypoints.Length - 1) {
@@ -310,42 +207,100 @@ public class EnemyScript : SavableScript {
 					}
 				}
 			}
-			//				curTime = 0;
-			//			}
-		}//else{        
-		//			var rotation = Quaternion.LookRotation(target - transform.position);
-		//			transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * dampingLook);
-		//			character.Move(moveDirection.normalized * patrolSpeed * Time.deltaTime);
-		//		} 
-		agent.SetDestination (waypoints[enemydata.currentWaypoint].position);
+
+			wayPoint = waypoints [enemydata.currentWaypoint];
+		}
+
+		//move towards current waypoint
+		agent.SetDestination (wayPoint.transform.position);
+	}
+
+	public void DefaultCautious(){
+		//if player directly visible, go to alert state
+		if(highestPriorityVisibility > currentVars.visibleLightValue){
+			ChangeState (State.Alert);
+			return;
+		}
+
+		//if interest too high, or built up rapidly go to investigate state
+		if (enemydata.interestLevel >= currentVars.maxInterest || interestRate >= currentVars.highInterestRate) {
+			ChangeState (State.Investigate);
+			return;
+		}
+
+		//if interest has dropped enough, go to patrol state
+//		if (enemydata.interestLevel == 0) {
+//			ChangeState (State.Patrol);
+//			return;
+//		}
+
+		//else, patrol but stop every so often to look around based off caution level
+
+
+
+		//		//TODO if reached lastknownposition, look left and right then pick a new one
+		//		if (Vector3.Distance (transform.position, enemydata.lastKnownPosition) < 1.5)
+		//			GetNewPosition (searchRandomness);
+		//		agent.SetDestination (enemydata.lastKnownPosition);
 	}
 
 	public void DefaultInvestigate(){
-		//TODO if reached lastknownposition, look left and right then pick a new one
-		if (Vector3.Distance (transform.position, enemydata.lastKnownPosition) < 1.5)
-			GetNewPosition (investigateRandomness);
-
-		Vector3 targetPoint = new Vector3(enemydata.lastKnownPosition	.x, transform.position.y, enemydata.lastKnownPosition.z) - transform.position;
-		if (Vector3.Angle (transform.forward, targetPoint) > 10) {
-			agent.ResetPath ();
-			TurnTowards (enemydata.lastKnownPosition, noticeTurnSpeed);
-		} else {
-			agent.SetDestination (enemydata.lastKnownPosition);
+		//if player directly visible or investigate triggered enough, go to alert state
+		if(highestPriorityVisibility > currentVars.visibleLightValue || enemydata.timesInvestigateTriggered > maxInvestigations){
+			ChangeState (State.Alert);
+			return;
 		}
+
+		//if interest has dropped enough, go to cautious state
+//		if (enemydata.interestLevel == 0) {
+//			ChangeState (State.Cautious);
+//			return;
+//		}
+
+		//if not at interesting location, move towards interesting location
+		//else, look around for some time, choose a new interesting location, or return to cautious state
+
+
+
+
+//		//TODO if reached lastknownposition, look left and right then pick a new one
+//		if (Vector3.Distance (transform.position, enemydata.lastKnownPosition) < 1.5)
+//			GetNewPosition (investigateRandomness);
+//
+//		Vector3 targetPoint = new Vector3(enemydata.lastKnownPosition	.x, transform.position.y, enemydata.lastKnownPosition.z) - transform.position;
+//		if (Vector3.Angle (transform.forward, targetPoint) > 10) {
+//			agent.ResetPath ();
+//			TurnTowards (enemydata.lastKnownPosition, noticeTurnSpeed);
+//		} else {
+//			agent.SetDestination (enemydata.lastKnownPosition);
+//		}
 	}
 
 	public void DefaultAlert(){
-		agent.SetDestination (player.transform.position);
+		//on first time here, alert other guards in vicinity
+		//after alerting other guards, go to hunt state
+
+
+
+//		agent.SetDestination (player.transform.position);
 	}
 
-	public void DefaultSearch(){
-		//TODO if reached lastknownposition, look left and right then pick a new one
-		if (Vector3.Distance (transform.position, enemydata.lastKnownPosition) < 1.5)
-			GetNewPosition (searchRandomness);
-		agent.SetDestination (enemydata.lastKnownPosition);
+	public void DefaultHunt(){
+		//if player directly visible
+			//move towards player
+			//update last known position
+
+			//TODO if at player, do something
+		//else
+			//move towards last known position
+			//if at last known position
+				//TODO sweep the area
 	}
 
-	public void GetNewPosition(float randomness){
+	public void PauseAndLook(float time, bool look){
+	}
+
+	public void GetRandomPosition(float randomness){
 		//TODO
 //		lastKnownPosition = transform.forward;
 //		lastKnownPosition += new Vector3 (lastKnownPosition.x + Random.Range (-randomness, randomness),
@@ -353,56 +308,158 @@ public class EnemyScript : SavableScript {
 //		                                 lastKnownPosition.z + Random.Range (-randomness, randomness));
 	}
 
+	public float Look(){
+		float newInterest = 0f;
+		highestPriorityVisibleEntity = null;
+		highestPriorityVisibility = 0f;
+		highestPriorityInterestingEntity = null;
+		highestPriorityInterest = 0f;
+
+		int highestVisiblePriority = 0;
+
+		//foreach entity visible to this guard
+		foreach (GameObject go in detector.entities.Keys) {
+			DetectionData dd = (DetectionData)detector.entities [go];
+
+			/*increase awareness about the entity*/
+
+			//get light, distance, and motion data about entity
+			float lightLevel = go.GetComponent<LightLevel> ().level;
+			float distance = Vector3.Distance (transform.position, go.transform.position);
+			VisionCone visionCone = dd.HighestPriorityCone ();
+			float distancePercent = distance / visionCone.length;
+
+			//			TODO speed = magnitude of component of motion vector perpendicular to us, clamped
+			//			Debug.DrawRay (go.transform.position, go.GetComponent<Rigidbody> ().velocity, Color.magenta);
+			//
+			//			Vector3 direction = go.transform.position - transform.position;
+			//			Debug.DrawRay (go.transform.position, direction, Color.green);
+			//
+			//			Vector3 movementPerpendicular = Vector3.ProjectOnPlane (go.GetComponent<Rigidbody> ().velocity, direction);
+			//			Debug.DrawRay (go.transform.position, movementPerpendicular, Color.cyan);
+			//
+			//			float relativeSpeed = movementPerpendicular.magnitude;
+			float relativeSpeed = go.GetComponent<Rigidbody> ().velocity.magnitude;
+
+			//if entity is directly visible, add interest based on light level only
+			float lightValue = 0f;
+			if (dd.isDirect ()) {
+				//amount to add is porportional to light, sensitivity, amount of entity visible, distance to entity, and cone sensitivity
+				lightValue = lightLevel * currentVars.visionSensitivity * dd.percentVisible * distancePercent * visionCone.sensitivity * Time.deltaTime;
+				newInterest += lightValue;
+
+				//if lightValue is high enough, entity is visible
+				//if priority is higher than current highest priority visible entity
+				Debug.Log(lightValue+" "+currentVars.visibleLightValue+" "+dd.priority+" "+highestVisiblePriority);
+				if(lightValue >= currentVars.visibleLightValue && dd.priority > highestVisiblePriority){
+					//set highest priority visible entity to this one
+					highestVisiblePriority = dd.priority;
+					highestPriorityVisibility = lightValue;
+					highestPriorityVisibleEntity = go;
+				}
+			}
+
+			//add interest based on motion
+			//amount to add is porportional to light, sensitivity, amount of entity visible, speed, distance to entity, and cone sensitivity
+			float motionValue = lightLevel * currentVars.motionSensitivity * dd.percentVisible * relativeSpeed * distancePercent * visionCone.sensitivity * Time.deltaTime;
+			newInterest += motionValue;
+
+			//if this entity has generated the most interest so far
+			if(lightValue + motionValue > highestPriorityInterest){
+				//set highest priority interesting entity to this one
+				highestPriorityInterest = lightValue + motionValue;
+				highestPriorityInterestingEntity = go;
+			}
+		}
+
+		return newInterest;
+	}
+
+	public float Listen(){
+		float newInterest = 0f;
+		highestPrioritySound = null;
+		highestPriorityVolume = 0f;
+
+		foreach (SoundData sd in soundDetector.sounds) {
+			if (sd.volume > currentVars.ignorableSoundLevel) {
+				//				newInterest += maxInterest;
+				newInterest += sd.volume * currentVars.soundSensitivity;
+
+				//if this sound is loudest
+				if (newInterest > highestPriorityVolume) {
+					//set highestPrioritySound to this one
+					highestPriorityVolume = newInterest;
+					highestPrioritySound = sd;
+				}
+			}
+		}
+		soundDetector.sounds.Clear ();
+
+		return newInterest;
+	}
+
+	public void RelaxInterest(){
+		enemydata.interestLevel = Mathf.Max (enemydata.interestLevel - currentVars.interestDecreaseRate * Time.deltaTime, 0);
+	}
+
 	public void TurnTowards(Vector3 target, float speed){
-		Vector3 targetPoint = new Vector3(target.x, transform.position.y, target.z) - transform.position;
+		Vector3 targetPoint = target - transform.position;
 		Quaternion targetRotation = Quaternion.LookRotation (targetPoint, Vector3.up);
 		transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * speed);
 	}
 	
 	public void ChangeState(State state){
+		StateChanged = true;
+
 		enemydata.previousState = enemydata.currentState;
 		enemydata.currentState = state;
-	}
-	
-	public bool CanSee(GameObject target){
-//		// Detect if target is within the field of view
-//		Vector3 direction = target.transform.position - transform.position;
-//		
-//		if((Vector3.Angle(direction, transform.forward)) < fovScript.frontFov){
-//			// Detect if target within viewDistance
-//			RaycastHit hit;
-//			if (Physics.Raycast (transform.position, direction, out hit, fovScript.frontViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
-//				if (hit.transform == target.transform)
-//					return true;
-//			}
-//		}
-		return false;
-	}
-	
-	public bool CanNotice(GameObject target){
-//		// Detect if target is within the peripheral view
-//		Vector3 direction = target.transform.position - transform.position;
-//		
-////		Debug.DrawRay(transform.position, direction, Color.red);
-//		
-//		RaycastHit hit;
-//		if((Vector3.Angle(direction, transform.forward)) < fovScript.peripheralFov){
-//			// Detect if player within peripheralViewDistance
-//			if (Physics.Raycast (transform.position, direction, out hit, fovScript.peripheralViewDistance, GlobalScript.IgnoreInteractableLayerMask)) {
-//				if (hit.transform == target.transform)
-//					return true;
-//			}
-//			return false;
-//		}
-//		
-//		// Detect if player is beind
-//		Physics.Raycast (transform.position, direction, out hit, fovScript.backViewDistance, GlobalScript.IgnoreInteractableLayerMask);
-//		if(hit.transform == target.transform){
-//			return true;
-//		}
-		
-		//TODO remove this once we do sound!
-		return false;	
-		//TODO Detect if player is heard
+		enemydata.interestLevel = 0;
+
+		//set vars correctly
+		switch (enemydata.currentState) {
+		case State.Patrol:
+			currentVars = patrolVars;
+			agent.speed = patrolVars.speed;
+
+			doDefault = doDefaultPatrol;
+			defaultBehavior = DefaultPatrol;
+			customBehavior = Patrol;
+
+			break;
+		case State.Cautious:
+			currentVars = cautiousVars;
+			agent.speed = cautiousVars.speed;
+
+			doDefault = doDefaultCautious;
+			defaultBehavior = DefaultCautious;
+			customBehavior = Cautious;
+			break;
+		case State.Investigate:
+			currentVars = investigateVars;
+			agent.speed = investigateVars.speed;
+
+			doDefault = doDefaultInvestigate;
+			defaultBehavior = DefaultInvestigate;
+			customBehavior = Investigate;
+
+			enemydata.timesInvestigateTriggered++;
+			break;
+		case State.Alert:
+			currentVars = alertVars;
+			agent.speed = alertVars.speed;
+
+			doDefault = doDefaultAlert;
+			defaultBehavior = DefaultAlert;
+			customBehavior = Alert;
+			break;
+		case State.Hunt:
+			currentVars = huntVars;
+			agent.speed = huntVars.speed;
+
+			doDefault = doDefaultHunt;
+			defaultBehavior = DefaultHunt;
+			customBehavior = Hunt;
+			break;
+		}
 	}
 }

@@ -31,7 +31,10 @@ GameObject:
   - 114: {fileID: 11400004}
   - 114: {fileID: 11410272}
   - 114: {fileID: 11476490}
-  m_Layer: 0
+  - 114: {fileID: 11474998}
+  - 114: {fileID: 11476080}
+  - 114: {fileID: 11419792}
+  m_Layer: 10
   m_Name: RigidBodyFPSController
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -47,7 +50,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: -360, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 400002}
   m_RootOrder: 0
@@ -57,10 +60,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100006}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000016292068}
-  m_LocalPosition: {x: -18.3, y: 1, z: -3.4}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071067}
+  m_LocalPosition: {x: -14.42, y: 1, z: -16.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
   m_Children:
   - {fileID: 400000}
   m_Father: {fileID: 0}
@@ -137,7 +140,7 @@ MonoBehaviour:
   CrouchScale: 0.5
   cam: {fileID: 2000000}
   movementSettings:
-    ForwardSpeed: 8
+    ForwardSpeed: 4
     BackwardSpeed: 4
     StrafeSpeed: 4
     RunMultiplier: 2
@@ -173,8 +176,8 @@ MonoBehaviour:
     invertX: 0
     invertY: 0
     clampVerticalRotation: 1
-    MinimumX: -45
-    MaximumX: 90
+    MinimumX: -89
+    MaximumX: 89
     smooth: 1
     smoothTime: 18
     lockCursor: 0
@@ -184,8 +187,8 @@ MonoBehaviour:
     invertX: 0
     invertY: 1
     clampVerticalRotation: 1
-    MinimumX: -90
-    MaximumX: 90
+    MinimumX: -89
+    MaximumX: 89
     smooth: 1
     smoothTime: 10
   advancedSettings:
@@ -263,7 +266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a278fbe4732774990f65e6dddef0a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uid: 
+  uid: 37caf920-ea71-442c-bdba-04ab58103d3a
   savedata:
     uid: 
     position: {x: 0, y: 0, z: 0}
@@ -273,6 +276,63 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
   currentState: 0
+  footStepRate: 4
+  footStepDistance: 30
+--- !u!114 &11419792
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cc8ec47006b2b24aaf4e50057fa2baf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attenuationOffset: 0.05
+  attenuationFactor: 25
+  distanceFactor: 2
+  rangeFactor: 2
+  intensityFactor: 1
+  spotIntensityFactor: 0.33
+  level: 0
+  lightSpots:
+  - {x: -15.238898, y: 0.9996359, z: -7.63013}
+  - {x: -15.238898, y: 1.3996359, z: -7.63013}
+  - {x: -15.238898, y: 0.59963584, z: -7.63013}
+  priority: 100
+  lightUI: {fileID: 0}
+  lightSlider: {fileID: 0}
+--- !u!114 &11474998
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e315c945409f77248b62cce220c59c49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priority: 1
+--- !u!114 &11476080
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29d3da32cefbf674ca0c2891a6da0a11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 50
+  clip: {fileID: 0}
+  volume: 0.01
+  minDistance: 10
+  maxDistance: 30
+  frequency: 2
+  timeSinceLast: 0
 --- !u!114 &11476490
 MonoBehaviour:
   m_ObjectHideFlags: 1

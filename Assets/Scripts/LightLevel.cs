@@ -9,6 +9,7 @@ public class LightLevel : MonoBehaviour {
 	public float distanceFactor = 2f;
 	public float rangeFactor = 2f;
 	public float intensityFactor = 1f;
+	public float spotIntensityFactor = 0.33f;
 	public float level = 0f;
 	public Vector3[] lightSpots;
 
@@ -53,16 +54,19 @@ public class LightLevel : MonoBehaviour {
 //				float attenuation = 1f / (1f + attenuationFactor * Mathf.Pow (distance, distanceFactor) / Mathf.Pow (light.range, rangeFactor));
 				float attenuation = 1f;
 				float cookieFactor = 1f;
+				float brightness = 0F;
 
 				if (light.type == LightType.Spot) {
 					cookieFactor = CalculateCookieAlpha (light, angle, point);
-					attenuation = cookieFactor * distance / light.range;
+					attenuation = (1 - distance / light.range);
+					Debug.Log (light.intensity+" "+cookieFactor+" "+attenuation);
+					brightness = light.intensity * spotIntensityFactor * attenuation * cookieFactor;
 				}
-//				else if (light.type == LightType.Point) {
+				else if (light.type == LightType.Point) {
 					attenuation = 1f / (1f + attenuationFactor * Mathf.Pow (distance, distanceFactor)) * Mathf.Pow (light.range, rangeFactor) - attenuationOffset;
-//				}
+					brightness = Mathf.Pow (light.intensity, intensityFactor) * attenuation;
+				}
 
-				float brightness = Mathf.Pow (light.intensity, intensityFactor) * attenuation * cookieFactor;
 				level += brightness;
 			}
 		}
