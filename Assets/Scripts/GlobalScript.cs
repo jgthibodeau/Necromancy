@@ -19,10 +19,13 @@ public class GlobalScript : MonoBehaviour {
 	public static bool GetButton(string action){
 		return Input.GetButtonDown (action);
 	}
+	public static bool GetButtonHeld(string action){
+		return Input.GetButton (action);
+	}
 	public static float GetTrigger(string action){
 		return Input.GetAxis (action);
 	}
-	public static Vector2 GetAxis(string action){
+	public static Vector2 GetStick(string action){
 		Vector2 stickInput = new Vector2 (Input.GetAxis ("Horizontal " + action), Input.GetAxis ("Vertical " + action));
 		if (stickInput.magnitude < deadzone)
 			stickInput = Vector2.zero;
@@ -34,6 +37,9 @@ public class GlobalScript : MonoBehaviour {
 //			stickInput = Vector2.zero;
 
 		return stickInput;
+	}
+	public static float GetAxis(string axis){
+		return Input.GetAxis (axis);
 	}
 
 	//Gamestate stuff

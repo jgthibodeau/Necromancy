@@ -225,9 +225,9 @@ public class PaintingScript : MonoBehaviour {
 		interact = GlobalScript.GetButton (GlobalScript.Interact);
 		cancel = GlobalScript.GetButton (GlobalScript.Cancel);
 		prevInputLeft = inputLeft;
-		inputLeft = GlobalScript.GetAxis(GlobalScript.LeftStick);
+		inputLeft = GlobalScript.GetStick(GlobalScript.LeftStick);
 		prevInputRight = inputRight;
-		inputRight = GlobalScript.GetAxis(GlobalScript.RightStick);
+		inputRight = GlobalScript.GetStick(GlobalScript.RightStick);
 		leftTrigger = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
 		rightTrigger = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
 	}

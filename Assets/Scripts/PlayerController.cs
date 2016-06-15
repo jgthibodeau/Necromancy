@@ -21,18 +21,26 @@ public class PlayerController : SavableScript {
 
 	private Transform camera;
 
-	private RigidbodyFirstPersonController firstPersonController;
+	private FpsController fpsController;
+
+	public AudioClip[] footStepClips;
+	public AudioClip jumpClip;
+	public AudioClip landClip;
+	public AudioClip crouchClip;
+	public AudioClip unCrouchClip;
+	public AudioClip[] distractionClips;
 
 	private DetectableSound detectableSounds;
 	public float footStepRate = 4f;
 	public float footStepDistance = 30f;
+	public float lastStep;
 
 	// Use this for initialization
 	void Start () {
 		savedata = playerdata;
 //		camera = GetComponentInChildren <Camera> ().transform;
 		camera = Camera.main.transform;
-		firstPersonController = GetComponent<RigidbodyFirstPersonController>();
+		fpsController = GetComponent<FpsController>();
 		detectableSounds = GetComponent<DetectableSound> ();
 	}
 
@@ -40,7 +48,7 @@ public class PlayerController : SavableScript {
 		if (GlobalScript.currentGameState == GlobalScript.GameState.InGame)
 			InGame ();
 		else
-			firstPersonController.doMovement = false;
+			fpsController.doMovement = false;
 	}
 
 	void InGame () {
@@ -51,7 +59,7 @@ public class PlayerController : SavableScript {
 		// Only do movement updates if in movement playerstate
 		switch (currentState) {
 		case State.Moving:
-			firstPersonController.doMovement = true;
+			fpsController.doMovement = true;
 			if (interact) {
 				InteractorScript interactor = GetComponent<InteractorScript> ();
 				if (interactor != null) {
@@ -60,15 +68,24 @@ public class PlayerController : SavableScript {
 			}
 			break;
 		case State.Interacting:
-			firstPersonController.doMovement = false;
+			fpsController.doMovement = false;
 			break;
 		}
 
-		//if moving, send out sound waves of appropriate strength and rate
-		float speed = firstPersonController.Velocity.magnitude;
-		float frequency = speed/firstPersonController.MaxSpeed;
-		detectableSounds.frequency = footStepRate * frequency;
-		detectableSounds.maxDistance = footStepDistance * frequency;
+		//if grounded and moving, make step sounds and send out sound waves of appropriate strength and rate
+		float speed = fpsController.Velocity.magnitude;
+		if (fpsController.IsGrounded && speed > 0) {
+			float period = footStepRate * fpsController.MaxSpeed / speed;
+
+			//TODO keep track of last step
+			if (Time.time - lastStep > period) {
+//				detectableSounds.frequency = footStepRate * frequency;
+//				detectableSounds.maxDistance = footStepDistance * period;
+				detectableSounds.Play(footStepClips[0], 0.01f, 10, footStepDistance * period, 30f);
+			}
+		}
+
+		//if jumped
 	}
 
 	void GetInput(){

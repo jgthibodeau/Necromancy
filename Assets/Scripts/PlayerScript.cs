@@ -118,8 +118,8 @@ public class PlayerScript : SavableScript {
 		cancel = GlobalScript.GetButton (GlobalScript.Cancel);
 		jump = GlobalScript.GetButton (GlobalScript.Jump);
 
-		moveInput = GlobalScript.GetAxis (GlobalScript.LeftStick);
-		lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
+		moveInput = GlobalScript.GetStick (GlobalScript.LeftStick);
+		lookInput = GlobalScript.GetStick (GlobalScript.RightStick);
 	}
 	
 	void FixedUpdate()

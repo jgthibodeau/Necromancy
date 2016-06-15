@@ -18,7 +18,7 @@ public class CameraFirstPersonScript : MonoBehaviour {
 
 	void LateUpdate () 
 	{
-		Vector2 lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
+		Vector2 lookInput = GlobalScript.GetStick (GlobalScript.RightStick);
 		//player moving camera
 		Vector3 rotation = transform.rotation.eulerAngles;
 		float newX = rotation.x + lookInput.y * controllerSensitivity.y *(controllerInvertY ? 1 : -1);

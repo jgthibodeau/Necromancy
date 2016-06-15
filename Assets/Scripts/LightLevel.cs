@@ -59,7 +59,6 @@ public class LightLevel : MonoBehaviour {
 				if (light.type == LightType.Spot) {
 					cookieFactor = CalculateCookieAlpha (light, angle, point);
 					attenuation = (1 - distance / light.range);
-					Debug.Log (light.intensity+" "+cookieFactor+" "+attenuation);
 					brightness = light.intensity * spotIntensityFactor * attenuation * cookieFactor;
 				}
 				else if (light.type == LightType.Point) {

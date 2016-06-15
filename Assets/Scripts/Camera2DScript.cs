@@ -20,7 +20,7 @@ public class Camera2DScript : MonoBehaviour {
 			//TODO only add this if it won't push the camera into a wall
 			//ensure camera will not allow for looking beyond walls?
 
-			Vector2 lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
+			Vector2 lookInput = GlobalScript.GetStick (GlobalScript.RightStick);
 			//player moving camera
 			if (lookInput.magnitude > 0) {
 				projectedTarget.z += lookInput.y * cameraRange;

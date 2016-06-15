@@ -254,7 +254,7 @@ public class KeyLockScript : ToggleableScript {
 		unlock = GlobalScript.GetButton (GlobalScript.Interact);
 		cancel = GlobalScript.GetButton (GlobalScript.Cancel);
 		prevPickInput = pickInput;
-		pickInput = GlobalScript.GetAxis(GlobalScript.LeftStick).x;
+		pickInput = GlobalScript.GetStick(GlobalScript.LeftStick).x;
 		wrenchInput = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
 		pickHeightInput = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
 	}
