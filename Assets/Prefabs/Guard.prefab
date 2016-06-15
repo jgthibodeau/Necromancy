@@ -329,7 +329,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 89.980194, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 493606}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!4 &493606
 Transform:
   m_ObjectHideFlags: 1
@@ -344,8 +344,8 @@ Transform:
   - {fileID: 461454}
   - {fileID: 482736}
   - {fileID: 451904}
-  - {fileID: 497020}
   - {fileID: 488150}
+  - {fileID: 497020}
   - {fileID: 499466}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -374,7 +374,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 493606}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!4 &499466
 Transform:
   m_ObjectHideFlags: 1
@@ -897,7 +897,7 @@ MonoBehaviour:
   generationMode: 0
   normalsType: 0
   pivotPosition: 1
-  radius: 30
+  radius: 10
   segments: 20
   coneAngle: 220
 --- !u!114 &11408160
@@ -1054,7 +1054,7 @@ MonoBehaviour:
   generationMode: 0
   normalsType: 0
   pivotPosition: 1
-  radius: 30
+  radius: 10
   segments: 20
   coneAngle: 60
 --- !u!114 &11464374
@@ -1078,7 +1078,7 @@ MonoBehaviour:
   generationMode: 0
   normalsType: 0
   pivotPosition: 1
-  radius: 30
+  radius: 10
   segments: 20
   coneAngle: 120
 --- !u!114 &11469498
@@ -1150,7 +1150,7 @@ MonoBehaviour:
   generationMode: 0
   normalsType: 0
   pivotPosition: 1
-  radius: 40
+  radius: 15
   segments: 20
   coneAngle: 10
 --- !u!114 &11479968
@@ -1199,7 +1199,7 @@ MonoBehaviour:
   generationMode: 0
   normalsType: 0
   pivotPosition: 1
-  radius: 5
+  radius: 3
   segments: 20
   coneAngle: 150
 --- !u!114 &11496144
@@ -1290,7 +1290,7 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 2100000, guid: 272ba847f100d4251bb8260575189042, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0

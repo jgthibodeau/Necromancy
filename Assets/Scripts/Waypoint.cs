@@ -11,6 +11,10 @@ public class Waypoint : MonoBehaviour {
 //	public bool lookAround = false;
 //	public bool lookForward = false;
 
+	public void Start(){
+		GetComponent<MeshRenderer> ().enabled = false;
+	}
+
 	public void OnTriggerEnter(Collider collider)
 	{
 		if (collider.tag == "Enemy")
