@@ -8,6 +8,7 @@ TagManager:
   - WayPoint
   - Interactable
   - Eyes
+  - Enemy
   layers:
   - Default
   - TransparentFX

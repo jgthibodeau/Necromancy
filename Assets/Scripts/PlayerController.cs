@@ -31,6 +31,7 @@ public class PlayerController : SavableScript {
 	public AudioClip[] distractionClips;
 
 	private DetectableSound detectableSounds;
+	public float footStepVolume = 0.1f;
 	public float footStepRate = 4f;
 	public float footStepDistance = 30f;
 	public float lastStep;
@@ -76,12 +77,14 @@ public class PlayerController : SavableScript {
 		float speed = fpsController.Velocity.magnitude;
 		if (fpsController.IsGrounded && speed > 0) {
 			float period = footStepRate * fpsController.MaxSpeed / speed;
-
+//			Debug.Log (period);
 			//TODO keep track of last step
 			if (Time.time - lastStep > period) {
+				lastStep = Time.time;
 //				detectableSounds.frequency = footStepRate * frequency;
 //				detectableSounds.maxDistance = footStepDistance * period;
-				detectableSounds.Play(footStepClips[0], 0.01f, 10, footStepDistance * period, 30f);
+				int index = Random.Range (0, footStepClips.Length);
+				detectableSounds.Play(footStepClips[index], footStepVolume, footStepVolume, 10, footStepDistance / period, 30f);
 			}
 		}
 

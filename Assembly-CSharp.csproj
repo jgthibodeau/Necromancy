@@ -162,6 +162,7 @@
      <Compile Include="Assets\SampleScenes\Scripts\ParticleSceneControls.cs" />
      <Compile Include="Assets\SampleScenes\Scripts\PlaceTargetWithMouse.cs" />
      <Compile Include="Assets\SampleScenes\Scripts\SlowMoButton.cs" />
+     <Compile Include="Assets\Scripts\AgentController.cs" />
      <Compile Include="Assets\Scripts\AnimationScript.cs" />
      <Compile Include="Assets\Scripts\Camera2DScript.cs" />
      <Compile Include="Assets\Scripts\Camera3DScript.cs" />
@@ -210,8 +211,9 @@
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
      <Compile Include="Assets\Scripts\ViewFogScript.cs" />
      <Compile Include="Assets\Scripts\VisionCone.cs" />
-     <Compile Include="Assets\Scripts\WayPoint.cs" />
+     <Compile Include="Assets\Scripts\Waypoint.cs" />
      <Compile Include="Assets\Scripts\WeaponScript.cs" />
+     <Compile Include="Assets\WaypointFollower.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\DebugDrawingExtension\readme.txt" />

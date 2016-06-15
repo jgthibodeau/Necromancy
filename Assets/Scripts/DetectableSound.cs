@@ -24,7 +24,7 @@ public class DetectableSound : MonoBehaviour {
 //			timeSinceLast = 0;
 	}
 
-	public void Play(AudioClip clip, float volume, float minDistance, float maxDistance, float speed){
+	public void Play(AudioClip clip, float clipVolume, float detectableVolume, float minDistance, float maxDistance, float speed){
 		GameObject wave =  new GameObject ();
 		wave.name = "Sound Wave";
 		wave.transform.position = transform.position;
@@ -33,10 +33,11 @@ public class DetectableSound : MonoBehaviour {
 		SphereCollider collider = wave.AddComponent<SphereCollider> ();
 		collider.isTrigger = true;
 
+		AudioSource audioSource = null;
 		if (clip != null) {
-			AudioSource audioSource = wave.AddComponent <AudioSource> ();
+			audioSource = wave.AddComponent <AudioSource> ();
 			audioSource.clip = clip;
-			audioSource.volume = volume;
+			audioSource.volume = clipVolume;
 			audioSource.spatialBlend = 1;
 			audioSource.dopplerLevel = 5;
 			audioSource.rolloffMode = AudioRolloffMode.Linear;
@@ -49,34 +50,8 @@ public class DetectableSound : MonoBehaviour {
 		SoundWave waveScript = wave.AddComponent<SoundWave> ();
 		waveScript.maxMagnitude = maxDistance;
 		waveScript.speed = speed;
-		waveScript.volume = volume;
+		waveScript.volume = detectableVolume;
+		waveScript.collider = collider;
+		waveScript.audioSource = audioSource;
 	}
-
-//	public void CreateWave(){
-//		GameObject wave =  new GameObject ();
-//		wave.name = "Sound Wave";
-//		wave.transform.position = transform.position;
-//		wave.layer = LayerMask.NameToLayer("Ignore Raycast");
-//
-//		SphereCollider collider = wave.AddComponent<SphereCollider> ();
-//		collider.isTrigger = true;
-//
-//		if (clip != null) {
-//			AudioSource audioSource = wave.AddComponent <AudioSource> ();
-//			audioSource.clip = clip;
-//			audioSource.volume = volume;
-//			audioSource.spatialBlend = 1;
-//			audioSource.dopplerLevel = 5;
-//			audioSource.rolloffMode = AudioRolloffMode.Linear;
-//			audioSource.minDistance = minDistance;
-//			audioSource.maxDistance = maxDistance;
-//
-//			audioSource.Play ();
-//		}
-//
-//		SoundWave waveScript = wave.AddComponent<SoundWave> ();
-//		waveScript.maxMagnitude = maxDistance;
-//		waveScript.speed = speed;
-//		waveScript.volume = volume;
-//	}
 }

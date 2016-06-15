@@ -48,11 +48,9 @@ public class FpsController : MonoBehaviour {
 	private CharacterController characterController;
 	private CollisionFlags collisionFlags;
 	private Vector3 moveDir = Vector3.zero;
-	private Vector3 prevPosition;
-	private Vector3 velocity = Vector3.zero;
 
 	public Vector3 Velocity{
-		get { return velocity; }
+		get { return characterController.velocity; }
 	}
 
 	public float MaxSpeed {
@@ -73,13 +71,10 @@ public class FpsController : MonoBehaviour {
 //		collider = GetComponent<CapsuleCollider> ();
 		height = characterController.height;
 		cameraTransform = Camera.main.transform;
-		prevPosition = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		velocity = (transform.position - prevPosition)/Time.deltaTime;
-		prevPosition = transform.position;
 
 		GetInput ();
 

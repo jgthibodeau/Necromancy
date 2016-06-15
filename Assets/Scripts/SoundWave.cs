@@ -7,6 +7,7 @@ public class SoundWave : MonoBehaviour {
 	public float magnitude;
 	public float speed;
 	public SphereCollider collider;
+	public AudioSource audioSource;
 	private int enemyLayer;
 
 	public float Strength {
@@ -19,19 +20,27 @@ public class SoundWave : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		collider = GetComponent<SphereCollider> ();
+//		audioSource = GetComponent<AudioSource> ();
+//		collider = GetComponent<SphereCollider> ();
 		enemyLayer = LayerMask.NameToLayer("Enemy");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		DebugExtension.DebugCircle (transform.position, magnitude);
+		if (magnitude < maxMagnitude) {
+			DebugExtension.DebugCircle (transform.position, magnitude);
 
-		magnitude = magnitude + speed * Time.deltaTime;
-		collider.radius = magnitude;
+			magnitude = magnitude + speed * Time.deltaTime;
+			collider.radius = magnitude;
+		}
 
-		if (magnitude > maxMagnitude)
+		if (magnitude > maxMagnitude) {
 			Destroy (gameObject);
+			collider.enabled = false;
+
+			if (audioSource == null || !audioSource.isPlaying)
+				Destroy (gameObject);
+		}
 	}
 
 	void OnTriggerEnter(Collider other) {

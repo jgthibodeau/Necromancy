@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class CopSpawnerScript : MonoBehaviour {
-	public GameObject copPath;
+	public Transform copPath;
 	public GameObject cop;
 	private bool called = false;
 
@@ -22,7 +22,7 @@ public class CopSpawnerScript : MonoBehaviour {
 
 				CopScript copScript = cop.GetComponentInChildren<CopScript> ();
 				copScript.enemydata.currentState = EnemyScript.State.Patrol;
-				copScript.patrolPath = copPath;
+				copScript.agentController.SetWaypointParent(copPath);
 
 				GameObject copClone = (GameObject)Instantiate (cop, transform.position, transform.rotation);
 				copClone.transform.position += new Vector3 (Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));

@@ -66,6 +66,9 @@ public class EnemyScript : SavableScript {
 	public EnemyStateVariables huntVars = new EnemyStateVariables();
 	private EnemyStateVariables currentVars;
 
+	//Patrol pathing
+	public AgentController agentController;
+
 	//Player info
 	public GameObject player;
 
@@ -75,11 +78,6 @@ public class EnemyScript : SavableScript {
 
 	//Agent and state speeds
 	public NavMeshAgent agent;
-
-	//Patroling waypoints
-	public GameObject patrolPath;
-	public WayPoint[] waypoints;
-	public bool loop = true;
 
 	//Random values
 	public float investigateRandomness;
@@ -106,14 +104,9 @@ public class EnemyScript : SavableScript {
 
 		ChangeState (State.Patrol);
 
-		patrolPath.SetActive (true);
-
-		waypoints = patrolPath.GetComponentsInChildren<WayPoint> ();
-		patrolPath.SetActive (false);
-		agent = this.transform.GetComponent<NavMeshAgent> ();
-
 		detector = GetComponentInChildren<EntityDetector> ();
 		soundDetector = GetComponentInChildren<SoundDetector> ();
+		agentController = GetComponent <AgentController> ();
 
 		savedata = enemydata;
 	}
@@ -175,44 +168,8 @@ public class EnemyScript : SavableScript {
 			return;
 		}
 
-		//regular patrol
-		WayPoint wayPoint = waypoints [enemydata.currentWaypoint];
-		Vector3 target = wayPoint.transform.position;
-		Vector3 moveDirection = target - transform.position;
-
-		//if at current waypoint, 
-		if (moveDirection.magnitude < 1.5) {
-			//TODO pause for a time, and look around if need to
-//			PauseAndLook (wayPoint.pauseTime, wayPoint.lookAround);
-
-			//set to next waypoint
-			if (enemydata.movingForward) {
-				enemydata.currentWaypoint++;
-				if (enemydata.currentWaypoint > waypoints.Length - 1) {
-					if (loop)
-						enemydata.currentWaypoint = 0;
-					else {
-						enemydata.currentWaypoint--;
-						enemydata.movingForward = false;
-					}
-				}
-			} else {
-				enemydata.currentWaypoint--;
-				if (enemydata.currentWaypoint < 0) {
-					if (loop)
-						enemydata.currentWaypoint = waypoints.Length - 1;
-					else {
-						enemydata.currentWaypoint++;
-						enemydata.movingForward = true;
-					}
-				}
-			}
-
-			wayPoint = waypoints [enemydata.currentWaypoint];
-		}
-
-		//move towards current waypoint
-		agent.SetDestination (wayPoint.transform.position);
+		//follow regular patrol path
+		agentController.ResumePath ();
 	}
 
 	public void DefaultCautious(){
@@ -350,7 +307,7 @@ public class EnemyScript : SavableScript {
 
 				//if lightValue is high enough, entity is visible
 				//if priority is higher than current highest priority visible entity
-				Debug.Log(lightValue+" "+currentVars.visibleLightValue+" "+dd.priority+" "+highestVisiblePriority);
+//				Debug.Log(lightValue+" "+currentVars.visibleLightValue+" "+dd.priority+" "+highestVisiblePriority);
 				if(lightValue >= currentVars.visibleLightValue && dd.priority > highestVisiblePriority){
 					//set highest priority visible entity to this one
 					highestVisiblePriority = dd.priority;
