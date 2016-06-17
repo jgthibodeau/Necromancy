@@ -40,7 +40,7 @@ public class KeyLock3DUIScript : UI3DScript{
 			}
 			else */if(!keylock.CorrectHeight(keylock.currentTumblerToPick))
 				randomAngle = Random.Range (-2, 2);
-			wrench.transform.rotation = Quaternion.Euler (0, 0, 315 + 45 * keylock.pickHeightInput + randomAngle);
+			wrench.transform.localRotation = Quaternion.Euler (0, 0, 315 + 45 * keylock.pickHeightInput + randomAngle);
 
 			//set lockpick and add randomness as appropriate
 			//want to stop at z -.075, y .05
@@ -49,7 +49,7 @@ public class KeyLock3DUIScript : UI3DScript{
 			randomAngle = 0f;
 			if(keylock.wiggleLockpick)
 				randomAngle = Random.Range (-2, 2);
-			lockpick.rotation = Quaternion.Euler (randomAngle, 0, 0);
+			lockpick.localRotation = Quaternion.Euler (randomAngle, 0, 0);
 
 
 //			foreach(Transform r in rotatables){
