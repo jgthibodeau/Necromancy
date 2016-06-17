@@ -23,6 +23,7 @@ public class InteractorScript : MonoBehaviour {
 	public void Interact(Transform source){
 		RaycastHit hit;
 		if (Physics.Raycast (source.position, source.forward, out hit, range, GlobalScript.InteractableLayerMask)) {
+			Debug.Log (hit + " " + hit.transform);
 			InteractableScript interactable = hit.transform.GetComponent<InteractableScript> ();
 			Debug.Log (interactable);
 			if(interactable != null)

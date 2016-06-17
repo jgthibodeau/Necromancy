@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 public class LockedData : SaveData{
 	public bool locked = true;
 	public bool opened = false;
+	public bool initiallyOpen = false;
 
 	public LockedData () : base () {}
 	public LockedData (SerializationInfo info, StreamingContext ctxt) : base(info, ctxt) {}
@@ -17,8 +18,10 @@ public class LockedScript : InteractableScript {
 	public GameObject lockObject;
 	public GameObject openedObject;
 	public GameObject closedObject;
+	public GameObject animatedObject;
 
 	public bool toggleable = true;
+	private bool useAnimations;
 	
 	public override void Interact(GameObject go){
 		if (lockeddata.locked) {
@@ -28,41 +31,53 @@ public class LockedScript : InteractableScript {
 				
 				//create keylock instance
 				lockObject.GetComponent<ToggleableScript>().Activate();
-//				lockObject.transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane));
-//				lockObject.transform.position = new Vector3 (lockObject.transform.position.x, go.transform.position.y + 5, lockObject.transform.position.z);
 			}
 		} else if (toggleable){
 			lockeddata.opened = !lockeddata.opened;
+
+			if (lockeddata.opened)
+				Open ();
+			else
+				Close ();
 		}
 	}
 
 	void Start(){
 		savedata = lockeddata;
+		useAnimations = (animatedObject != null);
 	}
 
-	void Update(){
-		lockeddata = (LockedData)savedata;
-
-		if (lockeddata.opened)
-			Open ();
-		else
-			Close ();
-	}
+//	void Update(){
+//		lockeddata = (LockedData)savedata;
+//
+//		if (lockeddata.opened)
+//			Open ();
+//		else
+//			Close ();
+//	}
 	
 	public void SetLocked(bool l){
 		lockeddata.locked = l;
 	}
 
 	public void Open(){
-		if (closedObject.activeInHierarchy) {
-			closedObject.SetActiveRecursively (false);
-			openedObject.SetActiveRecursively (true);
+		if (useAnimations) {
+			animatedObject.GetComponent<Animator> ().SetBool ("open", true);
+		} else {
+			if (closedObject.activeInHierarchy) {
+				closedObject.SetActiveRecursively (false);
+				openedObject.SetActiveRecursively (true);
+			}
 		}
 	}
 	public void Close(){
-		if (openedObject.activeInHierarchy) {
-			openedObject.SetActiveRecursively (false);
-			closedObject.SetActiveRecursively (true);
+		if (useAnimations) {
+			animatedObject.GetComponent<Animator> ().SetBool ("open", false);
+		} else {
+			if (openedObject.activeInHierarchy) {
+				openedObject.SetActiveRecursively (false);
+				closedObject.SetActiveRecursively (true);
+			}
 		}
 	}
 }

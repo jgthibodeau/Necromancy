@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\3dSpatialAudio\scripts\TwirlingSPAudioSource.cs" />
      <Compile Include="Assets\3rdPersonCamera\DemoSceneDependencies\Scripts\BallController.cs" />
      <Compile Include="Assets\3rdPersonCamera\DemoSceneDependencies\Scripts\CaretFix.cs" />
      <Compile Include="Assets\3rdPersonCamera\DemoSceneDependencies\Scripts\Reset.cs" />
@@ -58,10 +59,38 @@
      <Compile Include="Assets\3rdPersonCamera\Scripts\Targetable.cs" />
      <Compile Include="Assets\AxeyWorks\Low Poly v2\Scripts\PolyWater.cs" />
      <Compile Include="Assets\ConstantRotate.cs" />
+     <Compile Include="Assets\Controller Tester\Scripts\DetectUnknownControllerMappings.cs" />
      <Compile Include="Assets\DebugDrawingExtension\DebugExtension.cs" />
      <Compile Include="Assets\DebugDrawingExtension\Example\Example.cs" />
      <Compile Include="Assets\Detectable.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\CameraFollow.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\CameraView.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\CharacterFootsteps.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\DemoUI.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\FirstPersonController.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\FootstepTrigger.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\SurfaceManager.cs" />
+     <Compile Include="Assets\FREE Footsteps System\scripts\TopDownController.cs" />
+     <Compile Include="Assets\FirstPersonView\Example\Scripts\FPV_Example_Player.cs" />
+     <Compile Include="Assets\FirstPersonView\Example\Scripts\FPV_Example_Weapon.cs" />
+     <Compile Include="Assets\FirstPersonView\Example\Scripts\Test.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Camera\Base\FPV_Camera.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Camera\Base\IFPV_Camera.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Camera\FPV_FinalCamera.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Camera\FPV_FirstPersonCamera.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Camera\FPV_WorldCamera.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Objects\Base\IFPV_Object.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Objects\FPV_Object.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Objects\FPV_Object_Custom.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Objects\FPV_Object_DisableOnly.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Renderer\Base\FPV_Renderer_Base.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Renderer\Base\IFPV_Renderer.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Renderer\FPV_Renderer.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Renderer\FPV_Renderer_Custom.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\Renderer\FPV_Renderer_DisableOnly.cs" />
+     <Compile Include="Assets\FirstPersonView\Scripts\_Static\FPV.cs" />
      <Compile Include="Assets\FpsController.cs" />
+     <Compile Include="Assets\HUDFPS.cs" />
      <Compile Include="Assets\Lux 2.01 Personal\Lux Scripts\Lux TexturePostprocessor\LuxTexturePostprocessor.cs" />
      <Compile Include="Assets\Lux 2.01 Personal\Lux Scripts\LuxAreaLight.cs" />
      <Compile Include="Assets\Lux 2.01 Personal\Lux Scripts\LuxAttributes.cs" />
@@ -190,6 +219,7 @@
      <Compile Include="Assets\Scripts\HealthScript.cs" />
      <Compile Include="Assets\Scripts\InteractableScript.cs" />
      <Compile Include="Assets\Scripts\InteractorScript.cs" />
+     <Compile Include="Assets\Scripts\KeyLock3DUIScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockScript.cs" />
      <Compile Include="Assets\Scripts\KeyLockUIScript.cs" />
      <Compile Include="Assets\Scripts\LightLevel.cs" />
@@ -211,6 +241,7 @@
      <Compile Include="Assets\Scripts\Sprite3DScript.cs" />
      <Compile Include="Assets\Scripts\StaticCoroutine.cs" />
      <Compile Include="Assets\Scripts\ToggleableScript.cs" />
+     <Compile Include="Assets\Scripts\UI3DScript.cs" />
      <Compile Include="Assets\Scripts\UIScript.cs" />
      <Compile Include="Assets\Scripts\UniqueId.cs" />
      <Compile Include="Assets\Scripts\Unrotatable.cs" />
@@ -218,7 +249,9 @@
      <Compile Include="Assets\Scripts\VisionCone.cs" />
      <Compile Include="Assets\Scripts\Waypoint.cs" />
      <Compile Include="Assets\Scripts\WeaponScript.cs" />
+     <Compile Include="Assets\SpriteShadow.cs" />
      <Compile Include="Assets\WaypointFollower.cs" />
+     <None Include="Assets\3dSpatialAudio\Readme.txt" />
      <None Include="Assets\Lux 2.01 Personal\Lux Shaders\Lux custom Standard Shaders\Standard FullFeatures.shader" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
@@ -245,6 +278,7 @@
      <None Include="Assets\ProCore\ProGroups\About\changelog.txt" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\SunShaftsComposite.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrectionCurves.shader" />
+     <None Include="Assets\3dSpatialAudio\ReleaseNote.txt" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\ScreenSpaceAmbientObscurance.shader" />
      <None Include="Assets\Lux 2.01 Personal\Lux Shaders\Lux custom Standard Shaders\Standard Tessellation DynamicWeather MixMapping.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\NFAA.shader" />
@@ -392,6 +426,7 @@
      <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Lux 2.01 Personal\Lux Shaders\Lux custom Standard Shaders\Standard Terrain FirstPass.shader" />
+     <None Include="Assets\Medieval_Toon_Character\ReadMe.txt" />
      <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\SimpleClear.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAdd.shader" />

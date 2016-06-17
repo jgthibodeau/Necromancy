@@ -51,7 +51,7 @@ public class KeyLockScript : ToggleableScript {
 	public override void Start(){
 		base.Start ();
 
-		lockpickX = -3f;
+		lockpickX = 0;
 
 		rotatable = new GameObject().transform;
 
@@ -62,7 +62,7 @@ public class KeyLockScript : ToggleableScript {
 			keylockdata.tumblerOrder[i] = i;
 		}
 		GlobalScript.ShuffleArray<int> (keylockdata.tumblerOrder);
-		tumblerSize = 2.5f / keylockdata.correctHeights.Length;
+		tumblerSize = 1f / keylockdata.correctHeights.Length;
 		tensionStep = 1f / (keylockdata.correctHeights.Length+1);
 		SetDefaults ();
 
@@ -75,13 +75,15 @@ public class KeyLockScript : ToggleableScript {
 	}
 
 	public override void Activate(){
-		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().SetLock (this);
-		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().Open ();
+//		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().SetLock (this);
+//		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().Open ();
+		GameObject.Find ("KeyLock3DUI").GetComponent<KeyLock3DUIScript>().SetLock (this);
+		GameObject.Find ("KeyLock3DUI").GetComponent<KeyLock3DUIScript>().Open ();
 		base.Activate ();
 	}
 
 	public override void Deactivate(){
-		GameObject.Find ("KeyLockUI").GetComponent<KeyLockUIScript>().Close ();
+		GameObject.Find ("KeyLock3DUI").GetComponent<KeyLock3DUIScript>().Close ();
 		base.Deactivate ();
 	}
 	
@@ -113,24 +115,25 @@ public class KeyLockScript : ToggleableScript {
 				currentHeights [keylockdata.tumblerOrder[i]] = 0;
 
 			//Set current tumbler
-			oldTumbler = (int)((-0.5f - lockpickX) / tumblerSize);
+			oldTumbler = (int)(lockpickX / tumblerSize);
 			if (oldTumbler >= currentHeights.Length)
 				oldTumbler = currentHeights.Length - 1;
 
 			float offset = 0f;
-			if (pickInput < 0f && lockpickX > -3f) {
+			if (pickInput < 0f && lockpickX > 0f) {
 				offset = pickInput * changeTumblerSpeed * Time.deltaTime;
-				if (lockpickX + offset < -3f)
-					offset = -3f - lockpickX;
+				if (lockpickX + offset < 0)
+					offset = 0f - lockpickX;
 			}
-			if (pickInput > 0f && lockpickX < -0.5f) {
+			if (pickInput > 0f && lockpickX < 1f) {
 				offset = pickInput * changeTumblerSpeed * Time.deltaTime;
-				if (lockpickX + offset > -0.5f)
-					offset = -0.5f - lockpickX;
+				if (lockpickX + offset > 1f)
+					offset = 1f - lockpickX;
 			}
 			if (offset != 0f)
 				lockpickX += offset;
-			currentTumblerBeingPicked = (int)((-0.5f - lockpickX) / tumblerSize);
+			currentTumblerBeingPicked = (int)(lockpickX / tumblerSize);
+			Debug.Log (lockpickX + " " + tumblerSize + " " + currentTumblerBeingPicked);
 
 			if (currentTumblerBeingPicked >= currentHeights.Length)
 				currentTumblerBeingPicked = currentHeights.Length - 1;
@@ -254,7 +257,7 @@ public class KeyLockScript : ToggleableScript {
 		unlock = GlobalScript.GetButton (GlobalScript.Interact);
 		cancel = GlobalScript.GetButton (GlobalScript.Cancel);
 		prevPickInput = pickInput;
-		pickInput = GlobalScript.GetStick(GlobalScript.LeftStick).x;
+		pickInput = GlobalScript.GetStick(GlobalScript.LeftStick).y;
 		wrenchInput = GlobalScript.GetTrigger (GlobalScript.LeftTrigger);
 		pickHeightInput = GlobalScript.GetTrigger (GlobalScript.RightTrigger);
 	}

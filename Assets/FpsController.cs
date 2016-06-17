@@ -86,6 +86,8 @@ public class FpsController : MonoBehaviour {
 			Lean ();
 			Crouch ();
 			Move ();
+		} else {
+			Stop ();
 		}
 		Fall ();
 
@@ -138,6 +140,16 @@ public class FpsController : MonoBehaviour {
 				moveDir.y = jumpSpeed;
 				isJumping = true;
 			}
+		}
+	}
+
+	private void Stop(){
+		if (smoothMove) {
+			moveDir.x = Mathf.Lerp (moveDir.x, 0, smoothFactor * Time.deltaTime);
+			moveDir.z = Mathf.Lerp (moveDir.z, 0, smoothFactor * Time.deltaTime);
+		} else {
+			moveDir.x = 0;
+			moveDir.y = 0;
 		}
 	}
 
