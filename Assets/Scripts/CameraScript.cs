@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Camera2DScript : MonoBehaviour {
+public class CameraScript : MonoBehaviour {
 	public float dampTime = 1f;
 	public float cameraRange = 5f;
 	public float cameraHeight = 1f;
@@ -30,6 +30,8 @@ public class Camera2DScript : MonoBehaviour {
 			else {
 				projectedTarget += target.forward * cameraRange;
 			}
+
+			projectedTarget += target.up * cameraRange;
 
 			Vector3 point = GetComponent<Camera>().WorldToViewportPoint(projectedTarget);
 			Vector3 delta = projectedTarget - GetComponent<Camera>().ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z));

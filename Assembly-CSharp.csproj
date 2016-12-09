@@ -201,6 +201,7 @@
      <Compile Include="Assets\Scripts\Camera2DScript.cs" />
      <Compile Include="Assets\Scripts\Camera3DScript.cs" />
      <Compile Include="Assets\Scripts\CameraFirstPersonScript.cs" />
+     <Compile Include="Assets\Scripts\CameraScript.cs" />
      <Compile Include="Assets\Scripts\ConfirmationDialogScript.cs" />
      <Compile Include="Assets\Scripts\CopScript.cs" />
      <Compile Include="Assets\Scripts\CopSpawnerScript.cs" />
