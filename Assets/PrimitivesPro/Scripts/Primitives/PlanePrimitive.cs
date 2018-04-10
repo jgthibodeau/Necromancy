@@ -1,5 +1,5 @@
 // Version 2.2
-// ©2013 Reindeer Games
+// ï¿½2013 Reindeer Games
 // All rights reserved
 // Redistribution of source code without permission not allowed
 
@@ -86,7 +86,7 @@ namespace PrimitivesPro.Primitives
             mesh.RecalculateNormals();
             MeshUtils.CalculateTangents(mesh);
             mesh.RecalculateBounds();
-            mesh.Optimize();
+            ;
 
             stopWatch.Stop();
             return stopWatch.ElapsedMilliseconds;

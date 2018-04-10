@@ -9,6 +9,15 @@ TagManager:
   - Interactable
   - Eyes
   - Enemy
+  - FirstPersonCamera
+  - Destructible
+  - Waypoint
+  - Corpse
+  - Reanimated
+  - Breadcrumb
+  - Friendly
+  - Bone
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -23,11 +32,11 @@ TagManager:
   - Detectable
   - Terrain
   - Enemy
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Waypoint
+  - Enemy
+  - Obstacle
+  - Friendly
   - 
   - 
   - 

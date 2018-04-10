@@ -1189,7 +1189,7 @@ public class qb_Painter : EditorWindow
 			clearSelection = true;
 		} DoTipCheck("'Green Check' = mark object as selected - it will be placed exclusively");
 
-		if(Event.current.type == EventType.mouseUp)
+		if(Event.current.type == EventType.MouseUp)
 		{	if(prefabButtonRect.Contains(Event.current.mousePosition))
 			{
 				if(liveTemplate.prefabGroup[i].prefab != null)
@@ -1759,7 +1759,7 @@ public class qb_Painter : EditorWindow
 		{
 			switch(curEvent.type)
 			{
-				case EventType.mouseUp:
+				case EventType.MouseUp:
 					if(curEvent.button == 0)
 					{
 						if(brushMode == BrushMode.On)
@@ -1777,7 +1777,7 @@ public class qb_Painter : EditorWindow
 					}
 				break;
 
-				case EventType.mouseDown:
+				case EventType.MouseDown:
 					if(curEvent.button == 0)
 					{
 						if(brushMode == BrushMode.On)
@@ -1807,7 +1807,7 @@ public class qb_Painter : EditorWindow
 					}
 				break;
 
-				case EventType.mouseDrag:
+				case EventType.MouseDrag:
 				if(curEvent.button == 0)
 				{
 					if(brushMode == BrushMode.On)
@@ -1837,7 +1837,7 @@ public class qb_Painter : EditorWindow
 					HandleUtility.Repaint();
 				break;
 
-				case EventType.mouseMove:
+				case EventType.MouseMove:
 					HandleUtility.Repaint();
 				break;
 

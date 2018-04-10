@@ -5,6 +5,9 @@ public class FpsController : MonoBehaviour {
 	public float sensitivityX;
 	public float sensitivityY;
 
+	public float mouseSensitivityX;
+	public float mouseSensitivityY;
+
 	public bool invertX;
 	public bool invertY;
 
@@ -31,6 +34,7 @@ public class FpsController : MonoBehaviour {
 	private bool jump;
 	private Vector2 moveInput;
 	private Vector2 lookInput;
+	private Vector2 mouseInput;
 	private bool lookLeft;
 	private bool lookRight;
 	private float lean;
@@ -97,6 +101,7 @@ public class FpsController : MonoBehaviour {
 	private void GetInput(){
 		moveInput = GlobalScript.GetStick ("Left");
 		lookInput = GlobalScript.GetStick ("Right");
+		mouseInput = GlobalScript.GetMouse ();
 		isRunning = GlobalScript.GetButtonHeld ("Run");
 		isCrouching = isCrouching ^ GlobalScript.GetButton ("Crouch");
 		jump = GlobalScript.GetButton ("Jump");
@@ -106,34 +111,35 @@ public class FpsController : MonoBehaviour {
 	}
 
 	private void Move(){
+		Vector3 desiredMove = transform.forward * moveInput.y + transform.right * moveInput.x;
+
+		// get a normal for the surface that is being touched to move along it
+		RaycastHit hitInfo;
+		Physics.SphereCast (transform.position, characterController.radius, Vector3.down, out hitInfo,
+			characterController.height / 2f, ~0, QueryTriggerInteraction.Ignore);
+		desiredMove = Vector3.ProjectOnPlane (desiredMove, hitInfo.normal).normalized;
+
+		float currentSpeed = speed;
+		if (isRunning)
+			currentSpeed *= runMultiplier;
+		if (isCrouching)
+			currentSpeed *= crouchMultiplier;
+		//			currentSpeed *= 1 + (runMultiplier - 1)/(runMultiplier) * (runMultiplier*runPercent);
+		//			currentSpeed *= 1 + (crouchMultiplier - 1)/(crouchMultiplier) * (crouchMultiplier*crouchPercent);
+
+		if (smoothMove) {
+			moveDir.x = Mathf.Lerp (moveDir.x, desiredMove.x * currentSpeed, smoothFactor*Time.deltaTime);
+			moveDir.z = Mathf.Lerp (moveDir.z, desiredMove.z * currentSpeed, smoothFactor*Time.deltaTime);
+		}
+		else{
+			moveDir.x = desiredMove.x * currentSpeed;
+			moveDir.z = desiredMove.z * currentSpeed;
+		}
+
 		if (prevGrounded) {
 			moveDir.y = -stickToGroundForce;
 
 			isJumping = false;
-			Vector3 desiredMove = transform.forward * moveInput.y + transform.right * moveInput.x;
-
-			// get a normal for the surface that is being touched to move along it
-			RaycastHit hitInfo;
-			Physics.SphereCast (transform.position, characterController.radius, Vector3.down, out hitInfo,
-				characterController.height / 2f, ~0, QueryTriggerInteraction.Ignore);
-			desiredMove = Vector3.ProjectOnPlane (desiredMove, hitInfo.normal).normalized;
-
-			float currentSpeed = speed;
-			if (isRunning)
-				currentSpeed *= runMultiplier;
-			if (isCrouching)
-				currentSpeed *= crouchMultiplier;
-			//			currentSpeed *= 1 + (runMultiplier - 1)/(runMultiplier) * (runMultiplier*runPercent);
-			//			currentSpeed *= 1 + (crouchMultiplier - 1)/(crouchMultiplier) * (crouchMultiplier*crouchPercent);
-
-			if (smoothMove) {
-				moveDir.x = Mathf.Lerp (moveDir.x, desiredMove.x * currentSpeed, smoothFactor*Time.deltaTime);
-				moveDir.z = Mathf.Lerp (moveDir.z, desiredMove.z * currentSpeed, smoothFactor*Time.deltaTime);
-			}
-			else{
-				moveDir.x = desiredMove.x * currentSpeed;
-				moveDir.z = desiredMove.z * currentSpeed;
-			}
 
 			//jump
 			if (jump) {
@@ -161,6 +167,9 @@ public class FpsController : MonoBehaviour {
 	private void Look(){
 		float yRot = lookInput.x * sensitivityX * (invertX ? -1 : 1);
 		float xRot = lookInput.y * sensitivityY * (invertY ? -1 : 1);
+
+		yRot += mouseInput.x * mouseSensitivityX * (invertX ? -1 : 1);
+		xRot += mouseInput.y * mouseSensitivityY * (invertY ? -1 : 1);
 
 		Vector3 characterRot = transform.localRotation.eulerAngles;
 		characterRot.y += yRot;// * Time.deltaTime;

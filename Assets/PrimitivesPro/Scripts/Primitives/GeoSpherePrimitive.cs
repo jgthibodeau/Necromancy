@@ -172,7 +172,7 @@ namespace PrimitivesPro.Primitives
 
             mesh.RecalculateBounds();
             MeshUtils.CalculateTangents(mesh);
-            mesh.Optimize();
+            ;
 
             stopWatch.Stop();
             return stopWatch.ElapsedMilliseconds;

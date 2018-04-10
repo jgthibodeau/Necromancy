@@ -275,7 +275,7 @@ namespace PrimitivesPro.Primitives
             mesh.triangles = triangles;
             mesh.RecalculateNormals();
             MeshUtils.CalculateTangents(mesh);
-            mesh.Optimize();
+            ;
             mesh.RecalculateBounds();
 
             stopWatch.Stop();

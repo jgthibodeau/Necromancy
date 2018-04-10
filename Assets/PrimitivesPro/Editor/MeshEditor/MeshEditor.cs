@@ -1,5 +1,5 @@
 // Version 2.2
-// ©2013 Reindeer Games
+// ï¿½2013 Reindeer Games
 // All rights reserved
 // Redistribution of source code without permission not allowed
 
@@ -350,7 +350,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
             }
 
-            var hoverPoint = guiEvent != EventType.mouseDrag;
+            var hoverPoint = guiEvent != EventType.MouseDrag;
             var handleSelected = GUIUtility.hotControl != 0;
 
             if (handleSelected)
@@ -382,11 +382,11 @@ namespace PrimitivesPro.Editor.MeshEditor
             {
                 if (vertex != -1)
                 {
-                    if (guiEvent == EventType.mouseDown)
+                    if (guiEvent == EventType.MouseDown)
                     {
                         painting = true;
                     }
-                    else if (guiEvent == EventType.mouseUp || guiEvent == EventType.mouseMove)
+                    else if (guiEvent == EventType.MouseUp || guiEvent == EventType.MouseMove)
                     {
                         painting = false;
                     }
@@ -410,7 +410,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                     }
                     else
                     {
-                        if (guiEvent == EventType.mouseDown)
+                        if (guiEvent == EventType.MouseDown)
                         {
                             editCommand.Command |= EditCommand.CommandType.Clear;
                             editCommand.Vertex = -1;
@@ -425,7 +425,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
                 else
                 {
-                    if (guiEvent == EventType.mouseDown)
+                    if (guiEvent == EventType.MouseDown)
                     {
                         if (!Event.current.shift)
                         {
@@ -443,7 +443,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 multiselecting = false;
             }
 
-            if (guiEvent == EventType.mouseUp)
+            if (guiEvent == EventType.MouseUp)
             {
                 OnMultiselectFinished();
             }
@@ -464,7 +464,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             if (!handleSelected)
             {
-                if (guiEvent == EventType.mouseUp)
+                if (guiEvent == EventType.MouseUp)
                 {
                     var array = new int[vertexSelection.Count];
                     vertexSelection.CopyTo(array);
@@ -485,7 +485,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
             }
 
-            if (guiEvent == EventType.mouseUp)
+            if (guiEvent == EventType.MouseUp)
             {
                 editObject.ppMesh.SaveUndo();
                 RefreshToolbar();
@@ -493,7 +493,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             var newPos = Handles.PositionHandle(oldDragPos, handlesRotation);
 
-            if (guiEvent == EventType.mouseDrag && handleSelected)
+            if (guiEvent == EventType.MouseDrag && handleSelected)
             {
                 if (settings.GridSnap)
                 {
@@ -531,7 +531,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             var mouseRay = Utils.GetSceneViewMouseRay();
             var face = editObject.ppMesh.GetIntersectingPolygon(mouseRay, true);
-            var hoverPoint = guiEvent != EventType.mouseDrag;
+            var hoverPoint = guiEvent != EventType.MouseDrag;
             var handleSelected = GUIUtility.hotControl != 0;
 
             if (handleSelected)
@@ -558,11 +558,11 @@ namespace PrimitivesPro.Editor.MeshEditor
             {
                 if (face != null)
                 {
-                    if (guiEvent == EventType.mouseDown)
+                    if (guiEvent == EventType.MouseDown)
                     {
                         painting = true;
                     }
-                    else if (guiEvent == EventType.mouseUp || guiEvent == EventType.mouseMove)
+                    else if (guiEvent == EventType.MouseUp || guiEvent == EventType.MouseMove)
                     {
                         painting = false;
                     }
@@ -586,7 +586,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                     }
                     else
                     {
-                        if (guiEvent == EventType.mouseDown)
+                        if (guiEvent == EventType.MouseDown)
                         {
                             editCommand.Command |= EditCommand.CommandType.Clear;
                             editCommand.Face = null;
@@ -601,7 +601,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
                 else
                 {
-                    if (guiEvent == EventType.mouseDown)
+                    if (guiEvent == EventType.MouseDown)
                     {
                         if (!Event.current.shift)
                         {
@@ -619,7 +619,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 multiselecting = false;
             }
 
-            if (guiEvent == EventType.mouseUp)
+            if (guiEvent == EventType.MouseUp)
             {
                 OnMultiselectFinished();
             }
@@ -645,7 +645,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             if (!handleSelected)
             {
-                if (guiEvent == EventType.mouseUp)
+                if (guiEvent == EventType.MouseUp)
                 {
                     oldDragPos = editObject.ppMesh.GetAveragePos(pointList);
 					editObject.ppMesh.StartUpdateFacesDelta(faceSelection, settings.StickOverlappingPoints);
@@ -664,7 +664,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
             }
 
-            if (guiEvent == EventType.mouseUp)
+            if (guiEvent == EventType.MouseUp)
             {
                 editObject.ppMesh.SaveUndo();
                 RefreshToolbar();
@@ -672,7 +672,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             var newPos = Handles.PositionHandle(oldDragPos, handlesRotation);
 
-            if (guiEvent == EventType.mouseDrag && handleSelected)
+            if (guiEvent == EventType.MouseDrag && handleSelected)
             {
                 if (settings.GridSnap)
                 {
@@ -718,7 +718,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
             }
 
-            var hoverPoint = guiEvent != EventType.mouseDrag;
+            var hoverPoint = guiEvent != EventType.MouseDrag;
             var handleSelected = GUIUtility.hotControl != 0;
 
             if (handleSelected)
@@ -745,11 +745,11 @@ namespace PrimitivesPro.Editor.MeshEditor
             {
                 if (edge != null)
                 {
-                    if (guiEvent == EventType.mouseDown)
+                    if (guiEvent == EventType.MouseDown)
                     {
                         painting = true;
                     }
-                    else if (guiEvent == EventType.mouseUp || guiEvent == EventType.mouseMove)
+                    else if (guiEvent == EventType.MouseUp || guiEvent == EventType.MouseMove)
                     {
                         painting = false;
                     }
@@ -773,7 +773,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                     }
                     else
                     {
-                        if (guiEvent == EventType.mouseDown)
+                        if (guiEvent == EventType.MouseDown)
                         {
                             editCommand.Command |= EditCommand.CommandType.Clear;
                             editCommand.Edge = null;
@@ -788,7 +788,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
                 else
                 {
-                    if (guiEvent == EventType.mouseDown)
+                    if (guiEvent == EventType.MouseDown)
                     {
                         if (!Event.current.shift)
                         {
@@ -806,7 +806,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 multiselecting = false;
             }
 
-            if (guiEvent == EventType.mouseUp)
+            if (guiEvent == EventType.MouseUp)
             {
                 OnMultiselectFinished();
             }
@@ -833,7 +833,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             if (!handleSelected)
             {
-                if (guiEvent == EventType.mouseUp)
+                if (guiEvent == EventType.MouseUp)
                 {
                     oldDragPos = editObject.ppMesh.GetAveragePos(array);
 					editObject.ppMesh.StartUpdateEdgesDelta(edgeSelection, settings.StickOverlappingPoints);
@@ -852,7 +852,7 @@ namespace PrimitivesPro.Editor.MeshEditor
                 }
             }
 
-            if (guiEvent == EventType.mouseUp)
+            if (guiEvent == EventType.MouseUp)
             {
                 editObject.ppMesh.SaveUndo();
                 RefreshToolbar();
@@ -860,7 +860,7 @@ namespace PrimitivesPro.Editor.MeshEditor
 
             var newPos = Handles.PositionHandle(oldDragPos, handlesRotation);
 
-            if (guiEvent == EventType.mouseDrag && handleSelected)
+            if (guiEvent == EventType.MouseDrag && handleSelected)
             {
                 if (settings.GridSnap)
                 {

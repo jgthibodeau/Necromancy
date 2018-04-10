@@ -147,7 +147,7 @@ namespace PrimitivesPro.CSG
 
             mesh.RecalculateNormals();
 
-            mesh.Optimize();
+            ;
             mesh.RecalculateBounds();
 
             return mesh;

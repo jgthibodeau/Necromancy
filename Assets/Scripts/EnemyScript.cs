@@ -77,7 +77,7 @@ public class EnemyScript : SavableScript {
 	public float maxSearchTime;
 
 	//Agent and state speeds
-	public NavMeshAgent agent;
+	public UnityEngine.AI.NavMeshAgent agent;
 
 	//Random values
 	public float investigateRandomness;
@@ -100,7 +100,7 @@ public class EnemyScript : SavableScript {
 	// Use this for initialization
 	protected virtual void Start () {
 		player = GameObject.Find ("Player");
-		agent = this.GetComponent<NavMeshAgent> ();
+		agent = this.GetComponent<UnityEngine.AI.NavMeshAgent> ();
 
 		ChangeState (State.Patrol);
 

@@ -121,7 +121,7 @@ namespace PrimitivesPro.MeshEditor
             }
 
             OriginalMesh.triangles = triangles;
-            OriginalMesh.Optimize();
+            ;
 
             OriginalMesh.RecalculateNormals();
             MeshUtils.CalculateTangents(OriginalMesh);

@@ -38,6 +38,14 @@ public class GlobalScript : MonoBehaviour {
 
 		return stickInput;
 	}
+	public static Vector2 GetMouse(){
+		Vector2 stickInput = new Vector2 (Input.GetAxis ("Mouse X"), Input.GetAxis ("Mouse Y"));
+//		if (stickInput.magnitude < deadzone)
+//			stickInput = Vector2.zero;
+//		else
+//			stickInput = stickInput.normalized * ((stickInput.magnitude - deadzone) / (1 - deadzone));
+		return stickInput;
+	}
 	public static float GetAxis(string axis){
 		return Input.GetAxis (axis);
 	}

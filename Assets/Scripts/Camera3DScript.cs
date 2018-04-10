@@ -31,7 +31,7 @@ public class Camera3DScript : MonoBehaviour {
 
 	void LateUpdate(){
 		if (!collided) {
-			Vector2 lookInput = GlobalScript.GetAxis (GlobalScript.RightStick);
+			Vector2 lookInput = GlobalScript.GetStick (GlobalScript.RightStick);
 			currentX += sensitivityX * lookInput.x;
 			currentY += sensitivityY * lookInput.y;
 
