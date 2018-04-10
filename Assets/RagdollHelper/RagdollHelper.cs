@@ -53,17 +53,20 @@ public class RagdollHelper : MonoBehaviour {
 					}
 					
 					//Remember some key positions
-					ragdolledFeetPosition=0.5f*(anim.GetBoneTransform(HumanBodyBones.LeftToes).position + anim.GetBoneTransform(HumanBodyBones.RightToes).position);
-					ragdolledHeadPosition=anim.GetBoneTransform(HumanBodyBones.Head).position;
-					ragdolledHipPosition=anim.GetBoneTransform(HumanBodyBones.Hips).position;
+					if (anim.GetBoneTransform (HumanBodyBones.LeftToes) != null
+					    && anim.GetBoneTransform (HumanBodyBones.RightToes) != null
+					    && anim.GetBoneTransform (HumanBodyBones.Head) != null
+					    && anim.GetBoneTransform (HumanBodyBones.Hips) != null) {
+						ragdolledFeetPosition = 0.5f * (anim.GetBoneTransform (HumanBodyBones.LeftToes).position + anim.GetBoneTransform (HumanBodyBones.RightToes).position);
+						ragdolledHeadPosition = anim.GetBoneTransform (HumanBodyBones.Head).position;
+						ragdolledHipPosition = anim.GetBoneTransform (HumanBodyBones.Hips).position;
 						
-					//Initiate the get up animation
-					if (anim.GetBoneTransform(HumanBodyBones.Hips).forward.y>0) //hip hips forward vector pointing upwards, initiate the get up from back animation
-					{
-						anim.SetBool("GetUpFromBack",true);
-					}
-					else{
-						anim.SetBool("GetUpFromBelly",true);
+						//Initiate the get up animation
+						if (anim.GetBoneTransform (HumanBodyBones.Hips).forward.y > 0) { //hip hips forward vector pointing upwards, initiate the get up from back animation
+							anim.SetBool ("GetUpFromBack", true);
+						} else {
+							anim.SetBool ("GetUpFromBelly", true);
+						}
 					}
 				} //if (state==RagdollState.ragdolled)
 			}	//if value==false	
@@ -166,32 +169,35 @@ public class RagdollHelper : MonoBehaviour {
 			{
 				//If we are waiting for Mecanim to start playing the get up animations, update the root of the mecanim
 				//character to the best match with the ragdoll
-				Vector3 animatedToRagdolled=ragdolledHipPosition-anim.GetBoneTransform(HumanBodyBones.Hips).position;
-				Vector3 newRootPosition=transform.position + animatedToRagdolled;
+				if (anim.GetBoneTransform (HumanBodyBones.LeftToes) != null
+				    && anim.GetBoneTransform (HumanBodyBones.RightToes) != null
+				    && anim.GetBoneTransform (HumanBodyBones.Head) != null
+				    && anim.GetBoneTransform (HumanBodyBones.Hips) != null) {
+					Vector3 animatedToRagdolled = ragdolledHipPosition - anim.GetBoneTransform (HumanBodyBones.Hips).position;
+					Vector3 newRootPosition = transform.position + animatedToRagdolled;
 					
-				//Now cast a ray from the computed position downwards and find the highest hit that does not belong to the character 
-				RaycastHit[] hits=Physics.RaycastAll(new Ray(newRootPosition,Vector3.down)); 
-				newRootPosition.y=0;
-				foreach(RaycastHit hit in hits)
-				{
-					if (!hit.transform.IsChildOf(transform))
-					{
-						newRootPosition.y=Mathf.Max(newRootPosition.y, hit.point.y);
+					//Now cast a ray from the computed position downwards and find the highest hit that does not belong to the character 
+					RaycastHit[] hits = Physics.RaycastAll (new Ray (newRootPosition, Vector3.down)); 
+					newRootPosition.y = 0;
+					foreach (RaycastHit hit in hits) {
+						if (!hit.transform.IsChildOf (transform)) {
+							newRootPosition.y = Mathf.Max (newRootPosition.y, hit.point.y);
+						}
 					}
-				}
-				transform.position=newRootPosition;
+					transform.position = newRootPosition;
 				
-				//Get body orientation in ground plane for both the ragdolled pose and the animated get up pose
-				Vector3 ragdolledDirection=ragdolledHeadPosition-ragdolledFeetPosition;
-				ragdolledDirection.y=0;
+					//Get body orientation in ground plane for both the ragdolled pose and the animated get up pose
+					Vector3 ragdolledDirection = ragdolledHeadPosition - ragdolledFeetPosition;
+					ragdolledDirection.y = 0;
 
-				Vector3 meanFeetPosition=0.5f*(anim.GetBoneTransform(HumanBodyBones.LeftFoot).position + anim.GetBoneTransform(HumanBodyBones.RightFoot).position);
-				Vector3 animatedDirection=anim.GetBoneTransform(HumanBodyBones.Head).position - meanFeetPosition;
-				animatedDirection.y=0;
+					Vector3 meanFeetPosition = 0.5f * (anim.GetBoneTransform (HumanBodyBones.LeftFoot).position + anim.GetBoneTransform (HumanBodyBones.RightFoot).position);
+					Vector3 animatedDirection = anim.GetBoneTransform (HumanBodyBones.Head).position - meanFeetPosition;
+					animatedDirection.y = 0;
 										
-				//Try to match the rotations. Note that we can only rotate around Y axis, as the animated characted must stay upright,
-				//hence setting the y components of the vectors to zero. 
-				transform.rotation*=Quaternion.FromToRotation(animatedDirection.normalized,ragdolledDirection.normalized);
+					//Try to match the rotations. Note that we can only rotate around Y axis, as the animated characted must stay upright,
+					//hence setting the y components of the vectors to zero. 
+					transform.rotation *= Quaternion.FromToRotation (animatedDirection.normalized, ragdolledDirection.normalized);
+				}
 			}
 			//compute the ragdoll blend amount in the range 0...1
 			float ragdollBlendAmount=1.0f-(Time.time-ragdollingEndTime-mecanimToGetUpTransitionTime)/ragdollToMecanimBlendTime;
